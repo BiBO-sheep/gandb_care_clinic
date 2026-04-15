@@ -14,7 +14,7 @@ class SelectClinicController extends GetxController {
       duration: const Duration(seconds: 2),
     );
     // TODO: Navigasi ke halaman pemilihan Jadwal/Dokter
-    // Get.toNamed(Routes.SELECT_DOCTOR, arguments: clinicName);
+    Get.toNamed('/select-time', arguments: clinicName);
   }
 
   // Fungsi untuk tombol Call Center

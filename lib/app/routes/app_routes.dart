@@ -6,4 +6,6 @@ abstract class Routes {
   static const REGISTER = '/register';
   static const HOME = '/home';
   static const SELECT_CLINIC = '/select-clinic';
+  static const SELECT_TIME = '/select-time';
+  static const QUEUE_MONITOR = '/queue-monitor';
 }

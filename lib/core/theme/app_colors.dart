@@ -10,4 +10,6 @@ class AppColors {
 
   static const Color primaryContainer = Color(0xFFFF7F50);
   static const Color secondaryContainer = Color(0xFF90EFEF);
+
+  static Color? get surfaceContainerLow => null;
 }
