@@ -69,8 +69,17 @@ class SelectTimeController extends GetxController {
 
     // 3. PINDAH HALAMAN
     // Tunggu snackbar selesai (2 detik), lalu pindah halaman
-    Future.delayed(const Duration(seconds: 2), () {
+    () {
       Get.offAllNamed('/queue-monitor');
-    });
+    };
+    // KIRIM DATA KE HALAMAN KONFIRMASI
+    Get.toNamed(
+      '/confirm-appointment',
+      arguments: {
+        'clinic': clinicName,
+        'date': 'Sep ${selectedDate.value}, 2024',
+        'time': selectedTime.value,
+      },
+    );
   }
 }

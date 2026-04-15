@@ -1,3 +1,5 @@
+import 'package:gandb_care_clinic/app/modules/confirm_appointment/bindings/confirm_appointment_binding.dart';
+import 'package:gandb_care_clinic/app/modules/confirm_appointment/views/confirm_appointment_view.dart';
 import 'package:gandb_care_clinic/app/modules/home/bindings/home_bindings.dart';
 import 'package:gandb_care_clinic/app/modules/home/views/home_view.dart';
 import 'package:gandb_care_clinic/app/modules/login/bindings/login_binding.dart';
@@ -62,6 +64,12 @@ class AppPages {
       page: () => const QueueMonitorView(),
       binding: QueueMonitorBinding(),
       transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: Routes.CONFIRM_APPOINTMENT,
+      page: () => const ConfirmAppointmentView(),
+      binding: ConfirmAppointmentBinding(),
+      transition: Transition.rightToLeft,
     ),
   ];
 }
