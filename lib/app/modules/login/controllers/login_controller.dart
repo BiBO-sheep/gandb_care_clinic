@@ -49,7 +49,7 @@ class LoginController extends GetxController {
     );
 
     // TODO: Navigasi ke halaman Home/Dashboard
-    // Get.offAllNamed(Routes.HOME);
+    Get.offAllNamed('/home'); // Get.offAllNamed(Routes.HOME);
   }
 
   void loginWithGoogle() {

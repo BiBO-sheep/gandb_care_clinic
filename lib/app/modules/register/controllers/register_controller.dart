@@ -72,7 +72,9 @@ class RegisterController extends GetxController {
     );
 
     // TODO: Navigasi ke halaman Home/Dashboard
-    // Get.offAllNamed(Routes.HOME);
+    Get.offAllNamed(
+      '/home',
+    ); // Get.offAllNamed(Routes.HOME);
   }
 
   void _showError(String message) {
