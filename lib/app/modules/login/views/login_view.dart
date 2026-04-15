@@ -255,7 +255,9 @@ class LoginView extends GetView<LoginController> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {}, // Tambah navigasi ke Register nanti
+                    onTap: () => Get.toNamed(
+                      '/register',
+                    ), // Tambah navigasi ke Register nanti
                     child: Text(
                       'Sign Up',
                       style: GoogleFonts.beVietnamPro(
