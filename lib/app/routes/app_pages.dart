@@ -10,6 +10,10 @@ import 'package:gandb_care_clinic/app/modules/home/bindings/home_bindings.dart';
 import 'package:gandb_care_clinic/app/modules/home/views/home_view.dart';
 import 'package:gandb_care_clinic/app/modules/login/bindings/login_binding.dart';
 import 'package:gandb_care_clinic/app/modules/login/views/login_view.dart';
+import 'package:gandb_care_clinic/app/modules/notifications/bindings/notifications_binding.dart';
+import 'package:gandb_care_clinic/app/modules/notifications/views/notifications_view.dart';
+import 'package:gandb_care_clinic/app/modules/payment_history/bindings/payment_history_binding.dart';
+import 'package:gandb_care_clinic/app/modules/payment_history/views/payment_history_view.dart';
 import 'package:gandb_care_clinic/app/modules/queue_monitor/bindings/queue_monitor_binding.dart';
 import 'package:gandb_care_clinic/app/modules/queue_monitor/views/queue_monitor_view.dart';
 import 'package:gandb_care_clinic/app/modules/register/bindings/register_binding.dart';
@@ -95,6 +99,18 @@ class AppPages {
       page: () => const DigitalPrescriptionView(),
       binding: DigitalPrescriptionBinding(),
       transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: Routes.PAYMENT_HISTORY,
+      page: () => const PaymentHistoryView(),
+      binding: PaymentHistoryBinding(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: Routes.NOTIFICATIONS,
+      page: () => const NotificationsView(),
+      binding: NotificationsBinding(),
+      transition: Transition.fadeIn,
     ),
   ];
 }

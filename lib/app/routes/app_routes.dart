@@ -12,4 +12,6 @@ abstract class Routes {
   static const EXAM_RESULTS = '/exam-results';
   static const DIGITAL_PRESCRIPTION = '/digital-prescription';
   static const QUEUE_MONITOR = '/queue-monitor';
+  static const PAYMENT_HISTORY = '/payment-history';
+  static const NOTIFICATIONS = '/notifications';
 }

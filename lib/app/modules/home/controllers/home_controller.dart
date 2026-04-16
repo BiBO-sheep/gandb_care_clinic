@@ -18,7 +18,13 @@ class HomeController extends GetxController {
   // Fungsi mengubah tab menu bawah
   void changePage(int index) {
     currentIndex.value = index;
-    // TODO: Tambahkan logika perpindahan view jika index berubah
+    if (index == 0) {
+      Get.offAllNamed('/home');
+    } else if (index == 1) {
+      Get.offAllNamed('/payment-history');
+    } else if (index == 2) {
+      Get.offAllNamed('/notifications'); // <-- Buka Notifikasi
+    }
   }
 
   // Simulasi pemanggilan API ke Laravel
@@ -42,7 +48,7 @@ class HomeController extends GetxController {
     } else if (action == 'My History') {
       Get.toNamed('/exam-results');
     } else if (action == 'Active Prescription') {
-      // TAMBAHKAN INI: Buka halaman Resep Digital saat diklik
+      // Buka halaman Resep Digital saat diklik
       Get.toNamed('/digital-prescription');
     } else {
       Get.snackbar(
