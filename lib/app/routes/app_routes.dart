@@ -14,4 +14,6 @@ abstract class Routes {
   static const QUEUE_MONITOR = '/queue-monitor';
   static const PAYMENT_HISTORY = '/payment-history';
   static const NOTIFICATIONS = '/notifications';
+  static const PROFILE = '/profile';
+  static const SETTINGS = '/settings';
 }

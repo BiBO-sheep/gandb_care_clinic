@@ -23,7 +23,9 @@ class HomeController extends GetxController {
     } else if (index == 1) {
       Get.offAllNamed('/payment-history');
     } else if (index == 2) {
-      Get.offAllNamed('/notifications'); // <-- Buka Notifikasi
+      Get.offAllNamed('/notifications');
+    } else if (index == 3) {
+      Get.offAllNamed('/profile'); // <-- Buka Profile
     }
   }
 

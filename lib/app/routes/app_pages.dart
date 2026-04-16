@@ -14,6 +14,8 @@ import 'package:gandb_care_clinic/app/modules/notifications/bindings/notificatio
 import 'package:gandb_care_clinic/app/modules/notifications/views/notifications_view.dart';
 import 'package:gandb_care_clinic/app/modules/payment_history/bindings/payment_history_binding.dart';
 import 'package:gandb_care_clinic/app/modules/payment_history/views/payment_history_view.dart';
+import 'package:gandb_care_clinic/app/modules/profile/bindings/profile_binding.dart';
+import 'package:gandb_care_clinic/app/modules/profile/views/profile_view.dart';
 import 'package:gandb_care_clinic/app/modules/queue_monitor/bindings/queue_monitor_binding.dart';
 import 'package:gandb_care_clinic/app/modules/queue_monitor/views/queue_monitor_view.dart';
 import 'package:gandb_care_clinic/app/modules/register/bindings/register_binding.dart';
@@ -22,6 +24,8 @@ import 'package:gandb_care_clinic/app/modules/select_clinic/bindings/select_clin
 import 'package:gandb_care_clinic/app/modules/select_clinic/views/select_clinic_views.dart';
 import 'package:gandb_care_clinic/app/modules/select_time/bindings/select_time_bindings.dart';
 import 'package:gandb_care_clinic/app/modules/select_time/views/select_time_view.dart';
+import 'package:gandb_care_clinic/app/modules/settings/bindings/settings_binding.dart';
+import 'package:gandb_care_clinic/app/modules/settings/views/settings_view.dart';
 import 'package:get/get.dart';
 import '../modules/onboarding/bindings/onboarding_binding.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
@@ -111,6 +115,19 @@ class AppPages {
       page: () => const NotificationsView(),
       binding: NotificationsBinding(),
       transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: Routes.PROFILE,
+      page: () => const ProfileView(),
+      binding: ProfileBinding(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: Routes.SETTINGS,
+      page: () => const SettingsView(),
+      binding: SettingsBinding(),
+      transition:
+          Transition.rightToLeft, // Animasi masuk dari samping khas submenu
     ),
   ];
 }
