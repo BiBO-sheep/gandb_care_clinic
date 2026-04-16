@@ -40,8 +40,10 @@ class HomeController extends GetxController {
     if (action == 'Book Appointment') {
       Get.toNamed('/select-clinic');
     } else if (action == 'My History') {
-      // TAMBAHKAN INI: Buka halaman Exam Results saat klik My History
       Get.toNamed('/exam-results');
+    } else if (action == 'Active Prescription') {
+      // TAMBAHKAN INI: Buka halaman Resep Digital saat diklik
+      Get.toNamed('/digital-prescription');
     } else {
       Get.snackbar(
         'Fitur $action',

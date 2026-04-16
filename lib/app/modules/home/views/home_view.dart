@@ -276,7 +276,7 @@ class HomeView extends GetView<HomeController> {
           crossAxisCount: 2,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
-          childAspectRatio: 1.4,
+          childAspectRatio: 1.2,
           children: [
             _buildActionItem(
               'Book\nAppointment',

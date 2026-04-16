@@ -1,5 +1,7 @@
 import 'package:gandb_care_clinic/app/modules/confirm_appointment/bindings/confirm_appointment_binding.dart';
 import 'package:gandb_care_clinic/app/modules/confirm_appointment/views/confirm_appointment_view.dart';
+import 'package:gandb_care_clinic/app/modules/digital_prescription/bindings/digital_prescription_binding.dart';
+import 'package:gandb_care_clinic/app/modules/digital_prescription/views/digital_prescription_view.dart';
 import 'package:gandb_care_clinic/app/modules/digital_ticket/bindings/digital_binding.dart';
 import 'package:gandb_care_clinic/app/modules/digital_ticket/views/digital_ticket_view.dart';
 import 'package:gandb_care_clinic/app/modules/exam_results/bindings/exam_results_binding.dart';
@@ -86,6 +88,12 @@ class AppPages {
       name: Routes.EXAM_RESULTS,
       page: () => const ExamResultsView(),
       binding: ExamResultsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: Routes.DIGITAL_PRESCRIPTION,
+      page: () => const DigitalPrescriptionView(),
+      binding: DigitalPrescriptionBinding(),
       transition: Transition.rightToLeft,
     ),
   ];
