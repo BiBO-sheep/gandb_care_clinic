@@ -38,7 +38,10 @@ class HomeController extends GetxController {
   // Fungsi untuk tombol Quick Actions
   void onQuickActionTapped(String action) {
     if (action == 'Book Appointment') {
-      Get.toNamed('/select-clinic'); // Navigasi ke halaman pilih poli
+      Get.toNamed('/select-clinic');
+    } else if (action == 'My History') {
+      // TAMBAHKAN INI: Buka halaman Exam Results saat klik My History
+      Get.toNamed('/exam-results');
     } else {
       Get.snackbar(
         'Fitur $action',

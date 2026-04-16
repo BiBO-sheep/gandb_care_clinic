@@ -35,6 +35,7 @@ class ConfirmAppointmentController extends GetxController {
 
     isConfirming.value = false;
 
+    // Menampilkan notifikasi sukses di atas layar
     Get.snackbar(
       'Appointment Confirmed!',
       'Your booking has been successfully secured.',
@@ -43,8 +44,9 @@ class ConfirmAppointmentController extends GetxController {
       colorText: Colors.white,
     );
 
-    // Lanjut ke halaman Queue Monitor yang sudah kita buat sebelumnya!
-    Get.offAllNamed('/queue-monitor');
+    // UBAH BAGIAN INI:
+    // Arahkan ke halaman Digital Ticket (Bukan Queue Monitor)
+    Get.offAllNamed('/digital-ticket');
   }
 
   // Fungsi untuk tombol Edit Selection (Kembali ke halaman sebelumnya)

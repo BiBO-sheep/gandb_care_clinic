@@ -1,5 +1,9 @@
 import 'package:gandb_care_clinic/app/modules/confirm_appointment/bindings/confirm_appointment_binding.dart';
 import 'package:gandb_care_clinic/app/modules/confirm_appointment/views/confirm_appointment_view.dart';
+import 'package:gandb_care_clinic/app/modules/digital_ticket/bindings/digital_binding.dart';
+import 'package:gandb_care_clinic/app/modules/digital_ticket/views/digital_ticket_view.dart';
+import 'package:gandb_care_clinic/app/modules/exam_results/bindings/exam_results_binding.dart';
+import 'package:gandb_care_clinic/app/modules/exam_results/views/exam_results.view.dart';
 import 'package:gandb_care_clinic/app/modules/home/bindings/home_bindings.dart';
 import 'package:gandb_care_clinic/app/modules/home/views/home_view.dart';
 import 'package:gandb_care_clinic/app/modules/login/bindings/login_binding.dart';
@@ -69,6 +73,19 @@ class AppPages {
       name: Routes.CONFIRM_APPOINTMENT,
       page: () => const ConfirmAppointmentView(),
       binding: ConfirmAppointmentBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: Routes.DIGITAL_TICKET,
+      page: () => const DigitalTicketView(),
+      binding: DigitalTicketBinding(),
+      transition: Transition
+          .downToUp, // Animasi muncul dari bawah ke atas agar berasa "Sukses"
+    ),
+    GetPage(
+      name: Routes.EXAM_RESULTS,
+      page: () => const ExamResultsView(),
+      binding: ExamResultsBinding(),
       transition: Transition.rightToLeft,
     ),
   ];
