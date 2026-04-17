@@ -12,38 +12,124 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      extendBody: true, // Penting agar background memanjang ke bawah bottom nav
+      extendBody: true,
       body: SafeArea(
-        bottom:
-            false, // Jangan batasi area bawah agar bottom nav bisa efek kaca
-        child: Column(
-          children: [
-            _buildCustomAppBar(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    _buildWelcomeSection(),
-                    const SizedBox(height: 32),
-                    _buildAppointmentCard(),
-                    const SizedBox(height: 32),
-                    _buildQuickActions(),
-                    const SizedBox(height: 32),
-                    _buildDailyWellness(),
-                    const SizedBox(
-                      height: 100,
-                    ), // Spacing ekstra untuk bottom nav
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+        bottom: false,
+        // --- INI RAHASIANYA BOS: BUNGKUS PAKE OBX ---
+        child: Obx(() {
+          // Kita bikin daftar halamannya di sini
+          final List<Widget> pages = [
+            _buildHomeContent(), // Index 0: Tampilan Home
+            _buildHistoryContent(), // Index 1: Tampilan History
+            _buildNotifContent(), // Index 2: Tampilan Notif
+            _buildProfileContent(), // Index 3: Tampilan Profile (Gua taruh tombol Logout sekalian)
+          ];
+
+          // Tampilkan halaman sesuai tombol bawah yang lagi dipencet
+          return pages[controller.currentIndex.value];
+        }),
       ),
       bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  // =========================================
+  // 1. ISI HALAMAN HOME (Yang udah lu bikin)
+  // =========================================
+  Widget _buildHomeContent() {
+    return Column(
+      children: [
+        _buildCustomAppBar(),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                _buildWelcomeSection(),
+                const SizedBox(height: 32),
+                _buildAppointmentCard(),
+                const SizedBox(height: 32),
+                _buildQuickActions(),
+                const SizedBox(height: 32),
+                _buildDailyWellness(),
+                const SizedBox(height: 32),
+                _buildPoliSlider(), // <-- Slider API kita tadi
+                const SizedBox(height: 100),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // =========================================
+  // 2. HALAMAN DUMMY SEMENTARA
+  // =========================================
+  Widget _buildHistoryContent() {
+    return Center(
+      child: Text(
+        'Halaman History\n(Segera Hadir)',
+        textAlign: TextAlign.center,
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: AppColors.secondary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotifContent() {
+    return Center(
+      child: Text(
+        'Halaman Notifikasi\n(Segera Hadir)',
+        textAlign: TextAlign.center,
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: AppColors.secondary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileContent() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Halaman Profile',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 20),
+          // Sekalian gua bikinin tombol Logout buat ngetes
+          ElevatedButton.icon(
+            onPressed: controller.logout,
+            icon: const Icon(Icons.logout, color: Colors.white),
+            label: const Text(
+              'LOGOUT',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -522,6 +608,128 @@ class HomeView extends GetView<HomeController> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // --- KOMPONEN BARU: SLIDER POLI ---
+  Widget _buildPoliSlider() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'OUR CLINICS',
+              style: GoogleFonts.beVietnamPro(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: AppColors.secondary,
+                letterSpacing: 2,
+              ),
+            ),
+            Text(
+              'See All',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // Bungkus dengan Obx agar bereaksi saat data loading/selesai
+        Obx(() {
+          if (controller.isLoading.value) {
+            // Efek loading muter-muter
+            return const SizedBox(
+              height: 160,
+              child: Center(
+                child: CircularProgressIndicator(color: AppColors.primary),
+              ),
+            );
+          }
+
+          if (controller.listPoli.isEmpty) {
+            return const Text('Data poli belum tersedia');
+          }
+
+          // Slider Horizontal
+          return SizedBox(
+            height: 160,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              itemCount: controller.listPoli.length,
+              itemBuilder: (context, index) {
+                // Ambil data satu per satu dari list Laravel
+                final poli = controller.listPoli[index];
+                return _buildPoliCard(poli);
+              },
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  // --- DESAIN KARTU POLI ---
+  Widget _buildPoliCard(dynamic poli) {
+    return Container(
+      width: 140,
+      margin: const EdgeInsets.only(right: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.surfaceVariant.withOpacity(0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.medical_information, // Ikon medis
+              color: AppColors.primary,
+              size: 24,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            poli['name'] ?? 'Poli', // Tarik nama poli dari database
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: AppColors.onSurface,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            poli['ruangan'] ?? 'Lantai 1', // Tarik nama ruangan
+            style: GoogleFonts.beVietnamPro(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+        ],
       ),
     );
   }

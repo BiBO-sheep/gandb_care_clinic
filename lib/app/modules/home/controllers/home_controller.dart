@@ -1,72 +1,103 @@
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+import 'package:gandb_care_clinic/core/theme/app_colors.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
+// Pastikan path-nya benar menuju file api_config.dart
+import '../../../../api_config.dart';
 
 class HomeController extends GetxController {
-  // State untuk Bottom Navigation Bar
+  // ==========================================
+  // 1. VARIABEL UI BAWAAN LU (Biar Gak Error)
+  // ==========================================
+  var patientName = 'Pasien'.obs;
+  var heartRate = 82.obs;
   var currentIndex = 0.obs;
 
-  // State Data Pasien (MOCK DATA - Nantinya diisi dari API Laravel)
-  var patientName = 'Alex'.obs;
-  var heartRate = 72.obs;
-  var isLoading = false.obs;
+  // ==========================================
+  // 2. VARIABEL API DARI LARAVEL
+  // ==========================================
+  var isLoading = true.obs;
+  var listPoli = [].obs;
 
   @override
   void onInit() {
     super.onInit();
-    fetchDashboardData();
+    fetchPoliAPI(); // Tarik data pas halaman dibuka
   }
 
-  // Fungsi mengubah tab menu bawah
+  // ==========================================
+  // 3. FUNGSI KLIK TOMBOL BAWAAN LU
+  // ==========================================
   void changePage(int index) {
     currentIndex.value = index;
-    if (index == 0) {
-      Get.offAllNamed('/home');
-    } else if (index == 1) {
-      Get.offAllNamed('/payment-history');
-    } else if (index == 2) {
-      Get.offAllNamed('/notifications');
-    } else if (index == 3) {
-      Get.offAllNamed('/profile'); // <-- Buka Profile
-    }
   }
 
-  // Simulasi pemanggilan API ke Laravel
-  void fetchDashboardData() async {
-    isLoading.value = true;
-
-    // MOCK LOGIC: Delay seolah-olah sedang request ke server
-    await Future.delayed(const Duration(seconds: 1));
-
-    // Di sini nantinya kamu me-mapping response JSON ke variabel
-    patientName.value = 'Alex';
-    heartRate.value = 72;
-
-    isLoading.value = false;
-  }
-
-  // Fungsi untuk tombol Quick Actions
-  void onQuickActionTapped(String action) {
-    if (action == 'Book Appointment') {
-      Get.toNamed('/select-clinic');
-    } else if (action == 'My History') {
-      Get.toNamed('/exam-results');
-    } else if (action == 'Active Prescription') {
-      // Buka halaman Resep Digital saat diklik
-      Get.toNamed('/digital-prescription');
-    } else {
-      Get.snackbar(
-        'Fitur $action',
-        'Sedang dalam pengembangan...',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
-  }
-
-  // Fungsi QR Scanner
   void openQRScanner() {
     Get.snackbar(
-      'QR Scanner',
-      'Membuka kamera...',
+      'Info',
+      'Membuka Scanner...',
       snackPosition: SnackPosition.TOP,
     );
+  }
+
+  void onQuickActionTapped(String action) {
+    if (action == 'Book Appointment') {
+      // Pindah ke halaman Pilih Poli/Dokter
+      Get.toNamed('/select-clinic');
+    } else if (action == 'Poli Info') {
+      Get.snackbar(
+        'Informasi',
+        'Geser ke bawah untuk melihat ${listPoli.length} Poli yang tersedia!',
+        backgroundColor: Colors.white,
+        colorText: AppColors.primary,
+      );
+    } else {
+      Get.snackbar('Aksi', 'Membuka menu $action...');
+    }
+  }
+
+  // ==========================================
+  // 4. FUNGSI TARIK DATA DARI LARAVEL
+  // ==========================================
+  Future<void> fetchPoliAPI() async {
+    try {
+      isLoading.value = true;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        Get.offAllNamed('/login');
+        return;
+      }
+
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/poli'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        listPoli.value = data['data']; // Simpan data poli ke variabel
+      }
+    } catch (e) {
+      print("Error ambil data: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Fungsi Logout kalau butuh nanti
+  Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+    Get.offAllNamed('/login');
   }
 }

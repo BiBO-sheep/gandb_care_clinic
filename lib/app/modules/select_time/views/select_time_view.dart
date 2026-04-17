@@ -94,7 +94,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Choose a date and time that fits your wellness schedule. Our practitioners are ready for you.',
+                    'Choose a date and time that fits your wellness schedule.',
                     style: GoogleFonts.beVietnamPro(
                       fontSize: 14,
                       color: AppColors.onSurfaceVariant,
@@ -103,6 +103,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                   ),
                   const SizedBox(height: 32),
 
+                  // --- WIDGET KALENDER ---
                   _buildCalendarWidget(),
                   const SizedBox(height: 32),
 
@@ -126,13 +127,16 @@ class SelectTimeView extends GetView<SelectTimeController> {
                           color: AppColors.secondaryContainer.withOpacity(0.3),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Text(
-                          'THURSDAY, SEP 12',
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.secondary,
-                            letterSpacing: 1,
+                        child: Obx(
+                          () => Text(
+                            // 👇 PERBAIKAN: Nampilin Tanggal yang Dipilih
+                            controller.getFormattedSelectedDate().toUpperCase(),
+                            style: GoogleFonts.beVietnamPro(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.secondary,
+                              letterSpacing: 1,
+                            ),
                           ),
                         ),
                       ),
@@ -140,10 +144,10 @@ class SelectTimeView extends GetView<SelectTimeController> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Bagian _buildTimeSlotsGrid() dipanggil di sini
                   _buildTimeSlotsGrid(),
                   const SizedBox(height: 32),
 
+                  // --- SYSTEM ALLOCATION INFO ---
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -171,7 +175,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Practitioner Availability',
+                                'System Allocation',
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
@@ -180,7 +184,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Dr. Aris is currently accepting new patients for this specific time slot. Initial consultations typically last 45 minutes.',
+                                'Sistem akan otomatis mengalokasikan dokter spesialis yang bertugas untuk mempercepat antrean Anda.',
                                 style: GoogleFonts.beVietnamPro(
                                   fontSize: 12,
                                   color: const Color(
@@ -199,6 +203,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
               ),
             ),
 
+            // --- BUTTON BAWAH ---
             Positioned(
               bottom: 0,
               left: 0,
@@ -225,13 +230,12 @@ class SelectTimeView extends GetView<SelectTimeController> {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     elevation: 5,
-                    shadowColor: AppColors.primary.withOpacity(0.3),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Continue to Payment',
+                        'Continue to Confirmation',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -255,34 +259,15 @@ class SelectTimeView extends GetView<SelectTimeController> {
     );
   }
 
+  // ==========================================
+  // WIDGET HELPERS
+  // ==========================================
+
   Widget _buildCalendarWidget() {
-    final daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-    final dates = [
-      -28,
-      -29,
-      -30,
-      -31,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-    ];
+    final daysOfWeek = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
@@ -299,42 +284,27 @@ class SelectTimeView extends GetView<SelectTimeController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'September 2024',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.onSurface,
+              // 👇 PERBAIKAN: Nampilin Bulan & Tahun Kalender
+              Obx(
+                () => Text(
+                  controller.getFormattedDisplayMonth(),
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.onSurface,
+                  ),
                 ),
               ),
               Row(
                 children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerLow,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.chevron_left,
-                      color: AppColors.secondary,
-                      size: 20,
-                    ),
+                  GestureDetector(
+                    onTap: controller.prevMonth,
+                    child: _buildCircleBtn(Icons.chevron_left),
                   ),
                   const SizedBox(width: 8),
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerLow,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.chevron_right,
-                      color: AppColors.secondary,
-                      size: 20,
-                    ),
+                  GestureDetector(
+                    onTap: controller.nextMonth,
+                    child: _buildCircleBtn(Icons.chevron_right),
                   ),
                 ],
               ),
@@ -345,59 +315,83 @@ class SelectTimeView extends GetView<SelectTimeController> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: daysOfWeek
                 .map(
-                  (day) => Text(
-                    day,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                      letterSpacing: 1,
+                  (day) => Expanded(
+                    child: Center(
+                      child: Text(
+                        day,
+                        style: GoogleFonts.beVietnamPro(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ),
                   ),
                 )
                 .toList(),
           ),
-          const SizedBox(height: 16),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: dates.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 7,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 1,
-            ),
-            itemBuilder: (context, index) {
-              int date = dates[index];
-              bool isDimmed = date < 0;
-              int absDate = date.abs();
+          const SizedBox(height: 12),
+          Obx(() {
+            DateTime displayMonth = controller.displayMonth.value;
+            int daysInMonth = DateTime(
+              displayMonth.year,
+              displayMonth.month + 1,
+              0,
+            ).day;
+            int firstWeekday = DateTime(
+              displayMonth.year,
+              displayMonth.month,
+              1,
+            ).weekday;
+            int emptySlots = firstWeekday - 1;
 
-              return Obx(() {
-                bool isSelected =
-                    controller.selectedDate.value == absDate && !isDimmed;
-                return GestureDetector(
-                  onTap: () => controller.selectDate(isDimmed ? 0 : absDate),
+            List<Widget> dayWidgets = [];
+            for (int i = 0; i < emptySlots; i++) {
+              dayWidgets.add(const SizedBox());
+            }
+
+            DateTime today = DateTime(
+              DateTime.now().year,
+              DateTime.now().month,
+              DateTime.now().day,
+            );
+
+            for (int i = 1; i <= daysInMonth; i++) {
+              DateTime currentDate = DateTime(
+                displayMonth.year,
+                displayMonth.month,
+                i,
+              );
+              bool isPast = currentDate.isBefore(today);
+              bool isSelected =
+                  controller.selectedDate.value.year == currentDate.year &&
+                  controller.selectedDate.value.month == currentDate.month &&
+                  controller.selectedDate.value.day == currentDate.day;
+
+              dayWidgets.add(
+                GestureDetector(
+                  onTap: isPast
+                      ? null
+                      : () => controller.selectDate(currentDate),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? AppColors.primary
                           : Colors.transparent,
                       shape: BoxShape.circle,
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: AppColors.primary.withOpacity(0.3),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ]
-                          : [],
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.primary
+                            : (isPast
+                                  ? Colors.transparent
+                                  : Colors.grey.withOpacity(0.2)),
+                      ),
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      absDate.toString(),
+                      '$i',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 14,
                         fontWeight: isSelected
@@ -405,24 +399,41 @@ class SelectTimeView extends GetView<SelectTimeController> {
                             : FontWeight.w600,
                         color: isSelected
                             ? Colors.white
-                            : (isDimmed
-                                  ? Colors.grey.withOpacity(0.4)
+                            : (isPast
+                                  ? Colors.grey.withOpacity(0.3)
                                   : AppColors.onSurface),
                       ),
                     ),
                   ),
-                );
-              });
-            },
-          ),
+                ),
+              );
+            }
+
+            return GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 7,
+              children: dayWidgets,
+            );
+          }),
         ],
       ),
     );
   }
 
-  // --- KOMPONEN WAKTU (SUDAH DIPERBAIKI) ---
+  Widget _buildCircleBtn(IconData icon) {
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, color: AppColors.secondary, size: 20),
+    );
+  }
+
   Widget _buildTimeSlotsGrid() {
-    // Menghapus Obx yang membungkus GridView
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -439,10 +450,8 @@ class SelectTimeView extends GetView<SelectTimeController> {
         final period = slot['period'];
         final isBooked = slot['status'] == 'booked';
 
-        // Memindahkan Obx ke dalam itemBuilder
         return Obx(() {
           final isSelected = controller.selectedTime.value == time;
-
           return GestureDetector(
             onTap: () => controller.selectTime(time, slot['status']),
             child: AnimatedContainer(
@@ -471,7 +480,6 @@ class SelectTimeView extends GetView<SelectTimeController> {
                       decoration: isBooked ? TextDecoration.lineThrough : null,
                     ),
                   ),
-                  const SizedBox(height: 2),
                   Text(
                     isBooked
                         ? 'BOOKED'

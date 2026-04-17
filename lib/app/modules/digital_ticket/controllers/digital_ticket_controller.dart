@@ -1,48 +1,39 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class DigitalTicketController extends GetxController {
-  // State Bottom Nav (Di desain ini, tab 'History' yang menyala)
   var currentIndex = 1.obs;
 
-  // Data Mock Tiket
-  final String queueNumber = 'A-15';
-  final String patientName = 'Robert J. Wilson';
-  final String service = 'General Consultation';
-  final String dateTime = 'Tomorrow, 09:30 AM';
+  // Variabel penampung data asli
+  var queueNumber = '...'.obs;
+  var patientName = '...'.obs;
+  var service = '...'.obs;
+  var dateTime = '...'.obs;
+  var appointmentId = '0'.obs; // Untuk isi QR Code
   final String location =
       'G&B Care Central\n4th Floor, Suite 400, Medical Plaza';
 
-  void addToCalendar() {
-    Get.snackbar(
-      'Added to Calendar',
-      'Jadwal berhasil ditambahkan ke kalender HP Anda.',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF93F2F2),
-      colorText: const Color(0xFF004F54),
-    );
+  @override
+  void onInit() {
+    super.onInit();
+    // TANGKAP DATA DARI HALAMAN KONFIRMASI
+    if (Get.arguments != null) {
+      var data = Get.arguments;
+      queueNumber.value = data['queue_number'] ?? 'A-00';
+      patientName.value = data['patient_name'] ?? 'Patient';
+      service.value = data['service'] ?? 'Clinic';
+      dateTime.value = "${data['date']}, ${data['time']}";
+      appointmentId.value = data['id'].toString();
+    }
   }
 
-  void shareTicket() {
-    Get.snackbar(
-      'Share Ticket',
-      'Membuka menu bagikan...',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF006A6A),
-      colorText: Colors.white,
-    );
-  }
-
-  void backToDashboard() {
-    // Menghapus semua history halaman dan kembali ke Home
-    Get.offAllNamed('/home');
-  }
+  void backToDashboard() => Get.offAllNamed('/home');
 
   void changePage(int index) {
     currentIndex.value = index;
-    if (index == 0) {
-      Get.offAllNamed('/home');
-    }
-    // Tambahkan rute lain jika tab lain sudah ada halamannya
+    if (index == 0) Get.offAllNamed('/home');
   }
+
+  // Fungsi dummy tambahan
+  void addToCalendar() => Get.snackbar('Success', 'Added to calendar');
+  void shareTicket() => Get.snackbar('Share', 'Opening share menu...');
 }

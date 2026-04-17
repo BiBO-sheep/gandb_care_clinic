@@ -1,62 +1,96 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
+// Pastikan file api_config.dart ada di path yang benar
+import '../../../../api_config.dart';
 
 class LoginController extends GetxController {
-  // Controller untuk input teks
+  // Penangkap teks inputan
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  // State reaktif
-  var isPasswordHidden = true.obs;
+  // Variabel loading & hide password pakai .obs (GetX Reactive)
   var isLoading = false.obs;
+  var isPasswordHidden = true.obs;
 
-  @override
-  void onClose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.onClose();
-  }
-
+  // Fungsi untuk tombol mata (hide/show password) di UI lu
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
   }
 
-  void login() async {
+  // Fungsi untuk tombol Google (dummy sementara)
+  void loginWithGoogle() {
+    Get.snackbar(
+      'Info',
+      'Fitur Google Login akan segera hadir!',
+      backgroundColor: Colors.blue,
+      colorText: Colors.white,
+    );
+  }
+
+  // ==== FUNGSI API LOGIN UTAMA ====
+  // Namanya 'login' menyesuaikan dengan (controller.login) di tombol UI lu
+  Future<void> login() async {
+    // Validasi kosong
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
       Get.snackbar(
-        'Error',
-        'Email dan Password tidak boleh kosong',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
+        'Oops',
+        'Email dan Password tidak boleh kosong!',
+        backgroundColor: Colors.orange,
         colorText: Colors.white,
       );
       return;
     }
 
-    isLoading.value = true;
+    isLoading.value = true; // Nyalakan efek loading muter-muter
 
-    // MOCK LOGIC: Simulasi API Request ke Laravel
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/login'),
+        body: {
+          'email': emailController.text,
+          'password': passwordController.text,
+        },
+      );
 
-    isLoading.value = false;
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        String token = data['access_token'];
 
-    Get.snackbar(
-      'Login Berhasil',
-      'Selamat datang kembali!',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF006A6A),
-      colorText: Colors.white,
-    );
+        // Simpan Kunci di Brankas HP
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
 
-    // TODO: Navigasi ke halaman Home/Dashboard
-    Get.offAllNamed('/home'); // Get.offAllNamed(Routes.HOME);
-  }
+        // Notif sukses
+        Get.snackbar(
+          'Sukses',
+          'Welcome back! 🎉',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
 
-  void loginWithGoogle() {
-    Get.snackbar(
-      'Info',
-      'Fitur Google Sign-In segera hadir',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+        // Pindah ke halaman Home
+        Get.offAllNamed('/home');
+      } else {
+        Get.snackbar(
+          'Gagal',
+          'Email atau Password salah!',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Tidak bisa terhubung ke Server. Cek IP/Sinyal!',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false; // Matikan loading
+    }
   }
 }

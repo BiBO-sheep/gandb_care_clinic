@@ -113,7 +113,7 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                 ),
                 child: Column(
                   children: [
-                    // Top Brown Section
+                    // Top Section: Queue Number
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 24),
@@ -135,25 +135,26 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          Text(
-                            controller.queueNumber,
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 48,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                              height: 1,
+                          Obx(
+                            () => Text(
+                              controller.queueNumber.value,
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 48,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                height: 1,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
 
-                    // Middle Section (QR & Details)
+                    // Middle Section: QR Code & Details
                     Padding(
                       padding: const EdgeInsets.all(24.0),
                       child: Column(
                         children: [
-                          // QR Code Mock
                           Container(
                             width: 140,
                             height: 140,
@@ -168,9 +169,22 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                                 ),
                               ],
                             ),
-                            child: Image.network(
-                              'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png',
-                            ), // Placeholder QR Asli
+                            child: Obx(
+                              () => Image.network(
+                                'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${controller.appointmentId.value}',
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const Center(
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      );
+                                    },
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(Icons.qr_code, size: 80),
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -182,17 +196,32 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                           ),
                           const SizedBox(height: 32),
 
-                          // Details List
-                          _buildDetailRow('PATIENT', controller.patientName),
-                          const SizedBox(height: 16),
-                          _buildDetailRow('SERVICE', controller.service),
-                          const SizedBox(height: 16),
-                          _buildDetailRow('DATE & TIME', controller.dateTime),
+                          // Real-Time Details
+                          Obx(
+                            () => Column(
+                              children: [
+                                _buildDetailRow(
+                                  'PATIENT',
+                                  controller.patientName.value,
+                                ),
+                                const SizedBox(height: 16),
+                                _buildDetailRow(
+                                  'SERVICE',
+                                  controller.service.value,
+                                ),
+                                const SizedBox(height: 16),
+                                _buildDetailRow(
+                                  'DATE & TIME',
+                                  controller.dateTime.value,
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
 
-                    // Dashed Line Separator
+                    // Dashed Line
                     Row(
                       children: List.generate(
                         20,
@@ -207,7 +236,7 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                       ),
                     ),
 
-                    // Bottom Location Section
+                    // Bottom Section: Location
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: const BoxDecoration(
@@ -249,7 +278,7 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
               ),
               const SizedBox(height: 32),
 
-              // --- ACTIONS BUTTONS ---
+              // Action Buttons
               Row(
                 children: [
                   Expanded(
@@ -298,8 +327,6 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
-                        elevation: 5,
-                        shadowColor: AppColors.primary.withOpacity(0.3),
                         padding: const EdgeInsets.symmetric(vertical: 22),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -310,8 +337,6 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                 ],
               ),
               const SizedBox(height: 24),
-
-              // --- BACK TO DASHBOARD TEXT BUTTON ---
               TextButton(
                 onPressed: controller.backToDashboard,
                 child: Text(
@@ -323,7 +348,7 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                   ),
                 ),
               ),
-              const SizedBox(height: 120), // Spacing untuk Bottom Nav
+              const SizedBox(height: 120),
             ],
           ),
         ),
