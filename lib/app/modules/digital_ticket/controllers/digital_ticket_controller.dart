@@ -30,7 +30,12 @@ class DigitalTicketController extends GetxController {
 
   void changePage(int index) {
     currentIndex.value = index;
-    if (index == 0) Get.offAllNamed('/home');
+    if (index == 0) {
+      Get.offAllNamed('/home');
+    } else if (index == 1) {
+      // 👇 INI HARUS ADA SUPAYA BISA PINDAH KE HALAMAN HISTORY
+      Get.toNamed('/payment-history');
+    }
   }
 
   // Fungsi dummy tambahan

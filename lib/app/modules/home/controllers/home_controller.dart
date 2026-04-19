@@ -35,6 +35,12 @@ class HomeController extends GetxController {
   // ==========================================
   void changePage(int index) {
     currentIndex.value = index;
+    if (index == 0) {
+      Get.offAllNamed('/home');
+    } else if (index == 1) {
+      // 👇 INI HARUS ADA SUPAYA BISA PINDAH KE HALAMAN HISTORY
+      Get.toNamed('/payment-history');
+    }
   }
 
   void openQRScanner() {
@@ -45,22 +51,29 @@ class HomeController extends GetxController {
     );
   }
 
-  void onQuickActionTapped(String action) {
-    if (action == 'Book Appointment') {
-      // Pindah ke halaman Pilih Poli/Dokter
+ void onQuickActionTapped(String action) {
+    // 1. My History (Kotak Atas) -> Masuk ke Hasil Pemeriksaan Medis
+    if (action == 'my_history' || action == 'My History') {
+      Get.toNamed('/exam-results');
+    }
+    // 2. Book Appointment -> Masuk ke Alur Pendaftaran
+    else if (action == 'Book Appointment') {
       Get.toNamed('/select-clinic');
-    } else if (action == 'Poli Info') {
+    }
+    // 3. Poli Info -> Tampilkan Info Jumlah Poli
+    else if (action == 'Poli Info') {
       Get.snackbar(
         'Informasi',
         'Geser ke bawah untuk melihat ${listPoli.length} Poli yang tersedia!',
         backgroundColor: Colors.white,
         colorText: AppColors.primary,
       );
-    } else {
+    }
+    // 4. Lain-lain (jika ada tombol baru nanti)
+    else {
       Get.snackbar('Aksi', 'Membuka menu $action...');
     }
   }
-
   // ==========================================
   // 4. FUNGSI TARIK DATA DARI LARAVEL
   // ==========================================

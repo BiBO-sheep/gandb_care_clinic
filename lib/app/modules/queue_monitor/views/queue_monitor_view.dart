@@ -223,15 +223,17 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                       color: AppColors.onSurfaceVariant,
                     ),
                   ),
+                  // Di dalam _buildMainQueueCard()
                   Obx(
                     () => Text(
-                      controller.estimatedWaitTime.value > 0
-                          ? '${controller.estimatedWaitTime.value} mins'
-                          : 'It is your turn!',
+                      controller
+                          .myQueueNumber
+                          .value, // Pakai .value dari controller baru
                       style: GoogleFonts.plusJakartaSans(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
+                        fontSize: 72,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF380C00),
+                        height: 1,
                       ),
                     ),
                   ),

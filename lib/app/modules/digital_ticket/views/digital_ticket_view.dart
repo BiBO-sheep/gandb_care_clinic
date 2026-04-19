@@ -337,6 +337,35 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                 ],
               ),
               const SizedBox(height: 24),
+
+              // 👇 TOMBOL BARU: CHECK QUEUE STATUS 👇
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Get.offNamed('/queue-monitor');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF380C00), // Warna kontras
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'Check Queue Status',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // 👇 TOMBOL BACK TO DASHBOARD 👇
               TextButton(
                 onPressed: controller.backToDashboard,
                 child: Text(

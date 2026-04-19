@@ -206,108 +206,115 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
+  // 👇 INI DIA YANG DITAMBAHIN GESTURE DETECTOR 👇
   Widget _buildAppointmentCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.primary, AppColors.primaryContainer],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+    return GestureDetector(
+      onTap: () => Get.toNamed('/queue-monitor'), // Lari ke Queue Monitor
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [AppColors.primary, AppColors.primaryContainer],
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  'UPCOMING APPOINTMENT',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 1.5,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'UPCOMING APPOINTMENT',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 1.5,
+                    ),
                   ),
                 ),
-              ),
-              const Icon(Icons.event, color: Colors.white, size: 20),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'General Check-up',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+                const Icon(Icons.event, color: Colors.white, size: 20),
+              ],
             ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Icon(
-                Icons.medical_services,
-                color: Colors.white70,
-                size: 16,
+            const SizedBox(height: 20),
+            Text(
+              'General Check-up',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
-              const SizedBox(width: 8),
-              Text(
-                'Dr. Sarah Jenkins • Cardiology Dept.',
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 13,
-                  color: Colors.white.withOpacity(0.9),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
             ),
-            child: Row(
+            const SizedBox(height: 8),
+            Row(
               children: [
-                Expanded(
-                  child: _buildCardDetail('DATE & TIME', 'Tomorrow, 10:30 AM'),
+                const Icon(
+                  Icons.medical_services,
+                  color: Colors.white70,
+                  size: 16,
                 ),
-                Container(
-                  height: 30,
-                  width: 1,
-                  color: Colors.white.withOpacity(0.2),
-                ),
-                Expanded(
-                  child: _buildCardDetail(
-                    'LOCATION',
-                    'Room 302, Block B',
-                    alignment: CrossAxisAlignment.end,
+                const SizedBox(width: 8),
+                Text(
+                  'Dr. Sarah Jenkins • Cardiology Dept.',
+                  style: GoogleFonts.beVietnamPro(
+                    fontSize: 13,
+                    color: Colors.white.withOpacity(0.9),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildCardDetail(
+                      'DATE & TIME',
+                      'Tomorrow, 10:30 AM',
+                    ),
+                  ),
+                  Container(
+                    height: 30,
+                    width: 1,
+                    color: Colors.white.withOpacity(0.2),
+                  ),
+                  Expanded(
+                    child: _buildCardDetail(
+                      'LOCATION',
+                      'Room 302, Block B',
+                      alignment: CrossAxisAlignment.end,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -405,7 +412,7 @@ class HomeView extends GetView<HomeController> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFF4F3F1),
+          color: Color(0xFFF4F3F1),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -580,7 +587,7 @@ class HomeView extends GetView<HomeController> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFFFF7F50).withOpacity(0.2)
+              ? Color(0xFFFF7F50).withOpacity(0.2)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),

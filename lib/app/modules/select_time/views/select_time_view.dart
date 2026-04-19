@@ -263,6 +263,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
   // WIDGET HELPERS
   // ==========================================
 
+  // --- KOMPONEN KALENDER GRID (TAMPILAN BARU) ---
   Widget _buildCalendarWidget() {
     final daysOfWeek = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
@@ -281,10 +282,10 @@ class SelectTimeView extends GetView<SelectTimeController> {
       ),
       child: Column(
         children: [
+          // Header Bulan & Tombol Navigasi
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // 👇 PERBAIKAN: Nampilin Bulan & Tahun Kalender
               Obx(
                 () => Text(
                   controller.getFormattedDisplayMonth(),
@@ -299,18 +300,44 @@ class SelectTimeView extends GetView<SelectTimeController> {
                 children: [
                   GestureDetector(
                     onTap: controller.prevMonth,
-                    child: _buildCircleBtn(Icons.chevron_left),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF4F3F1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.chevron_left,
+                        color: AppColors.secondary,
+                        size: 20,
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   GestureDetector(
                     onTap: controller.nextMonth,
-                    child: _buildCircleBtn(Icons.chevron_right),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF4F3F1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.chevron_right,
+                        color: AppColors.secondary,
+                        size: 20,
+                      ),
+                    ),
                   ),
                 ],
               ),
             ],
           ),
           const SizedBox(height: 24),
+
+          // Nama Hari
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: daysOfWeek
@@ -331,6 +358,8 @@ class SelectTimeView extends GetView<SelectTimeController> {
                 .toList(),
           ),
           const SizedBox(height: 12),
+
+          // Grid Tanggal
           Obx(() {
             DateTime displayMonth = controller.displayMonth.value;
             int daysInMonth = DateTime(
@@ -350,11 +379,8 @@ class SelectTimeView extends GetView<SelectTimeController> {
               dayWidgets.add(const SizedBox());
             }
 
-            DateTime today = DateTime(
-              DateTime.now().year,
-              DateTime.now().month,
-              DateTime.now().day,
-            );
+            DateTime now = DateTime.now();
+            DateTime today = DateTime(now.year, now.month, now.day);
 
             for (int i = 1; i <= daysInMonth; i++) {
               DateTime currentDate = DateTime(

@@ -1,67 +1,68 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../api_config.dart';
 
 class PaymentHistoryController extends GetxController {
-  // Tab History yang aktif (Index 1)
-  var currentIndex = 1.obs;
+  // Observables untuk State Management
+  var isLoading = true.obs;
+  var historyList = [].obs;
+  var currentIndex = 1.obs; // Tab Bottom Nav
 
-  // Data Mock Tagihan (Nanti diganti response JSON dari PHP)
-  final paymentDetails = [
-    {'name': 'Consultation Fee', 'amount': 'Rp 250.000'},
-    {'name': 'Laboratory Tests', 'amount': 'Rp 450.000'},
-    {'name': 'Medicine & Vitamins', 'amount': 'Rp 185.000'},
-  ];
-  final String totalAmount = 'Rp 885.000';
-
-  // Data Mock Riwayat (Nanti diganti response JSON dari PHP)
-  final List<Map<String, String>> historyList = [
-    {
-      'date': '12 OCT 2023',
-      'title': 'General Checkup',
-      'clinic': 'Poli Umum',
-      'doctor': 'Dr. Sarah Jenkins',
-      'status': 'PAID',
-    },
-    {
-      'date': '28 AUG 2023',
-      'title': 'Dermatology Consult',
-      'clinic': 'Poli Kulit & Kelamin',
-      'doctor': 'Dr. Michael Chen',
-      'status': 'PAID',
-    },
-    {
-      'date': '15 JUN 2023',
-      'title': 'Blood Panel Screening',
-      'clinic': 'Laboratorium',
-      'doctor': 'Dr. Amara Okafor',
-      'status': 'PAID',
-    },
-  ];
-
-  void payWithQRIS() {
-    Get.snackbar(
-      'QRIS Pay',
-      'Membuka kamera untuk scan QRIS...',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF006A6A),
-      colorText: Colors.white,
-    );
+  @override
+  void onInit() {
+    super.onInit();
+    fetchHistory();
   }
 
-  void payWithBank() {
-    Get.snackbar(
-      'Bank Transfer',
-      'Menampilkan nomor Virtual Account...',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF006A6A),
-      colorText: Colors.white,
+  // Fungsi narik data dari Laravel
+  Future<void> fetchHistory() async {
+    isLoading.value = true;
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/history'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        historyList.value = responseData['data'];
+      }
+    } catch (e) {
+      print("Error fetch history: $e");
+      Get.snackbar('Error', 'Gagal memuat riwayat');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Buka tiket lama
+  void openTicket(Map<String, dynamic> item) {
+    Get.toNamed(
+      '/digital-ticket',
+      arguments: {
+        'id': item['id'],
+        'queue_number': item['queue_number'],
+        'patient_name': item['user']?['name'] ?? 'Patient',
+        'service':
+            item['poli']?['nama_poli'] ??
+            'Klinik', // Sesuaikan nama kolom poli di DB lu
+        'date': item['tanggal'],
+        'time': item['jam'],
+      },
     );
   }
 
   void changePage(int index) {
     currentIndex.value = index;
-    if (index == 0) {
-      Get.offAllNamed('/home');
-    }
+    if (index == 0) Get.offAllNamed('/home');
+    // Nanti tambahin rute lain kalau udah jadi
   }
 }

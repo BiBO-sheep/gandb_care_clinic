@@ -1,60 +1,85 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../api_config.dart';
 
 class QueueMonitorController extends GetxController {
-  // State Data Antrean
-  var myQueueNumber = 15.obs;
-  var nowServing = 12.obs;
-  var estimatedWaitTime = 18.obs; // dalam menit
-
-  // State untuk Bottom Navigation (Sama seperti Home)
+  var myQueueNumber = '...'.obs;
+  var nowServing = '...'.obs;
+  var estimatedWaitTime = 0.obs;
+  var isLoading = true.obs;
   var currentIndex = 0.obs;
 
-  Timer? _timer;
+  Timer? _refreshTimer;
 
   @override
   void onInit() {
     super.onInit();
-    _startQueueSimulation();
+    fetchQueueData();
+    // Auto refresh data setiap 10 detik biar real-time
+    _refreshTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      fetchQueueData();
+    });
   }
 
   @override
   void onClose() {
-    _timer?.cancel();
+    _refreshTimer?.cancel();
     super.onClose();
   }
 
-  // Simulasi Antrean Berjalan
-  void _startQueueSimulation() {
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      if (nowServing.value < myQueueNumber.value) {
-        nowServing.value++; // Nomor antrean berjalan
-        estimatedWaitTime.value -= 6; // Waktu tunggu berkurang
+  Future<void> fetchQueueData() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
 
-        if (nowServing.value == myQueueNumber.value) {
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/queue-status'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        // Update state dari database
+        myQueueNumber.value = data['my_queue'] ?? 'N/A';
+        nowServing.value = data['now_serving'] ?? '1';
+
+        // Logika estimasi: (Antrean Saya - Sekarang) * 10 menit
+        int myNum = int.tryParse(myQueueNumber.value.replaceAll('A-', '')) ?? 0;
+        int servNum = int.tryParse(nowServing.value.replaceAll('A-', '')) ?? 0;
+        int diff = myNum - servNum;
+        estimatedWaitTime.value = diff > 0 ? diff * 10 : 0;
+
+        if (myQueueNumber.value == nowServing.value && myNum != 0) {
           Get.snackbar(
             'Giliran Anda!',
-            'Silakan menuju Ruang 204. Dokter Aris Thorne sudah menunggu.',
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: const Color(0xFF006A6A),
-            colorText: const Color(0xFFFFFFFF),
-            duration: const Duration(seconds: 5),
+            'Silakan menuju ruang konsultasi sekarang.',
           );
-          timer.cancel(); // Hentikan simulasi jika sudah giliran
         }
       }
-    });
-  }
-
-  // Fungsi mengubah tab menu bawah
-  void changePage(int index) {
-    currentIndex.value = index;
-    if (index == 0) {
-      Get.offAllNamed('/home'); // Kembali ke home jika tab home diklik
+    } catch (e) {
+      print("Error fetch queue: $e");
+    } finally {
+      isLoading.value = false;
     }
   }
 
+  void changePage(int index) {
+    currentIndex.value = index;
+    if (index == 0) {
+      Get.offAllNamed('/home');
+    } else if (index == 1) {
+      // 👇 INI HARUS ADA SUPAYA BISA PINDAH KE HALAMAN HISTORY
+      Get.toNamed('/payment-history');
+    }
+  }
+  
   void openQRScanner() {
     Get.snackbar(
       'QR Scanner',
