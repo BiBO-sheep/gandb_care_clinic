@@ -50,7 +50,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
 
   // --- KOMPONEN UI ---
 
-  Widget _buildCustomAppBar() {
+ Widget _buildCustomAppBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
       child: Row(
@@ -58,19 +58,15 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         children: [
           Row(
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+              // 👇 INI DIA FOTO PROFIL DEFAULT-NYA BOS 👇
+              const CircleAvatar(
+                radius: 22,
+                backgroundColor: Colors
+                    .teal, // Atau ganti AppColors.primary kalau lu pake variabel warna
+                child: Icon(Icons.person, size: 28, color: Colors.white),
               ),
+
+              // 👆 UDAH GAK PAKE GAMBAR INTERNET LAGI 👆
               const SizedBox(width: 12),
               Text(
                 'G&B Care Clinic',
@@ -83,7 +79,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
             ],
           ),
           IconButton(
-            icon: const Icon(Icons.qr_code_scanner, color: AppColors.primary),
+            icon: const Icon(Icons.qr_code_scanner, color: AppColors.secondary),
             onPressed: controller.openQRScanner,
           ),
         ],

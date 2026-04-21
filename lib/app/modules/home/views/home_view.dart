@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:gandb_care_clinic/app/modules/home/views/home_shimmer_view.dart';
 import 'package:gandb_care_clinic/app/modules/profile/views/profile_view.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -107,21 +108,14 @@ class HomeView extends GetView<HomeController> {
         children: [
           Row(
             children: [
-              // Profile Picture
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.grey[300],
-                  image: const DecorationImage(
-                    image: NetworkImage(
-                      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+              // 👇 INI DIA FOTO PROFIL DEFAULT-NYA BOS 👇
+              const CircleAvatar(
+                radius: 22,
+                backgroundColor: Colors
+                    .teal, // Atau ganti AppColors.primary kalau lu pake variabel warna
+                child: Icon(Icons.person, size: 28, color: Colors.white),
               ),
+              // 👆 UDAH GAK PAKE GAMBAR INTERNET LAGI 👆
               const SizedBox(width: 12),
               Text(
                 'G&B Care Clinic',
@@ -376,7 +370,7 @@ class HomeView extends GetView<HomeController> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Color(0xFFF4F3F1),
+          color: const Color(0xFFF4F3F1),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -551,7 +545,7 @@ class HomeView extends GetView<HomeController> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? Color(0xFFFF7F50).withOpacity(0.2)
+              ? const Color(0xFFFF7F50).withOpacity(0.2)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
@@ -615,7 +609,7 @@ class HomeView extends GetView<HomeController> {
         // Bungkus dengan Obx agar bereaksi saat data loading/selesai
         Obx(() {
           if (controller.isLoading.value) {
-            // Efek loading muter-muter
+            HomeShimmerView();
             return const SizedBox(
               height: 160,
               child: Center(
@@ -647,8 +641,21 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // --- DESAIN KARTU POLI ---
+  // --- DESAIN KARTU POLI (KEBAL ERROR) ---
   Widget _buildPoliCard(dynamic poli) {
+    // 1. Tangkap datanya dengan aman (Safety Check)
+    final String namaPoli = poli['name']?.toString() ?? 'Poli Umum';
+    final String ruanganPoli = poli['ruangan']?.toString() ?? 'Belum ada ruang';
+
+    // 2. Tentukan icon berdasarkan nama poli (Biar keren bos!)
+    IconData iconPoli = Icons.medical_services;
+    if (namaPoli.toLowerCase().contains('gigi')) iconPoli = Icons.sick;
+    if (namaPoli.toLowerCase().contains('jantung'))
+      iconPoli = Icons.monitor_heart;
+    if (namaPoli.toLowerCase().contains('anak')) iconPoli = Icons.child_care;
+    if (namaPoli.toLowerCase().contains('mata'))
+      iconPoli = Icons.remove_red_eye;
+
     return Container(
       width: 140,
       margin: const EdgeInsets.only(right: 16),
@@ -674,15 +681,15 @@ class HomeView extends GetView<HomeController> {
               color: AppColors.primary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.medical_information, // Ikon medis
+            child: Icon(
+              iconPoli, // Icon dinamis
               color: AppColors.primary,
               size: 24,
             ),
           ),
           const Spacer(),
           Text(
-            poli['name'] ?? 'Poli', // Tarik nama poli dari database
+            namaPoli, // Data aman dari API
             style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -693,7 +700,7 @@ class HomeView extends GetView<HomeController> {
           ),
           const SizedBox(height: 4),
           Text(
-            poli['ruangan'] ?? 'Lantai 1', // Tarik nama ruangan
+            ruanganPoli, // Data aman dari API
             style: GoogleFonts.beVietnamPro(
               fontSize: 11,
               fontWeight: FontWeight.w500,

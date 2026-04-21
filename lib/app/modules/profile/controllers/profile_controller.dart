@@ -13,7 +13,7 @@ class ProfileController extends GetxController {
   var userName = ''.obs;
   var userEmail = ''.obs;
   var userPhone = ''.obs;
-  var userBloodType = ''.obs; // Tambahan untuk Golongan Darah
+  var userBloodType = ''.obs;
   var isLoading = false.obs;
 
   @override
@@ -23,14 +23,12 @@ class ProfileController extends GetxController {
   }
 
   Future<void> fetchUserProfile() async {
-    isLoading.value = true;
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
+      isLoading.value = true; // 1. Set loading nyala
 
-      // CATATAN BOS: Pastikan key ini sama dengan yang lu pakai pas nyimpen token di Login/Register
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
 
-      // Keamanan: Kalau token nggak ada di HP, tendang ke halaman login
       if (token == null || token.isEmpty) {
         Get.snackbar(
           'Sesi Habis',
@@ -49,25 +47,21 @@ class ProfileController extends GetxController {
         },
       );
 
-      print(
-        'Status Code API Profile: ${response.statusCode}',
-      ); // Buat ngecek di terminal
-      print(
-        'Response API Profile: ${response.body}',
-      ); // Buat ngintip balasan Laravel
+      print('Status Code API Profile: ${response.statusCode}');
+      print('Response API Profile: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        // Sesuaikan dengan format Laravel lu. Biasanya langsung data mentah.
-        final userData = data['data'] ?? data;
+        // Tameng: Pastikan userData jadi map kosong '{}' kalau server ngirim null
+        // Biar nggak error pas dipanggil userData['name']
+        final userData = data['data'] ?? {};
 
-        userName.value = userData['name'] ?? 'User';
-        userEmail.value = userData['email'] ?? '-';
-        userPhone.value = userData['phone'] ?? '-';
-        userBloodType.value = userData['blood_type'] ?? '-';
+        userName.value = userData['name']?.toString() ?? 'User';
+        userEmail.value = userData['email']?.toString() ?? '-';
+        userPhone.value = userData['phone']?.toString() ?? '-';
+        userBloodType.value = userData['blood_type']?.toString() ?? '-';
       } else if (response.statusCode == 401) {
-        // 401 artinya token ditolak/expired
         Get.snackbar(
           'Error Autentikasi',
           'Sesi Anda telah berakhir, silakan login ulang.',
@@ -80,12 +74,14 @@ class ProfileController extends GetxController {
         );
       }
     } catch (e) {
-      print('Profile Fetch Error Bos: $e');
+      // 👇 INI PENTING: Biar kalau error, aplikasinya ngasih tau, bukan langsung mati!
+      print("🚨 ERROR FATAL PAS AMBIL DATA PROFILE: $e");
       Get.snackbar(
         'Error Koneksi',
         'Tidak bisa terhubung ke server. Cek internet/IP.',
       );
     } finally {
+      // 2. WAJIB DI SINI: Apapun yang terjadi, matiin loadingnya!
       isLoading.value = false;
     }
   }
@@ -98,15 +94,11 @@ class ProfileController extends GetxController {
       textConfirm: 'Ya, Keluar',
       textCancel: 'Batal',
       confirmTextColor: Colors.white,
-      buttonColor: const Color(0xFFBA1A1A), // Warna merah elegan
+      buttonColor: const Color(0xFFBA1A1A),
       onConfirm: () async {
-        Get.back(); // Tutup pop-up dialognya
-
-        // 1. Hapus token dari memori HP biar gak nyangkut
+        Get.back();
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.remove('token');
-
-        // 2. Tendang balik ke halaman Login
         Get.offAllNamed('/login');
       },
     );

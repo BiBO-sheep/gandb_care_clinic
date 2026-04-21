@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:gandb_care_clinic/core/theme/app_colors.dart';
 import 'package:get/get.dart';
@@ -38,7 +36,6 @@ class HomeController extends GetxController {
     if (index == 0) {
       Get.offAllNamed('/home');
     } else if (index == 1) {
-      // 👇 INI HARUS ADA SUPAYA BISA PINDAH KE HALAMAN HISTORY
       Get.toNamed('/payment-history');
     }
   }
@@ -51,35 +48,30 @@ class HomeController extends GetxController {
     );
   }
 
- void onQuickActionTapped(String action) {
-    // 1. My History (Kotak Atas) -> Masuk ke Hasil Pemeriksaan Medis
+  void onQuickActionTapped(String action) {
     if (action == 'my_history' || action == 'My History') {
       Get.toNamed('/exam-results');
-    }
-    // 2. Book Appointment -> Masuk ke Alur Pendaftaran
-    else if (action == 'Book Appointment') {
+    } else if (action == 'Book Appointment') {
       Get.toNamed('/select-clinic');
-    }
-    // 3. Poli Info -> Tampilkan Info Jumlah Poli
-    else if (action == 'Poli Info') {
+    } else if (action == 'Poli Info') {
       Get.snackbar(
         'Informasi',
         'Geser ke bawah untuk melihat ${listPoli.length} Poli yang tersedia!',
         backgroundColor: Colors.white,
         colorText: AppColors.primary,
       );
-    }
-    // 4. Lain-lain (jika ada tombol baru nanti)
-    else {
+    } else {
       Get.snackbar('Aksi', 'Membuka menu $action...');
     }
   }
+
   // ==========================================
-  // 4. FUNGSI TARIK DATA DARI LARAVEL
+  // 4. FUNGSI TARIK DATA DARI LARAVEL (ANTI-CRASH)
   // ==========================================
   Future<void> fetchPoliAPI() async {
     try {
-      isLoading.value = true;
+      isLoading.value = true; // 1. Set loading nyala
+
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
 
@@ -98,16 +90,18 @@ class HomeController extends GetxController {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        listPoli.value = data['data']; // Simpan data poli ke variabel
+        // Tameng: Pastikan data['data'] gak null sebelum dimasukin
+        listPoli.value = data['data'] ?? [];
       }
     } catch (e) {
-      print("Error ambil data: $e");
+      // 👇 INI PENTING: Biar kalau error, aplikasinya ngasih tau, bukan langsung mati!
+      print("🚨 ERROR FATAL PAS AMBIL DATA POLI: $e");
     } finally {
+      // 2. WAJIB DI SINI: Apapun yang terjadi, matiin loadingnya!
       isLoading.value = false;
     }
   }
 
-  // Fungsi Logout kalau butuh nanti
   Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');

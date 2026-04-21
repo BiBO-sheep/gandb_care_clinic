@@ -7,6 +7,9 @@ import '../../../../api_config.dart';
 import '../../profile/controllers/profile_controller.dart';
 
 class SettingsController extends GetxController {
+  // --- EXPOSE PROFILE CONTROLLER BIAR BISA DIBACA DI VIEW ---
+  final profileCtrl = Get.find<ProfileController>();
+
   // --- FORM CONTROLLERS ---
   final nameController = TextEditingController();
   final emailController = TextEditingController();
@@ -20,15 +23,19 @@ class SettingsController extends GetxController {
   var biometricLogin = true.obs;
   var isLoading = false.obs;
 
+  // 👇 STATE BARU BUAT DARK MODE 👇
+  var isDarkMode = false.obs;
+
   @override
   void onInit() {
     super.onInit();
     // Load data awal dari ProfileController
-    final profileCtrl = Get.find<ProfileController>();
-   nameController.text = profileCtrl.userName.value;
+    nameController.text = profileCtrl.userName.value;
     emailController.text = profileCtrl.userEmail.value;
     phoneController.text = profileCtrl.userPhone.value;
-    // addressController.text = profileCtrl.address.value; // Kita comment dulu karena di backend kita belum bikin kolom alamat
+
+    // Cek apakah HP user lagi pake dark mode pas aplikasi dibuka
+    isDarkMode.value = Get.isDarkMode;
   }
 
   @override
@@ -38,6 +45,16 @@ class SettingsController extends GetxController {
     phoneController.dispose();
     addressController.dispose();
     super.onClose();
+  }
+
+  // --- FUNGSI DARK MODE SAKTI GETX ---
+  void toggleDarkMode(bool value) {
+    isDarkMode.value = value;
+    if (value) {
+      Get.changeThemeMode(ThemeMode.dark); // Ubah ke Gelap
+    } else {
+      Get.changeThemeMode(ThemeMode.light); // Ubah ke Terang
+    }
   }
 
   Future<void> updateProfile() async {
@@ -62,14 +79,15 @@ class SettingsController extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        // Refresh data di ProfileController
-        Get.find<ProfileController>().fetchUserProfile();
-        
+        // Refresh data di ProfileController biar langsung berubah di semua halaman
+        await profileCtrl.fetchUserProfile();
+
         Get.snackbar(
           'Sukses',
           'Profil berhasil diperbarui!',
           backgroundColor: Colors.green,
           colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
         );
       } else {
         final data = jsonDecode(response.body);
@@ -89,27 +107,15 @@ class SettingsController extends GetxController {
   void toggleBiometric(bool value) => biometricLogin.value = value;
 
   void changePassword() {
-    Get.snackbar(
-      'Security',
-      'Membuka halaman ubah password...',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    Get.snackbar('Security', 'Membuka halaman ubah password...');
   }
 
   void openPrivacyPolicy() {
-    Get.snackbar(
-      'Legal',
-      'Membuka Kebijakan Privasi...',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    Get.snackbar('Legal', 'Membuka Kebijakan Privasi...');
   }
 
   void openTerms() {
-    Get.snackbar(
-      'Legal',
-      'Membuka Syarat & Ketentuan...',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    Get.snackbar('Legal', 'Membuka Syarat & Ketentuan...');
   }
 
   void signOut() {
@@ -119,9 +125,11 @@ class SettingsController extends GetxController {
       textConfirm: 'Yes, Sign Out',
       textCancel: 'Cancel',
       confirmTextColor: Colors.white,
-      buttonColor: const Color(0xFFBA1A1A), // Error color
-      onConfirm: () {
-        Get.offAllNamed('/login'); // Kembali ke halaman Login
+      buttonColor: const Color(0xFFBA1A1A),
+      onConfirm: () async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove('token');
+        Get.offAllNamed('/login');
       },
     );
   }

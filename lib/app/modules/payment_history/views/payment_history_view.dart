@@ -102,19 +102,14 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Row(
           children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: NetworkImage(
-                    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop',
-                  ),
-                  fit: BoxFit.cover,
-                ),
-              ),
+            // 👇 FOTO PROFIL DEFAULT (Seragam & Anti Lemot) 👇
+            const CircleAvatar(
+              radius: 18, // Disesuaikan dengan lebar & tinggi 36 yang lu bikin
+              backgroundColor: Colors.teal,
+              child: Icon(Icons.person, size: 24, color: Colors.white),
             ),
+
+            // 👆 SAMPAI SINI BATESNYA 👆
             const SizedBox(width: 12),
             Text(
               'G&B Care Clinic',

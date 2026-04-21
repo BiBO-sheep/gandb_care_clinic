@@ -26,6 +26,8 @@ import 'package:gandb_care_clinic/app/modules/select_time/bindings/select_time_b
 import 'package:gandb_care_clinic/app/modules/select_time/views/select_time_view.dart';
 import 'package:gandb_care_clinic/app/modules/settings/bindings/settings_binding.dart';
 import 'package:gandb_care_clinic/app/modules/settings/views/settings_view.dart';
+import 'package:gandb_care_clinic/app/modules/splash/bindings/splash_binding.dart';
+import 'package:gandb_care_clinic/app/modules/splash/views/splash_view.dart';
 import 'package:get/get.dart';
 import '../modules/onboarding/bindings/onboarding_binding.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
@@ -128,6 +130,11 @@ class AppPages {
       binding: SettingsBinding(),
       transition:
           Transition.rightToLeft, // Animasi masuk dari samping khas submenu
+    ),
+    GetPage(
+      name: '/splash', // atau Routes.SPLASH
+      page: () => const SplashView(),
+      binding: SplashBinding(),
     ),
   ];
 }

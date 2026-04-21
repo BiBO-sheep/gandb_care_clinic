@@ -354,6 +354,7 @@ class ExamResultsView extends GetView<ExamResultsController> {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          
           children: [
             Icon(
               icon,

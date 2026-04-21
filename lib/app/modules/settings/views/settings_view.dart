@@ -9,13 +9,14 @@ class SettingsView extends GetView<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
+    // Pakai context.theme biar warnanya otomatis nyesuaiin pas Dark Mode
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: context.theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+          icon: Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => Get.back(),
         ),
         title: Text(
@@ -34,7 +35,7 @@ class SettingsView extends GetView<SettingsController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- HEADER PROFIL SINGKAT ---
+              // --- HEADER PROFIL REAL-TIME & DEFAULT AVATAR ---
               Center(
                 child: Column(
                   children: [
@@ -43,113 +44,110 @@ class SettingsView extends GetView<SettingsController> {
                       height: 96,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
+                        color: Colors.teal, // Background Default Profil
                         border: Border.all(
-                          color: AppColors.surfaceContainerLow ?? Colors.grey,
+                          color: AppColors.primary.withOpacity(0.3),
                           width: 4,
                         ),
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                            'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop',
-                          ), // Placeholder Wajah
-                          fit: BoxFit.cover,
-                        ),
+                      ),
+                      child: const Icon(
+                        Icons.person,
+                        size: 50,
+                        color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      'Robert J. Wilson',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.onSurface,
+                    // 👇 OBX BIAR NAMANYA REAL-TIME DARI DATABASE 👇
+                    Obx(
+                      () => Text(
+                        controller.profileCtrl.userName.value,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          // Sesuaikan warna teks biar kebaca di Dark Mode
+                          color: Get.isDarkMode
+                              ? Colors.white
+                              : AppColors.onSurface,
+                        ),
                       ),
                     ),
-                    Text(
-                      'Patient ID: GB-10023',
-                      style: GoogleFonts.beVietnamPro(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.onSurfaceVariant,
+                    Obx(
+                      () => Text(
+                        controller
+                            .profileCtrl
+                            .userEmail
+                            .value, // Nampilin Email sebagai ID
+                        style: GoogleFonts.beVietnamPro(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 32),
-              
+
               // --- EDIT PROFILE SECTION ---
               _buildSectionTitle(Icons.person_outline, 'Edit Profile'),
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLow,
+                  color: Get.isDarkMode
+                      ? Colors.grey[900]
+                      : AppColors.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   children: [
-                    _buildSettingsTextField('Full Name', controller.nameController),
+                    _buildSettingsTextField(
+                      'Full Name',
+                      controller.nameController,
+                    ),
                     const SizedBox(height: 12),
-                    _buildSettingsTextField('Email', controller.emailController),
+                    _buildSettingsTextField(
+                      'Email',
+                      controller.emailController,
+                    ),
                     const SizedBox(height: 12),
-                    _buildSettingsTextField('Phone', controller.phoneController),
+                    _buildSettingsTextField(
+                      'Phone',
+                      controller.phoneController,
+                    ),
                     const SizedBox(height: 12),
-                    _buildSettingsTextField('Address', controller.addressController, maxLines: 2),
+                    _buildSettingsTextField(
+                      'Address',
+                      controller.addressController,
+                      maxLines: 2,
+                    ),
                     const SizedBox(height: 20),
-                    Obx(() => SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: controller.isLoading.value ? null : controller.updateProfile,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                    Obx(
+                      () => SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: controller.isLoading.value
+                              ? null
+                              : controller.updateProfile,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
+                          child: controller.isLoading.value
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text('Simpan Perubahan'),
                         ),
-                        child: controller.isLoading.value 
-                          ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                          : const Text('Simpan Perubahan'),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // --- NOTIFICATIONS SECTION ---
-              _buildSectionTitle(Icons.notifications, 'Notifications'),
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  children: [
-                    Obx(
-                      () => _buildToggleItem(
-                        title: 'Appointment Reminders',
-                        subtitle: 'Get alerts for upcoming clinic visits',
-                        value: controller.appointmentReminders.value,
-                        onChanged: controller.toggleAppointment,
-                      ),
-                    ),
-                    _buildDivider(),
-                    Obx(
-                      () => _buildToggleItem(
-                        title: 'Lab Result Alerts',
-                        subtitle: 'Immediate notifications for new reports',
-                        value: controller.labResultAlerts.value,
-                        onChanged: controller.toggleLabResults,
-                      ),
-                    ),
-                    _buildDivider(),
-                    Obx(
-                      () => _buildToggleItem(
-                        title: 'Wellness Tips',
-                        subtitle: 'Curated health advice and insights',
-                        value: controller.wellnessTips.value,
-                        onChanged: controller.toggleWellnessTips,
                       ),
                     ),
                   ],
@@ -157,67 +155,25 @@ class SettingsView extends GetView<SettingsController> {
               ),
               const SizedBox(height: 24),
 
-              // --- SECURITY SECTION ---
-              _buildSectionTitle(Icons.security, 'Security'),
+              // --- APP INFO & TAMPILAN SECTION ---
+              _buildSectionTitle(Icons.display_settings, 'Display & App Info'),
               Container(
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLow,
+                  color: Get.isDarkMode
+                      ? Colors.grey[900]
+                      : AppColors.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   children: [
-                    _buildActionItem(
-                      title: 'Change Password',
-                      subtitle: 'Last updated 3 months ago',
-                      icon: Icons.lock_reset,
-                      onTap: controller.changePassword,
-                    ),
-                    _buildDivider(),
+                    // 👇 INI DIA TOMBOL SAKTI DARK MODE NYA 👇
                     Obx(
                       () => _buildToggleItem(
-                        title: 'Biometric Login',
-                        subtitle: 'Use FaceID or Fingerprint',
-                        icon: Icons.fingerprint, // Icon ekstra untuk keamanan
-                        value: controller.biometricLogin.value,
-                        onChanged: controller.toggleBiometric,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // --- APP INFO SECTION ---
-              _buildSectionTitle(Icons.info, 'App Info'),
-              Container(
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Version',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.onSurface,
-                            ),
-                          ),
-                          Text(
-                            '2.4.0 (Build 108)',
-                            style: GoogleFonts.beVietnamPro(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
+                        title: 'Dark Mode',
+                        subtitle: 'Ubah tema menjadi gelap',
+                        icon: Icons.dark_mode,
+                        value: controller.isDarkMode.value,
+                        onChanged: controller.toggleDarkMode,
                       ),
                     ),
                     _buildDivider(),
@@ -251,7 +207,7 @@ class SettingsView extends GetView<SettingsController> {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFDAD6), // error-container
+                    backgroundColor: const Color(0xFFFFDAD6),
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(
@@ -268,7 +224,7 @@ class SettingsView extends GetView<SettingsController> {
     );
   }
 
-  // --- KOMPONEN BANTUAN UNTUK MENGURANGI KODE BERULANG ---
+  // --- KOMPONEN BANTUAN ---
 
   Widget _buildSectionTitle(IconData icon, String title) {
     return Padding(
@@ -282,7 +238,7 @@ class SettingsView extends GetView<SettingsController> {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: AppColors.onSurface,
+              color: Get.isDarkMode ? Colors.white : AppColors.onSurface,
             ),
           ),
         ],
@@ -304,9 +260,9 @@ class SettingsView extends GetView<SettingsController> {
           if (icon != null) ...[
             Icon(
               icon,
-              color: const Color(0xFF57423B),
+              color: Get.isDarkMode ? Colors.white70 : const Color(0xFF57423B),
               size: 24,
-            ), // on-surface-variant
+            ),
             const SizedBox(width: 16),
           ],
           Expanded(
@@ -318,7 +274,7 @@ class SettingsView extends GetView<SettingsController> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.onSurface,
+                    color: Get.isDarkMode ? Colors.white : AppColors.onSurface,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -326,7 +282,7 @@ class SettingsView extends GetView<SettingsController> {
                   subtitle,
                   style: GoogleFonts.beVietnamPro(
                     fontSize: 11,
-                    color: AppColors.onSurfaceVariant,
+                    color: Colors.grey,
                   ),
                 ),
               ],
@@ -337,58 +293,8 @@ class SettingsView extends GetView<SettingsController> {
             onChanged: onChanged,
             activeThumbColor: Colors.white,
             activeTrackColor: AppColors.primary,
-            inactiveThumbColor: Colors.white,
-            inactiveTrackColor: AppColors.onSurfaceVariant,
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildActionItem({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            Icon(icon, color: const Color(0xFF57423B), size: 24),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.beVietnamPro(
-                      fontSize: 11,
-                      color: AppColors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(
-              Icons.chevron_right,
-              color: Color(0xFF8B7169),
-              size: 20,
-            ), // outline
-          ],
-        ),
       ),
     );
   }
@@ -406,14 +312,10 @@ class SettingsView extends GetView<SettingsController> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: AppColors.onSurface,
+                color: Get.isDarkMode ? Colors.white : AppColors.onSurface,
               ),
             ),
-            const Icon(
-              Icons.open_in_new,
-              color: Color(0xFF8B7169),
-              size: 18,
-            ), // outline
+            const Icon(Icons.open_in_new, color: Colors.grey, size: 18),
           ],
         ),
       ),
@@ -423,12 +325,16 @@ class SettingsView extends GetView<SettingsController> {
   Widget _buildDivider() {
     return Container(
       height: 1,
-      color: AppColors.surfaceVariant.withOpacity(0.5),
+      color: Colors.grey.withOpacity(0.2),
       margin: const EdgeInsets.symmetric(horizontal: 20),
     );
   }
 
-  Widget _buildSettingsTextField(String label, TextEditingController textController, {int maxLines = 1}) {
+  Widget _buildSettingsTextField(
+    String label,
+    TextEditingController textController, {
+    int maxLines = 1,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -444,18 +350,27 @@ class SettingsView extends GetView<SettingsController> {
         TextField(
           controller: textController,
           maxLines: maxLines,
-          style: GoogleFonts.beVietnamPro(fontSize: 14),
+          style: GoogleFonts.beVietnamPro(
+            fontSize: 14,
+            color: Get.isDarkMode ? Colors.white : Colors.black,
+          ),
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            fillColor: Get.isDarkMode ? Colors.grey[800] : Colors.white,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.primary,
+                width: 1.5,
+              ),
             ),
           ),
         ),
