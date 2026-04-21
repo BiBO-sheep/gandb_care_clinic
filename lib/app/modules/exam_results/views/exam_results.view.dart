@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../controllers/exam_results_controller.dart';
 
 class ExamResultsView extends GetView<ExamResultsController> {
@@ -11,10 +10,10 @@ class ExamResultsView extends GetView<ExamResultsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFFAF9F6),
       extendBody: true,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: const Color(0xFFFAF9F6),
         elevation: 0,
         automaticallyImplyLeading: false,
         title: Row(
@@ -41,13 +40,13 @@ class ExamResultsView extends GetView<ExamResultsController> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.secondary,
+                    color: const Color(0xFF006A6A),
                   ),
                 ),
               ],
             ),
             IconButton(
-              icon: const Icon(Icons.close, color: AppColors.secondary),
+              icon: const Icon(Icons.close, color: Color(0xFF006A6A)),
               onPressed: controller.backToHistory,
             ),
           ],
@@ -55,550 +54,260 @@ class ExamResultsView extends GetView<ExamResultsController> {
       ),
       body: SafeArea(
         bottom: false,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // --- ACTION BAR ---
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: controller.backToHistory,
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.arrow_back,
-                          color: AppColors.secondary,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Back to History',
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.secondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF90EFEF).withOpacity(0.4),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'OFFICIAL RECORD',
-                      style: GoogleFonts.beVietnamPro(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF006E6E),
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // --- HERO TEXT ---
-              Text(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              child: Text(
                 'Examination Results',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
+                  color: const Color(0xFF006A6A),
                   height: 1.1,
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Detailed clinical summary for visit on Oct 24, 2023',
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 14,
-                  color: AppColors.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 32),
+            ),
+            Expanded(
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: Color(0xFF006A6A),
+                    ),
+                  );
+                }
 
-              // --- DOCTOR CARD ---
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                            'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=200&auto=format&fit=crop',
+                if (controller.resultsList.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.assignment_outlined, size: 80, color: Colors.grey[400]),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Belum ada riwayat rekam medis',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[600],
                           ),
-                          fit: BoxFit.cover,
-                        ), // Placeholder Dokter
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'ATTENDING PHYSICIAN',
-                      style: GoogleFonts.beVietnamPro(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.secondary,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Dr. Julian Thorne',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.onSurface,
-                      ),
-                    ),
-                    Text(
-                      'Senior Consultant • Internal Medicine',
-                      style: GoogleFonts.beVietnamPro(
-                        fontSize: 12,
-                        color: AppColors.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton.icon(
-                      onPressed: controller.messageDoctor,
-                      icon: const Icon(
-                        Icons.chat,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                      label: Text(
-                        'Message Doctor',
-                        style: GoogleFonts.beVietnamPro(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
                         ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.secondary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        elevation: 0,
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
+                  );
+                }
 
-              // --- CHIEF COMPLAINT ---
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF4F3F1),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.assignment,
-                          color: AppColors.primary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'CHIEF COMPLAINT',
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Patient reports recurring discomfort in the upper respiratory region, accompanied by mild fatigue and evening fever spikes for 3 days.',
-                      style: GoogleFonts.beVietnamPro(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.onSurface,
-                        height: 1.6,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // --- VITALS ---
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFDBCF).withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.monitor_heart,
-                          color: AppColors.primary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'VITAL METRICS',
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Heart Rate',
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 14,
-                            color: AppColors.onSurfaceVariant,
-                          ),
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
-                            ),
-                            children: [
-                              const TextSpan(text: '78 '),
-                              TextSpan(
-                                text: 'bpm',
-                                style: GoogleFonts.beVietnamPro(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.normal,
-                                  color: AppColors.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: Divider(),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Temp',
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 14,
-                            color: AppColors.onSurfaceVariant,
-                          ),
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
-                            ),
-                            children: [
-                              const TextSpan(text: '38.2 '),
-                              TextSpan(
-                                text: '°C',
-                                style: GoogleFonts.beVietnamPro(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.normal,
-                                  color: AppColors.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // --- FINAL DIAGNOSIS ---
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE0F7F7),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.verified,
-                          color: AppColors.secondary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'FINAL DIAGNOSIS',
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.secondary,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Acute Viral Rhinitis',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.secondary,
-                        height: 1.1,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'The clinical presentation is consistent with a viral infection of the upper respiratory tract. No bacterial involvement indicated at this stage. Recommended rest and hydration protocol.',
-                      style: GoogleFonts.beVietnamPro(
-                        fontSize: 14,
-                        color: AppColors.onSurface,
-                        height: 1.6,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        _buildTag('Contagious: Low'),
-                        _buildTag('Follow-up: 7 Days'),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // --- TREATMENT PLAN ---
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE3E2E0).withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.medication,
-                          color: AppColors.onSurfaceVariant,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'TREATMENT PLAN',
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.onSurfaceVariant,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    _buildTreatmentStep(
-                      '1',
-                      'Rest & Hydration',
-                      'Minimum 2.5L water/day and 8 hours sleep.',
-                    ),
-                    const SizedBox(height: 20),
-                    _buildTreatmentStep(
-                      '2',
-                      'Prescribed Medication',
-                      'Check digital pharmacy for your order #4492.',
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Next Assessment Box
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.calendar_month,
-                            color: AppColors.primary,
-                            size: 28,
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Next Assessment',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.onSurface,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Tuesday, Oct 31 • 10:30 AM',
-                            style: GoogleFonts.beVietnamPro(
-                              fontSize: 12,
-                              color: AppColors.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          GestureDetector(
-                            onTap: controller.reschedule,
-                            child: Text(
-                              'Reschedule',
-                              style: GoogleFonts.beVietnamPro(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 120), // Spacing for bottom nav
-            ],
-          ),
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  itemCount: controller.resultsList.length,
+                  itemBuilder: (context, index) {
+                    final record = controller.resultsList[index];
+                    return _buildRecordCard(record);
+                  },
+                );
+              }),
+            ),
+            const SizedBox(height: 90), // Bottom nav spacing
+          ],
         ),
       ),
       bottomNavigationBar: _buildBottomNav(),
     );
   }
 
-  Widget _buildTag(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFF90EFEF),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        text,
-        style: GoogleFonts.beVietnamPro(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: const Color(0xFF006E6E),
-        ),
-      ),
-    );
-  }
+  Widget _buildRecordCard(dynamic record) {
+    final appointmentDate = record['appointment']?['appointment_date'] ?? 'Tanggal tidak tersedia';
+    final doctorName = record['doctor']?['name'] ?? 'Dokter tidak tersedia';
+    final doctorSpec = record['doctor']?['specialization'] ?? '';
 
-  Widget _buildTreatmentStep(String number, String title, String desc) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
-            shape: BoxShape.circle,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
-          alignment: Alignment.center,
-          child: Text(
-            number,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-            ),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.onSurface,
+              Expanded(
+                flex: 3,
+                child: Text(
+                  appointmentDate,
+                  style: GoogleFonts.beVietnamPro(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[600],
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                desc,
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 12,
-                  color: AppColors.onSurfaceVariant,
-                  height: 1.5,
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 4,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE0F7F7),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.person, size: 12, color: Color(0xFF006A6A)),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            doctorName,
+                            style: GoogleFonts.beVietnamPro(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF006A6A),
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
-        ),
-      ],
+          if (doctorSpec.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                doctorSpec,
+                style: GoogleFonts.beVietnamPro(
+                  fontSize: 10,
+                  color: Colors.grey[600],
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+          const SizedBox(height: 16),
+          Text(
+            'DIAGNOSIS',
+            style: GoogleFonts.beVietnamPro(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF006A6A),
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            record['diagnosis'] ?? 'Tidak ada diagnosis',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: const Color(0xFF006A6A),
+            ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'TREATMENT PLAN',
+            style: GoogleFonts.beVietnamPro(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[600],
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            record['treatment_plan'] ?? 'Tidak ada rencana perawatan',
+            style: GoogleFonts.beVietnamPro(
+              fontSize: 14,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => controller.goToPrescription(record),
+                  icon: const Icon(Icons.medication, color: Colors.white, size: 18),
+                  label: Text(
+                    'Lihat Resep',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF006A6A),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              // TOMBOL BAYAR SEKARANG
+              // Logika: Tampilkan jika belum lunas (berdasarkan field appointment_status atau payment_status)
+              if (record['appointment']?['status'] != 'paid')
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      final appointmentId = record['appointment_id'] ?? record['appointment']?['id'];
+                      if (appointmentId != null) {
+                        Get.toNamed('/payment-history', arguments: appointmentId);
+                      } else {
+                        Get.snackbar('Gagal', 'ID Appointment tidak ditemukan');
+                      }
+                    },
+                    icon: const Icon(Icons.payment, color: Colors.white, size: 18),
+                    label: Text(
+                      'Bayar Sekarang',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF7F50), // Warna orange kontras
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -619,11 +328,7 @@ class ExamResultsView extends GetView<ExamResultsController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildNavItem(0, 'Home', Icons.home),
-                _buildNavItem(
-                  1,
-                  'History',
-                  Icons.history,
-                ), // Ini yang akan aktif
+                _buildNavItem(1, 'History', Icons.history),
                 _buildNavItem(2, 'Notifs', Icons.notifications),
                 _buildNavItem(3, 'Profile', Icons.person),
               ],
@@ -653,8 +358,8 @@ class ExamResultsView extends GetView<ExamResultsController> {
             Icon(
               icon,
               color: isSelected
-                  ? AppColors.primary
-                  : AppColors.secondary.withOpacity(0.5),
+                  ? const Color(0xFF006A6A)
+                  : Colors.grey,
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -664,8 +369,8 @@ class ExamResultsView extends GetView<ExamResultsController> {
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                 color: isSelected
-                    ? AppColors.primary
-                    : AppColors.secondary.withOpacity(0.5),
+                    ? const Color(0xFF006A6A)
+                    : Colors.grey,
                 letterSpacing: 1,
               ),
             ),

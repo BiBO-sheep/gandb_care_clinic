@@ -365,6 +365,74 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
               ),
               const SizedBox(height: 12),
 
+              // 👇 TOMBOL REAKTIF: SIMULASI ATAU LANJUT PEMBAYARAN 👇
+              Obx(() {
+                if (controller.status.value == 'completed') {
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (controller.appointmentId.value != '0' && controller.appointmentId.value.isNotEmpty) {
+                          Get.toNamed('/payment-history', arguments: controller.appointmentId.value);
+                        } else {
+                          Get.snackbar('Error', 'ID Janji Temu tidak ditemukan');
+                        }
+                      },
+                      icon: const Icon(Icons.payment, color: Colors.white),
+                      label: Text(
+                        'Lanjut ke Pembayaran',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF006A6A),
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        elevation: 0,
+                      ),
+                    ),
+                  );
+                } else {
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: controller.isSimulating.value 
+                          ? null 
+                          : controller.simulateDoctorExamination,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: const BorderSide(color: Colors.redAccent, width: 2),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: controller.isSimulating.value 
+                        ? const SizedBox(
+                            width: 20, 
+                            height: 20, 
+                            child: CircularProgressIndicator(color: Colors.redAccent, strokeWidth: 2)
+                          )
+                        : Text(
+                            'Simulasi Periksa (Dev Mode)',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.redAccent,
+                            ),
+                          ),
+                    ),
+                  );
+                }
+              }),
+              const SizedBox(height: 12),
+
               // 👇 TOMBOL BACK TO DASHBOARD 👇
               TextButton(
                 onPressed: controller.backToDashboard,

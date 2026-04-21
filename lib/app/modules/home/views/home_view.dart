@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:gandb_care_clinic/app/modules/profile/views/profile_view.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -22,7 +23,7 @@ class HomeView extends GetView<HomeController> {
             _buildHomeContent(), // Index 0: Tampilan Home
             _buildHistoryContent(), // Index 1: Tampilan History
             _buildNotifContent(), // Index 2: Tampilan Notif
-            _buildProfileContent(), // Index 3: Tampilan Profile (Gua taruh tombol Logout sekalian)
+            const ProfileView(), // Index 3: Tampilan Profile (Gua taruh tombol Logout sekalian)
           ];
 
           // Tampilkan halaman sesuai tombol bawah yang lagi dipencet
@@ -92,43 +93,6 @@ class HomeView extends GetView<HomeController> {
           fontWeight: FontWeight.bold,
           color: AppColors.secondary,
         ),
-      ),
-    );
-  }
-
-  Widget _buildProfileContent() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Halaman Profile',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 20),
-          // Sekalian gua bikinin tombol Logout buat ngetes
-          ElevatedButton.icon(
-            onPressed: controller.logout,
-            icon: const Icon(Icons.logout, color: Colors.white),
-            label: const Text(
-              'LOGOUT',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

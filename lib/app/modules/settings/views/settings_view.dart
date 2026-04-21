@@ -76,6 +76,46 @@ class SettingsView extends GetView<SettingsController> {
                 ),
               ),
               const SizedBox(height: 32),
+              
+              // --- EDIT PROFILE SECTION ---
+              _buildSectionTitle(Icons.person_outline, 'Edit Profile'),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    _buildSettingsTextField('Full Name', controller.nameController),
+                    const SizedBox(height: 12),
+                    _buildSettingsTextField('Email', controller.emailController),
+                    const SizedBox(height: 12),
+                    _buildSettingsTextField('Phone', controller.phoneController),
+                    const SizedBox(height: 12),
+                    _buildSettingsTextField('Address', controller.addressController, maxLines: 2),
+                    const SizedBox(height: 20),
+                    Obx(() => SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: controller.isLoading.value ? null : controller.updateProfile,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: controller.isLoading.value 
+                          ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                          : const Text('Simpan Perubahan'),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
 
               // --- NOTIFICATIONS SECTION ---
               _buildSectionTitle(Icons.notifications, 'Notifications'),
@@ -385,6 +425,41 @@ class SettingsView extends GetView<SettingsController> {
       height: 1,
       color: AppColors.surfaceVariant.withOpacity(0.5),
       margin: const EdgeInsets.symmetric(horizontal: 20),
+    );
+  }
+
+  Widget _buildSettingsTextField(String label, TextEditingController textController, {int maxLines = 1}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: AppColors.secondary,
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: textController,
+          maxLines: maxLines,
+          style: GoogleFonts.beVietnamPro(fontSize: 14),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

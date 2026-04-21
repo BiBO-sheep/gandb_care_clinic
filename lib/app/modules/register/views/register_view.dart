@@ -106,6 +106,16 @@ class RegisterView extends GetView<RegisterController> {
                       controller.emailController,
                       isEmail: true,
                     ),
+                    const SizedBox(height: 20),
+                    Obx(() => _buildInputField(
+                      'PASSWORD',
+                      Icons.lock,
+                      '••••••••',
+                      controller.passwordController,
+                      isPassword: true,
+                      obscureText: !controller.isPasswordVisible.value,
+                      onToggleVisibility: () => controller.isPasswordVisible.toggle(),
+                    )),
                     const SizedBox(height: 24),
 
                     // --- BLOOD TYPE GRID ---
@@ -308,6 +318,9 @@ class RegisterView extends GetView<RegisterController> {
     TextEditingController controller, {
     bool isEmail = false,
     bool isPhone = false,
+    bool isPassword = false,
+    bool obscureText = false,
+    VoidCallback? onToggleVisibility,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -318,6 +331,7 @@ class RegisterView extends GetView<RegisterController> {
           keyboardType: isEmail
               ? TextInputType.emailAddress
               : (isPhone ? TextInputType.phone : TextInputType.text),
+          obscureText: obscureText,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: GoogleFonts.beVietnamPro(
@@ -326,6 +340,15 @@ class RegisterView extends GetView<RegisterController> {
             filled: true,
             fillColor: Colors.white,
             prefixIcon: Icon(icon, color: AppColors.secondary.withOpacity(0.4)),
+            suffixIcon: isPassword
+                ? IconButton(
+                    icon: Icon(
+                      obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: AppColors.secondary.withOpacity(0.4),
+                    ),
+                    onPressed: onToggleVisibility,
+                  )
+                : null,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 16,

@@ -1,67 +1,113 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../api_config.dart';
 
 class ProfileController extends GetxController {
   // Tab Profile yang aktif (Index 3)
   var currentIndex = 3.obs;
 
-  // --- DATA MOCKUP (Nanti diisi dari response API Laravel/PHP) ---
-  var patientName = 'Robert J. Wilson'.obs;
-  var patientId = 'GB-10023'.obs;
-  var email = 'robert.wilson@email.com'.obs;
-  var phone = '+1 (555) 123-4567'.obs;
-  var address = '482 Oakwood Drive, Apt 4B\nMaplewood, NJ 07040'.obs;
+  // --- DATA REAKTIF ---
+  var userName = ''.obs;
+  var userEmail = ''.obs;
+  var userPhone = ''.obs;
+  var userBloodType = ''.obs; // Tambahan untuk Golongan Darah
+  var isLoading = false.obs;
 
-  var bloodType = 'O+'.obs;
-  var emergencyContactName = 'Sarah Wilson (Wife)'.obs;
-  var emergencyContactPhone = '+1 (555) 987-6543'.obs;
+  @override
+  void onInit() {
+    super.onInit();
+    fetchUserProfile();
+  }
+
+  Future<void> fetchUserProfile() async {
+    isLoading.value = true;
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // CATATAN BOS: Pastikan key ini sama dengan yang lu pakai pas nyimpen token di Login/Register
+      String? token = prefs.getString('token');
+
+      // Keamanan: Kalau token nggak ada di HP, tendang ke halaman login
+      if (token == null || token.isEmpty) {
+        Get.snackbar(
+          'Sesi Habis',
+          'Silakan login kembali',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        Get.offAllNamed('/login');
+        return;
+      }
+
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/profile'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      print(
+        'Status Code API Profile: ${response.statusCode}',
+      ); // Buat ngecek di terminal
+      print(
+        'Response API Profile: ${response.body}',
+      ); // Buat ngintip balasan Laravel
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        // Sesuaikan dengan format Laravel lu. Biasanya langsung data mentah.
+        final userData = data['data'] ?? data;
+
+        userName.value = userData['name'] ?? 'User';
+        userEmail.value = userData['email'] ?? '-';
+        userPhone.value = userData['phone'] ?? '-';
+        userBloodType.value = userData['blood_type'] ?? '-';
+      } else if (response.statusCode == 401) {
+        // 401 artinya token ditolak/expired
+        Get.snackbar(
+          'Error Autentikasi',
+          'Sesi Anda telah berakhir, silakan login ulang.',
+        );
+        logout();
+      } else {
+        Get.snackbar(
+          'Error Server',
+          'Gagal memuat profil (Kode: ${response.statusCode})',
+        );
+      }
+    } catch (e) {
+      print('Profile Fetch Error Bos: $e');
+      Get.snackbar(
+        'Error Koneksi',
+        'Tidak bisa terhubung ke server. Cek internet/IP.',
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   // --- FUNGSI TOMBOL ---
-  void editProfile() {
-    Get.snackbar(
-      'Edit Profile',
-      'Membuka form edit profil...',
-      snackPosition: SnackPosition.TOP,
-    );
-  }
-
-  void openSettings() {
-    Get.snackbar(
-      'Settings',
-      'Membuka pengaturan aplikasi...',
-      snackPosition: SnackPosition.TOP,
-    );
-    Get.toNamed('/settings');
-  }
-
-  void openSecurity() {
-    Get.snackbar(
-      'Security',
-      'Membuka pengaturan keamanan...',
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
-
-  void openPrivacyPolicy() {
-    Get.snackbar(
-      'Privacy Policy',
-      'Membuka kebijakan privasi...',
-      snackPosition: SnackPosition.BOTTOM,
-    );
-  }
-
   void logout() {
-    // Simulasi proses logout
     Get.defaultDialog(
-      title: 'Logout',
-      middleText: 'Are you sure you want to log out?',
-      textConfirm: 'Yes, Logout',
-      textCancel: 'Cancel',
+      title: 'Konfirmasi Logout',
+      middleText: 'Apakah Anda yakin ingin keluar dari akun ini?',
+      textConfirm: 'Ya, Keluar',
+      textCancel: 'Batal',
       confirmTextColor: Colors.white,
-      buttonColor: const Color(0xFFBA1A1A), // Error color
-      onConfirm: () {
-        // Hapus session/token di sini nantinya
-        Get.offAllNamed('/login'); // Kembali ke halaman Login
+      buttonColor: const Color(0xFFBA1A1A), // Warna merah elegan
+      onConfirm: () async {
+        Get.back(); // Tutup pop-up dialognya
+
+        // 1. Hapus token dari memori HP biar gak nyangkut
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove('token');
+
+        // 2. Tendang balik ke halaman Login
+        Get.offAllNamed('/login');
       },
     );
   }
@@ -76,6 +122,5 @@ class ProfileController extends GetxController {
     } else if (index == 2) {
       Get.offAllNamed('/notifications');
     }
-    // Index 3 adalah halaman ini sendiri
   }
 }

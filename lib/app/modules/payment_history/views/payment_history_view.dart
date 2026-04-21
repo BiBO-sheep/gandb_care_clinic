@@ -60,7 +60,12 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
                     );
                   }
 
-                  // 2. STATE KOSONG (Belum pernah daftar)
+                  // 2. STATE SUMMARY (Jika sedang proses bayar)
+                  if (controller.invoiceData.value != null) {
+                    return _buildPaymentSummary(controller.invoiceData.value!);
+                  }
+
+                  // 3. STATE KOSONG (Belum pernah daftar)
                   if (controller.historyList.isEmpty) {
                     return _buildEmptyState();
                   }
@@ -122,6 +127,117 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPaymentSummary(Map<String, dynamic> data) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(32),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                const Icon(Icons.receipt_long, size: 64, color: AppColors.primary),
+                const SizedBox(height: 16),
+                Text(
+                  'Rincian Pembayaran',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                _buildSummaryRow('Biaya Konsultasi', 'Rp ${controller.invoiceData.value?['consultation_fee'] ?? 0}'),
+                const SizedBox(height: 16),
+                _buildSummaryRow('Biaya Obat', 'Rp ${controller.invoiceData.value?['medicine_fee'] ?? 0}'),
+                const Divider(height: 32),
+                _buildSummaryRow(
+                  'Total Pembayaran', 
+                  'Rp ${controller.invoiceData.value?['total_amount'] ?? 0}',
+                  isTotal: true,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => controller.showPaymentMethods(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              child: Text(
+                'BAYAR SEKARANG',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Center(
+            child: TextButton(
+              onPressed: () {
+                controller.invoiceData.value = null;
+                controller.fetchHistory();
+              },
+              child: Text(
+                'Kembali ke Riwayat',
+                style: GoogleFonts.plusJakartaSans(
+                  color: AppColors.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryRow(String label, String value, {bool isTotal = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.beVietnamPro(
+            fontSize: isTotal ? 16 : 14,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            color: isTotal ? AppColors.onSurface : AppColors.onSurfaceVariant,
+          ),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: isTotal ? 20 : 14,
+            fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
+            color: isTotal ? AppColors.primary : AppColors.onSurface,
+          ),
+        ),
+      ],
     );
   }
 
