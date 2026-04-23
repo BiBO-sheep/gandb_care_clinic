@@ -11,25 +11,22 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Get.isDarkMode;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.theme.scaffoldBackgroundColor,
       extendBody: true,
       body: SafeArea(
         bottom: false,
-        // 👇 LANGSUNG TEMBAK HALAMAN HOME, GAK PAKE ARRAY OBX LAGI 👇
-        child: _buildHomeContent(),
+        child: _buildHomeContent(isDark),
       ),
-      bottomNavigationBar: _buildBottomNav(),
+      bottomNavigationBar: _buildBottomNav(isDark),
     );
   }
 
-  // =========================================
-  // 1. ISI HALAMAN HOME
-  // =========================================
-  Widget _buildHomeContent() {
+  Widget _buildHomeContent(bool isDark) {
     return Column(
       children: [
-        _buildCustomAppBar(),
+        _buildCustomAppBar(isDark),
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -37,16 +34,16 @@ class HomeView extends GetView<HomeController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
-                _buildWelcomeSection(),
+                _buildWelcomeSection(isDark),
                 const SizedBox(height: 32),
-                _buildAppointmentCard(),
+                _buildAppointmentCard(isDark),
                 const SizedBox(height: 32),
-                _buildQuickActions(),
+                _buildQuickActions(isDark),
                 const SizedBox(height: 32),
-                _buildDailyWellness(),
+                _buildDailyWellness(isDark),
                 const SizedBox(height: 32),
-                _buildPoliSlider(),
-                const SizedBox(height: 100), // Spasi buat bottom nav
+                _buildPoliSlider(isDark),
+                const SizedBox(height: 100),
               ],
             ),
           ),
@@ -55,9 +52,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // --- KOMPONEN UI ---
-
-  Widget _buildCustomAppBar() {
+  Widget _buildCustomAppBar(bool isDark) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
       child: Row(
@@ -76,13 +71,13 @@ class HomeView extends GetView<HomeController> {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.secondary,
+                  color: isDark ? Colors.white : AppColors.secondary,
                 ),
               ),
             ],
           ),
           IconButton(
-            icon: const Icon(Icons.qr_code_scanner, color: AppColors.secondary),
+            icon: Icon(Icons.qr_code_scanner, color: isDark ? Colors.white70 : AppColors.secondary),
             onPressed: controller.openQRScanner,
           ),
         ],
@@ -90,7 +85,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildWelcomeSection() {
+  Widget _buildWelcomeSection(bool isDark) {
     return Obx(
       () => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +95,7 @@ class HomeView extends GetView<HomeController> {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: AppColors.onSurface,
+              color: isDark ? Colors.white : AppColors.onSurface,
               letterSpacing: -0.5,
             ),
           ),
@@ -110,7 +105,7 @@ class HomeView extends GetView<HomeController> {
             style: GoogleFonts.beVietnamPro(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: AppColors.onSurfaceVariant,
+              color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
             ),
           ),
         ],
@@ -118,7 +113,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildAppointmentCard() {
+  Widget _buildAppointmentCard(bool isDark) {
     return GestureDetector(
       onTap: () => Get.toNamed('/queue-monitor'),
       child: Container(
@@ -131,7 +126,7 @@ class HomeView extends GetView<HomeController> {
             end: Alignment.bottomRight,
             colors: [AppColors.primary, AppColors.primaryContainer],
           ),
-          boxShadow: [
+          boxShadow: isDark ? [] : [
             BoxShadow(
               color: AppColors.primary.withOpacity(0.3),
               blurRadius: 20,
@@ -146,10 +141,7 @@ class HomeView extends GetView<HomeController> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(20),
@@ -179,11 +171,7 @@ class HomeView extends GetView<HomeController> {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(
-                  Icons.medical_services,
-                  color: Colors.white70,
-                  size: 16,
-                ),
+                const Icon(Icons.medical_services, color: Colors.white70, size: 16),
                 const SizedBox(width: 8),
                 Text(
                   'Dr. Sarah Jenkins • Cardiology Dept.',
@@ -203,24 +191,13 @@ class HomeView extends GetView<HomeController> {
               ),
               child: Row(
                 children: [
-                  Expanded(
-                    child: _buildCardDetail(
-                      'DATE & TIME',
-                      'Tomorrow, 10:30 AM',
-                    ),
-                  ),
+                  Expanded(child: _buildCardDetail('DATE & TIME', 'Tomorrow, 10:30 AM')),
                   Container(
                     height: 30,
                     width: 1,
                     color: Colors.white.withOpacity(0.2),
                   ),
-                  Expanded(
-                    child: _buildCardDetail(
-                      'LOCATION',
-                      'Room 302, Block B',
-                      alignment: CrossAxisAlignment.end,
-                    ),
-                  ),
+                  Expanded(child: _buildCardDetail('LOCATION', 'Room 302, Block B', alignment: CrossAxisAlignment.end)),
                 ],
               ),
             ),
@@ -230,11 +207,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildCardDetail(
-    String title,
-    String value, {
-    CrossAxisAlignment alignment = CrossAxisAlignment.start,
-  }) {
+  Widget _buildCardDetail(String title, String value, {CrossAxisAlignment alignment = CrossAxisAlignment.start}) {
     return Column(
       crossAxisAlignment: alignment,
       children: [
@@ -260,7 +233,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildQuickActions() {
+  Widget _buildQuickActions(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -269,7 +242,7 @@ class HomeView extends GetView<HomeController> {
           style: GoogleFonts.beVietnamPro(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: AppColors.secondary,
+            color: isDark ? Colors.white70 : AppColors.secondary,
             letterSpacing: 2,
           ),
         ),
@@ -282,48 +255,23 @@ class HomeView extends GetView<HomeController> {
           crossAxisSpacing: 16,
           childAspectRatio: 1.2,
           children: [
-            _buildActionItem(
-              'Book\nAppointment',
-              Icons.add_circle,
-              const Color(0xFF90EFEF),
-              AppColors.secondary,
-            ),
-            _buildActionItem(
-              'My History',
-              Icons.history,
-              const Color(0xFFFFDBCF),
-              AppColors.primary,
-            ),
-            _buildActionItem(
-              'Poli Info',
-              Icons.info,
-              const Color(0xFF7AF4FF),
-              const Color(0xFF006970),
-            ),
-            _buildActionItem(
-              'Active\nPrescription',
-              Icons.medication,
-              const Color(0xFF93F2F2),
-              const Color(0xFF006A6A),
-            ),
+            _buildActionItem('Book\nAppointment', Icons.add_circle, const Color(0xFF90EFEF), AppColors.secondary, isDark),
+            _buildActionItem('My History', Icons.history, const Color(0xFFFFDBCF), AppColors.primary, isDark),
+            _buildActionItem('Poli Info', Icons.info, const Color(0xFF7AF4FF), const Color(0xFF006970), isDark),
+            _buildActionItem('Active\nPrescription', Icons.medication, const Color(0xFF93F2F2), const Color(0xFF006A6A), isDark),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildActionItem(
-    String title,
-    IconData icon,
-    Color bgColor,
-    Color iconColor,
-  ) {
+  Widget _buildActionItem(String title, IconData icon, Color bgColor, Color iconColor, bool isDark) {
     return GestureDetector(
       onTap: () => controller.onQuickActionTapped(title.replaceAll('\n', ' ')),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFF4F3F1),
+          color: isDark ? Colors.grey[900] : const Color(0xFFF4F3F1),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -341,7 +289,7 @@ class HomeView extends GetView<HomeController> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
-                color: AppColors.onSurface,
+                color: isDark ? Colors.white : AppColors.onSurface,
                 height: 1.2,
               ),
             ),
@@ -351,7 +299,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildDailyWellness() {
+  Widget _buildDailyWellness(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -360,7 +308,7 @@ class HomeView extends GetView<HomeController> {
           style: GoogleFonts.beVietnamPro(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: AppColors.secondary,
+            color: isDark ? Colors.white70 : AppColors.secondary,
             letterSpacing: 2,
           ),
         ),
@@ -368,12 +316,10 @@ class HomeView extends GetView<HomeController> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? Colors.grey[900] : Colors.white,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: AppColors.surfaceVariant.withOpacity(0.5),
-            ),
-            boxShadow: [
+            border: Border.all(color: AppColors.surfaceVariant.withOpacity(isDark ? 0.1 : 0.5)),
+            boxShadow: isDark ? [] : [
               BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10),
             ],
           ),
@@ -384,16 +330,9 @@ class HomeView extends GetView<HomeController> {
                 height: 56,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.primary.withOpacity(0.2),
-                    width: 4,
-                  ),
+                  border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 4),
                 ),
-                child: const Icon(
-                  Icons.favorite,
-                  color: AppColors.primary,
-                  size: 28,
-                ),
+                child: const Icon(Icons.favorite, color: AppColors.primary, size: 28),
               ),
               const SizedBox(width: 16),
               Column(
@@ -404,7 +343,7 @@ class HomeView extends GetView<HomeController> {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.onSurfaceVariant,
+                      color: isDark ? Colors.white60 : AppColors.onSurfaceVariant,
                       letterSpacing: 1,
                     ),
                   ),
@@ -418,7 +357,7 @@ class HomeView extends GetView<HomeController> {
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.onSurface,
+                            color: isDark ? Colors.white : AppColors.onSurface,
                           ),
                         ),
                         const SizedBox(width: 4),
@@ -427,7 +366,7 @@ class HomeView extends GetView<HomeController> {
                           style: GoogleFonts.beVietnamPro(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.onSurfaceVariant,
+                            color: isDark ? Colors.white60 : AppColors.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -437,10 +376,7 @@ class HomeView extends GetView<HomeController> {
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: AppColors.secondary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -450,7 +386,7 @@ class HomeView extends GetView<HomeController> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.secondary,
+                    color: isDark ? const Color(0xFF90EFEF) : AppColors.secondary,
                   ),
                 ),
               ),
@@ -461,26 +397,23 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildBottomNav() {
+  Widget _buildBottomNav(bool isDark) {
     return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(40),
-        topRight: Radius.circular(40),
-      ),
+      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           height: 90,
-          color: const Color(0xFFFAF9F6).withOpacity(0.8),
+          color: isDark ? Colors.black.withOpacity(0.8) : const Color(0xFFFAF9F6).withOpacity(0.8),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Obx(
             () => Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildNavItem(0, 'Home', Icons.home),
-                _buildNavItem(1, 'History', Icons.history),
-                _buildNavItem(2, 'Notifs', Icons.notifications),
-                _buildNavItem(3, 'Profile', Icons.person),
+                _buildNavItem(0, 'Home', Icons.home, isDark),
+                _buildNavItem(1, 'History', Icons.history, isDark),
+                _buildNavItem(2, 'Notifs', Icons.notifications, isDark),
+                _buildNavItem(3, 'Profile', Icons.person, isDark),
               ],
             ),
           ),
@@ -489,7 +422,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon) {
+  Widget _buildNavItem(int index, String label, IconData icon, bool isDark) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
@@ -497,9 +430,7 @@ class HomeView extends GetView<HomeController> {
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFFFF7F50).withOpacity(0.2)
-              : Colors.transparent,
+          color: isSelected ? const Color(0xFFFF7F50).withOpacity(0.2) : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
@@ -507,9 +438,7 @@ class HomeView extends GetView<HomeController> {
           children: [
             Icon(
               icon,
-              color: isSelected
-                  ? AppColors.primary
-                  : AppColors.secondary.withOpacity(0.5),
+              color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -518,9 +447,7 @@ class HomeView extends GetView<HomeController> {
               style: GoogleFonts.beVietnamPro(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected
-                    ? AppColors.primary
-                    : AppColors.secondary.withOpacity(0.5),
+                color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
                 letterSpacing: 1,
               ),
             ),
@@ -530,7 +457,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildPoliSlider() {
+  Widget _buildPoliSlider(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -542,7 +469,7 @@ class HomeView extends GetView<HomeController> {
               style: GoogleFonts.beVietnamPro(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: AppColors.secondary,
+                color: isDark ? Colors.white70 : AppColors.secondary,
                 letterSpacing: 2,
               ),
             ),
@@ -557,22 +484,13 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
         const SizedBox(height: 16),
-
         Obx(() {
           if (controller.isLoading.value) {
-            HomeShimmerView();
-            return const SizedBox(
-              height: 160,
-              child: Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              ),
-            );
+            return const SizedBox(height: 160, child: Center(child: CircularProgressIndicator(color: AppColors.primary)));
           }
-
           if (controller.listPoli.isEmpty) {
-            return const Text('Data poli belum tersedia');
+            return Text('Data poli belum tersedia', style: GoogleFonts.beVietnamPro(color: isDark ? Colors.white60 : Colors.black54));
           }
-
           return SizedBox(
             height: 160,
             child: ListView.builder(
@@ -581,7 +499,7 @@ class HomeView extends GetView<HomeController> {
               itemCount: controller.listPoli.length,
               itemBuilder: (context, index) {
                 final poli = controller.listPoli[index];
-                return _buildPoliCard(poli);
+                return _buildPoliCard(poli, isDark);
               },
             ),
           );
@@ -590,32 +508,26 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildPoliCard(dynamic poli) {
+  Widget _buildPoliCard(dynamic poli, bool isDark) {
     final String namaPoli = poli['name']?.toString() ?? 'Poli Umum';
     final String ruanganPoli = poli['ruangan']?.toString() ?? 'Belum ada ruang';
 
     IconData iconPoli = Icons.medical_services;
     if (namaPoli.toLowerCase().contains('gigi')) iconPoli = Icons.sick;
-    if (namaPoli.toLowerCase().contains('jantung'))
-      iconPoli = Icons.monitor_heart;
+    if (namaPoli.toLowerCase().contains('jantung')) iconPoli = Icons.monitor_heart;
     if (namaPoli.toLowerCase().contains('anak')) iconPoli = Icons.child_care;
-    if (namaPoli.toLowerCase().contains('mata'))
-      iconPoli = Icons.remove_red_eye;
+    if (namaPoli.toLowerCase().contains('mata')) iconPoli = Icons.remove_red_eye;
 
     return Container(
       width: 140,
       margin: const EdgeInsets.only(right: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.grey[900] : Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.surfaceVariant.withOpacity(0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
+        border: Border.all(color: AppColors.surfaceVariant.withOpacity(isDark ? 0.1 : 0.5)),
+        boxShadow: isDark ? [] : [
+          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
       child: Column(
@@ -623,10 +535,7 @@ class HomeView extends GetView<HomeController> {
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), shape: BoxShape.circle),
             child: Icon(iconPoli, color: AppColors.primary, size: 24),
           ),
           const Spacer(),
@@ -635,7 +544,7 @@ class HomeView extends GetView<HomeController> {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: AppColors.onSurface,
+              color: isDark ? Colors.white : AppColors.onSurface,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -646,7 +555,7 @@ class HomeView extends GetView<HomeController> {
             style: GoogleFonts.beVietnamPro(
               fontSize: 11,
               fontWeight: FontWeight.w500,
-              color: AppColors.onSurfaceVariant,
+              color: isDark ? Colors.white60 : AppColors.onSurfaceVariant,
             ),
           ),
         ],

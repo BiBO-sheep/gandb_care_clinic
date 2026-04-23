@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../api_config.dart';
 import '../../profile/controllers/profile_controller.dart';
+import '../../../services/theme_service.dart';
 
 class SettingsController extends GetxController {
   // --- EXPOSE PROFILE CONTROLLER BIAR BISA DIBACA DI VIEW ---
@@ -34,8 +35,8 @@ class SettingsController extends GetxController {
     emailController.text = profileCtrl.userEmail.value;
     phoneController.text = profileCtrl.userPhone.value;
 
-    // Cek apakah HP user lagi pake dark mode pas aplikasi dibuka
-    isDarkMode.value = Get.isDarkMode;
+    // Load status dark mode dari ThemeService
+    isDarkMode.value = ThemeService.to.theme == ThemeMode.dark;
   }
 
   @override
@@ -50,11 +51,7 @@ class SettingsController extends GetxController {
   // --- FUNGSI DARK MODE SAKTI GETX ---
   void toggleDarkMode(bool value) {
     isDarkMode.value = value;
-    if (value) {
-      Get.changeThemeMode(ThemeMode.dark); // Ubah ke Gelap
-    } else {
-      Get.changeThemeMode(ThemeMode.light); // Ubah ke Terang
-    }
+    Get.find<ThemeService>().switchTheme();
   }
 
   Future<void> updateProfile() async {

@@ -16,10 +16,10 @@ class NotificationsView extends GetView<NotificationsController> {
       backgroundColor: context.theme.scaffoldBackgroundColor,
       extendBody: true,
       appBar: AppBar(
-        backgroundColor: context.theme.scaffoldBackgroundColor,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.primary),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : AppColors.primary),
           onPressed: () => Get.back(),
         ),
         title: Text(
@@ -33,7 +33,6 @@ class NotificationsView extends GetView<NotificationsController> {
         centerTitle: true,
       ),
       body: SafeArea(
-        bottom: false,
         child: Obx(() {
           if (controller.isLoading.value) {
             return const Center(child: CircularProgressIndicator());
@@ -43,7 +42,7 @@ class NotificationsView extends GetView<NotificationsController> {
             return Center(
               child: Text(
                 'Belum ada notifikasi.',
-                style: GoogleFonts.plusJakartaSans(color: Colors.grey),
+                style: GoogleFonts.plusJakartaSans(color: isDark ? Colors.grey[600] : Colors.grey),
               ),
             );
           }
@@ -54,7 +53,6 @@ class NotificationsView extends GetView<NotificationsController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 16),
-                // --- HEADER ACTIONS ---
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -79,7 +77,7 @@ class NotificationsView extends GetView<NotificationsController> {
                           style: GoogleFonts.beVietnamPro(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
+                            color: isDark ? const Color(0xFF93F2F2) : AppColors.primary,
                           ),
                         ),
                       ),
@@ -87,16 +85,12 @@ class NotificationsView extends GetView<NotificationsController> {
                   ],
                 ),
                 const SizedBox(height: 24),
-
-                // --- TODAY SECTION ---
                 if (controller.todayNotifs.isNotEmpty) ...[
                   _buildSectionHeader('TODAY', isDark),
                   Column(
                     children: controller.todayNotifs.map((notif) => _buildDynamicNotifCard(notif, isDark)).toList(),
                   ),
                 ],
-
-                // --- EARLIER SECTION ---
                 if (controller.earlierNotifs.isNotEmpty) ...[
                   const SizedBox(height: 16),
                   _buildSectionHeader('EARLIER', isDark),
@@ -104,8 +98,7 @@ class NotificationsView extends GetView<NotificationsController> {
                     children: controller.earlierNotifs.map((notif) => _buildDynamicNotifCard(notif, isDark)).toList(),
                   ),
                 ],
-
-                const SizedBox(height: 120), // Spasi buat navigasi bawah
+                const SizedBox(height: 120),
               ],
             ),
           );
@@ -115,7 +108,6 @@ class NotificationsView extends GetView<NotificationsController> {
     );
   }
 
-  // --- WIDGET HELPER: Header Tanggal ---
   Widget _buildSectionHeader(String title, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
@@ -126,25 +118,20 @@ class NotificationsView extends GetView<NotificationsController> {
             style: GoogleFonts.beVietnamPro(
               fontSize: 10,
               fontWeight: FontWeight.bold,
-              color: Colors.grey,
+              color: isDark ? Colors.white38 : Colors.grey,
               letterSpacing: 1.5,
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
-            child: Container(height: 1, color: Colors.grey.withOpacity(0.3)),
-          ),
+          Expanded(child: Container(height: 1, color: isDark ? Colors.white12 : Colors.grey.withOpacity(0.3))),
         ],
       ),
     );
   }
 
-  // --- WIDGET HELPER: Desain Kartu Otomatis Berdasarkan Tipe ---
   Widget _buildDynamicNotifCard(Map<String, dynamic> notif, bool isDark) {
     String type = notif['type'] ?? 'info';
     bool isRead = notif['isRead'] ?? false;
-
-    // Logika Warna & Icon Dinamis
     IconData icon;
     Color iconColor;
     Color bgColor;
@@ -171,7 +158,7 @@ class NotificationsView extends GetView<NotificationsController> {
           ? (isRead ? Colors.transparent : Colors.grey[900])
           : (isRead ? Colors.grey[50] : Colors.white),
         borderRadius: BorderRadius.circular(12),
-        border: isRead ? Border.all(color: Colors.grey.withOpacity(0.2)) : null,
+        border: isRead ? Border.all(color: isDark ? Colors.white10 : Colors.grey.withOpacity(0.2)) : null,
         boxShadow: isRead || isDark ? [] : [
           BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10),
         ],
@@ -188,7 +175,6 @@ class NotificationsView extends GetView<NotificationsController> {
             )
           else
             const SizedBox(width: 14),
-
           Container(
             width: 48,
             height: 48,
@@ -215,10 +201,7 @@ class NotificationsView extends GetView<NotificationsController> {
                     ),
                     Text(
                       notif['time'],
-                      style: GoogleFonts.beVietnamPro(
-                        fontSize: 10,
-                        color: Colors.grey,
-                      ),
+                      style: GoogleFonts.beVietnamPro(fontSize: 10, color: isDark ? Colors.white38 : Colors.grey),
                     ),
                   ],
                 ),
@@ -239,7 +222,6 @@ class NotificationsView extends GetView<NotificationsController> {
     );
   }
 
-  // --- WIDGET HELPER: Bottom Nav ---
   Widget _buildBottomNav(bool isDark) {
     return ClipRRect(
       borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
@@ -252,10 +234,10 @@ class NotificationsView extends GetView<NotificationsController> {
           child: Obx(() => Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildNavItem(0, 'Home', Icons.home),
-              _buildNavItem(1, 'History', Icons.history),
-              _buildNavItem(2, 'Notifs', Icons.notifications),
-              _buildNavItem(3, 'Profile', Icons.person),
+              _buildNavItem(0, 'Home', Icons.home, isDark),
+              _buildNavItem(1, 'History', Icons.history, isDark),
+              _buildNavItem(2, 'Notifs', Icons.notifications, isDark),
+              _buildNavItem(3, 'Profile', Icons.person, isDark),
             ],
           )),
         ),
@@ -263,7 +245,7 @@ class NotificationsView extends GetView<NotificationsController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon) {
+  Widget _buildNavItem(int index, String label, IconData icon, bool isDark) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
@@ -279,7 +261,7 @@ class NotificationsView extends GetView<NotificationsController> {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primary : Colors.grey,
+              color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : Colors.grey),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -288,7 +270,7 @@ class NotificationsView extends GetView<NotificationsController> {
               style: GoogleFonts.beVietnamPro(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? AppColors.primary : Colors.grey,
+                color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : Colors.grey),
                 letterSpacing: 1,
               ),
             ),

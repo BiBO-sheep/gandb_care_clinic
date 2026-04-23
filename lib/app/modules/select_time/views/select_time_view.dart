@@ -9,15 +9,16 @@ class SelectTimeView extends GetView<SelectTimeController> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Get.isDarkMode;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
-            color: AppColors.secondary,
+            color: isDark ? Colors.white : AppColors.secondary,
             size: 20,
           ),
           onPressed: () => Get.back(),
@@ -27,12 +28,12 @@ class SelectTimeView extends GetView<SelectTimeController> {
           style: GoogleFonts.plusJakartaSans(
             fontSize: 16,
             fontWeight: FontWeight.w800,
-            color: AppColors.secondary,
+            color: isDark ? Colors.white : AppColors.secondary,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.qr_code_scanner, color: AppColors.primary),
+            icon: Icon(Icons.qr_code_scanner, color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary),
             onPressed: () {},
           ),
           Container(
@@ -41,13 +42,9 @@ class SelectTimeView extends GetView<SelectTimeController> {
             height: 32,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              image: DecorationImage(
-                image: NetworkImage(
-                  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop',
-                ),
-                fit: BoxFit.cover,
-              ),
+              color: Colors.teal,
             ),
+            child: const Icon(Icons.person, size: 20, color: Colors.white),
           ),
         ],
       ),
@@ -70,7 +67,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFDBCF),
+                      color: isDark ? const Color(0xFF571B05) : const Color(0xFFFFDBCF),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -78,7 +75,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF822800),
+                        color: isDark ? const Color(0xFFFFDBCF) : const Color(0xFF822800),
                         letterSpacing: 1.5,
                       ),
                     ),
@@ -89,7 +86,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.onSurface,
+                      color: isDark ? Colors.white : AppColors.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -97,14 +94,13 @@ class SelectTimeView extends GetView<SelectTimeController> {
                     'Choose a date and time that fits your wellness schedule.',
                     style: GoogleFonts.beVietnamPro(
                       fontSize: 14,
-                      color: AppColors.onSurfaceVariant,
+                      color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 32),
 
-                  // --- WIDGET KALENDER ---
-                  _buildCalendarWidget(),
+                  _buildCalendarWidget(isDark),
                   const SizedBox(height: 32),
 
                   Row(
@@ -115,7 +111,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.onSurface,
+                          color: isDark ? Colors.white : AppColors.onSurface,
                         ),
                       ),
                       Container(
@@ -124,17 +120,16 @@ class SelectTimeView extends GetView<SelectTimeController> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.secondaryContainer.withOpacity(0.3),
+                          color: isDark ? Colors.white10 : AppColors.secondaryContainer.withOpacity(0.3),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Obx(
                           () => Text(
-                            // 👇 PERBAIKAN: Nampilin Tanggal yang Dipilih
                             controller.getFormattedSelectedDate().toUpperCase(),
                             style: GoogleFonts.beVietnamPro(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.secondary,
+                              color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
                               letterSpacing: 1,
                             ),
                           ),
@@ -144,14 +139,13 @@ class SelectTimeView extends GetView<SelectTimeController> {
                   ),
                   const SizedBox(height: 16),
 
-                  _buildTimeSlotsGrid(),
+                  _buildTimeSlotsGrid(isDark),
                   const SizedBox(height: 32),
 
-                  // --- SYSTEM ALLOCATION INFO ---
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.secondaryContainer.withOpacity(0.2),
+                      color: isDark ? Colors.white10 : AppColors.secondaryContainer.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
@@ -160,12 +154,12 @@ class SelectTimeView extends GetView<SelectTimeController> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppColors.secondaryContainer,
+                            color: isDark ? const Color(0xFF004F4F) : AppColors.secondaryContainer,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.info,
-                            color: AppColors.secondary,
+                            color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
                             size: 20,
                           ),
                         ),
@@ -179,7 +173,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF004F4F),
+                                  color: isDark ? Colors.white : const Color(0xFF004F4F),
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -187,9 +181,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                                 'Sistem akan otomatis mengalokasikan dokter spesialis yang bertugas untuk mempercepat antrean Anda.',
                                 style: GoogleFonts.beVietnamPro(
                                   fontSize: 12,
-                                  color: const Color(
-                                    0xFF004F4F,
-                                  ).withOpacity(0.8),
+                                  color: isDark ? Colors.white70 : const Color(0xFF004F4F).withOpacity(0.8),
                                   height: 1.5,
                                 ),
                               ),
@@ -203,7 +195,6 @@ class SelectTimeView extends GetView<SelectTimeController> {
               ),
             ),
 
-            // --- BUTTON BAWAH ---
             Positioned(
               bottom: 0,
               left: 0,
@@ -215,8 +206,8 @@ class SelectTimeView extends GetView<SelectTimeController> {
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                     colors: [
-                      AppColors.background,
-                      AppColors.background.withOpacity(0.9),
+                      isDark ? Colors.black : AppColors.background,
+                      isDark ? Colors.black.withOpacity(0.9) : AppColors.background.withOpacity(0.9),
                       Colors.transparent,
                     ],
                   ),
@@ -229,7 +220,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    elevation: 5,
+                    elevation: isDark ? 0 : 5,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -259,20 +250,15 @@ class SelectTimeView extends GetView<SelectTimeController> {
     );
   }
 
-  // ==========================================
-  // WIDGET HELPERS
-  // ==========================================
-
-  // --- KOMPONEN KALENDER GRID (TAMPILAN BARU) ---
-  Widget _buildCalendarWidget() {
+  Widget _buildCalendarWidget(bool isDark) {
     final daysOfWeek = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.grey[900] : Colors.white,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [
+        boxShadow: isDark ? [] : [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
             blurRadius: 20,
@@ -282,7 +268,6 @@ class SelectTimeView extends GetView<SelectTimeController> {
       ),
       child: Column(
         children: [
-          // Header Bulan & Tombol Navigasi
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -292,7 +277,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.onSurface,
+                    color: isDark ? Colors.white : AppColors.onSurface,
                   ),
                 ),
               ),
@@ -303,13 +288,13 @@ class SelectTimeView extends GetView<SelectTimeController> {
                     child: Container(
                       width: 36,
                       height: 36,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFF4F3F1),
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white10 : const Color(0xFFF4F3F1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.chevron_left,
-                        color: AppColors.secondary,
+                        color: isDark ? Colors.white70 : AppColors.secondary,
                         size: 20,
                       ),
                     ),
@@ -320,13 +305,13 @@ class SelectTimeView extends GetView<SelectTimeController> {
                     child: Container(
                       width: 36,
                       height: 36,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFF4F3F1),
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white10 : const Color(0xFFF4F3F1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.chevron_right,
-                        color: AppColors.secondary,
+                        color: isDark ? Colors.white70 : AppColors.secondary,
                         size: 20,
                       ),
                     ),
@@ -337,7 +322,6 @@ class SelectTimeView extends GetView<SelectTimeController> {
           ),
           const SizedBox(height: 24),
 
-          // Nama Hari
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: daysOfWeek
@@ -349,7 +333,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                         style: GoogleFonts.beVietnamPro(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey,
+                          color: isDark ? Colors.white24 : Colors.grey,
                         ),
                       ),
                     ),
@@ -359,7 +343,6 @@ class SelectTimeView extends GetView<SelectTimeController> {
           ),
           const SizedBox(height: 12),
 
-          // Grid Tanggal
           Obx(() {
             DateTime displayMonth = controller.displayMonth.value;
             int daysInMonth = DateTime(
@@ -412,7 +395,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                             ? AppColors.primary
                             : (isPast
                                   ? Colors.transparent
-                                  : Colors.grey.withOpacity(0.2)),
+                                  : (isDark ? Colors.white10 : Colors.grey.withOpacity(0.2))),
                       ),
                     ),
                     alignment: Alignment.center,
@@ -426,8 +409,8 @@ class SelectTimeView extends GetView<SelectTimeController> {
                         color: isSelected
                             ? Colors.white
                             : (isPast
-                                  ? Colors.grey.withOpacity(0.3)
-                                  : AppColors.onSurface),
+                                  ? (isDark ? Colors.white12 : Colors.grey.withOpacity(0.3))
+                                  : (isDark ? Colors.white70 : AppColors.onSurface)),
                       ),
                     ),
                   ),
@@ -447,19 +430,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
     );
   }
 
-  Widget _buildCircleBtn(IconData icon) {
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLow,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: AppColors.secondary, size: 20),
-    );
-  }
-
-  Widget _buildTimeSlotsGrid() {
+  Widget _buildTimeSlotsGrid(bool isDark) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -484,10 +455,10 @@ class SelectTimeView extends GetView<SelectTimeController> {
               duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
                 color: isBooked
-                    ? AppColors.surfaceContainerLow?.withOpacity(0.5)
+                    ? (isDark ? Colors.white.withOpacity(0.05) : const Color(0xFFF4F3F1).withOpacity(0.5))
                     : (isSelected
                           ? AppColors.primaryContainer.withOpacity(0.2)
-                          : AppColors.surfaceContainerLow),
+                          : (isDark ? Colors.white10 : const Color(0xFFF4F3F1))),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: isSelected ? AppColors.primary : Colors.transparent,
@@ -502,7 +473,7 @@ class SelectTimeView extends GetView<SelectTimeController> {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isBooked ? Colors.grey : AppColors.onSurface,
+                      color: isBooked ? Colors.grey : (isDark ? Colors.white : AppColors.onSurface),
                       decoration: isBooked ? TextDecoration.lineThrough : null,
                     ),
                   ),

@@ -10,10 +10,11 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Get.isDarkMode;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.theme.scaffoldBackgroundColor,
       extendBody: true,
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(isDark),
       body: SafeArea(
         bottom: false,
         child: RefreshIndicator(
@@ -23,10 +24,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -35,7 +33,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.onSurface,
+                        color: isDark ? Colors.white : AppColors.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -43,7 +41,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
                       'Riwayat pendaftaran dan tiket Anda',
                       style: GoogleFonts.beVietnamPro(
                         fontSize: 14,
-                        color: AppColors.onSurfaceVariant,
+                        color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -51,36 +49,21 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
               ),
               Expanded(
                 child: Obx(() {
-                  // 1. STATE LOADING
                   if (controller.isLoading.value) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primary,
-                      ),
-                    );
+                    return const Center(child: CircularProgressIndicator(color: AppColors.primary));
                   }
-
-                  // 2. STATE SUMMARY (Jika sedang melihat rincian)
                   if (controller.invoiceData.value != null) {
-                    return _buildPaymentSummary(controller.invoiceData.value!);
+                    return _buildPaymentSummary(controller.invoiceData.value!, isDark);
                   }
-
-                  // 3. STATE KOSONG (Belum pernah daftar)
                   if (controller.historyList.isEmpty) {
-                    return _buildEmptyState();
+                    return _buildEmptyState(isDark);
                   }
-
-                  // 4. STATE SUKSES (Ada data history)
                   return ListView.builder(
-                    padding: const EdgeInsets.only(
-                      left: 24,
-                      right: 24,
-                      bottom: 120,
-                    ),
+                    padding: const EdgeInsets.only(left: 24, right: 24, bottom: 120),
                     itemCount: controller.historyList.length,
                     itemBuilder: (context, index) {
                       var item = controller.historyList[index];
-                      return _buildHistoryCard(item);
+                      return _buildHistoryCard(item, isDark);
                     },
                   );
                 }),
@@ -89,13 +72,13 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
+      bottomNavigationBar: _buildBottomNav(isDark),
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(bool isDark) {
     return AppBar(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       elevation: 0,
       automaticallyImplyLeading: false,
       title: Padding(
@@ -113,7 +96,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
-                color: AppColors.secondary,
+                color: isDark ? Colors.white : AppColors.secondary,
               ),
             ),
           ],
@@ -122,62 +105,39 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
     );
   }
 
-  Widget _buildPaymentSummary(Map<String, dynamic> data) {
+  Widget _buildPaymentSummary(Map<String, dynamic> data, bool isDark) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 16,
-      ), // Padding sedikit dikecilin biar lega
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? Colors.grey[900] : Colors.white,
               borderRadius: BorderRadius.circular(32),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
+              boxShadow: isDark ? [] : [
+                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10)),
               ],
             ),
             child: Column(
               children: [
-                const Icon(
-                  Icons.receipt_long,
-                  size: 64,
-                  color: AppColors.primary,
-                ),
+                Icon(Icons.receipt_long, size: 64, color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary),
                 const SizedBox(height: 16),
                 Text(
                   'Rincian Pembayaran',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.onSurface,
+                    color: isDark ? Colors.white : AppColors.onSurface,
                   ),
                 ),
                 const SizedBox(height: 32),
-
-                // Gunakan formatRupiah dan Key JSON yang benar dari Laravel
-                _buildSummaryRow(
-                  'Biaya Konsultasi',
-                  controller.formatRupiah(data['total_consultation']),
-                ),
+                _buildSummaryRow('Biaya Konsultasi', controller.formatRupiah(data['total_consultation']), isDark: isDark),
                 const SizedBox(height: 16),
-                _buildSummaryRow(
-                  'Biaya Obat',
-                  controller.formatRupiah(data['total_medicines']),
-                ),
-                const Divider(height: 32),
-                _buildSummaryRow(
-                  'Total Pembayaran',
-                  controller.formatRupiah(data['grand_total']),
-                  isTotal: true,
-                ),
+                _buildSummaryRow('Biaya Obat', controller.formatRupiah(data['total_medicines']), isDark: isDark),
+                Divider(height: 32, color: isDark ? Colors.white12 : Colors.grey[300]),
+                _buildSummaryRow('Total Pembayaran', controller.formatRupiah(data['grand_total']), isTotal: true, isDark: isDark),
               ],
             ),
           ),
@@ -187,19 +147,13 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
             child: ElevatedButton(
               onPressed: () => controller.showPaymentMethods(),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: isDark ? const Color(0xFF571B05) : AppColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               ),
               child: Text(
                 'BAYAR SEKARANG',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
               ),
             ),
           ),
@@ -207,119 +161,93 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
           Center(
             child: TextButton(
               onPressed: () {
-                controller.invoiceData.value = null; // Tutup mode summary
-                controller.fetchHistory(); // Balik ke mode list history
+                controller.invoiceData.value = null;
+                controller.fetchHistory();
               },
               child: Text(
                 'Kembali ke Riwayat',
-                style: GoogleFonts.plusJakartaSans(
-                  color: AppColors.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: GoogleFonts.plusJakartaSans(color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary, fontWeight: FontWeight.w600),
               ),
             ),
           ),
-          const SizedBox(height: 80), // Jarak aman dari Bottom Nav
+          const SizedBox(height: 80),
         ],
       ),
     );
   }
 
-  // 👇 INI OBAT ANTI OVERFLOW BOS! SUPER KEBAL 👇
-  Widget _buildSummaryRow(String label, String value, {bool isTotal = false}) {
+  Widget _buildSummaryRow(String label, String value, {bool isTotal = false, required bool isDark}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center, // Sejajarkan di tengah
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Expanded agar label teksnya mau mengalah jika kepanjangan
         Expanded(
           child: Text(
             label,
             style: GoogleFonts.beVietnamPro(
               fontSize: isTotal ? 16 : 14,
               fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              color: isTotal ? AppColors.onSurface : AppColors.onSurfaceVariant,
+              color: isTotal ? (isDark ? Colors.white : AppColors.onSurface) : (isDark ? Colors.white70 : AppColors.onSurfaceVariant),
             ),
           ),
         ),
-        const SizedBox(width: 8), // Spasi anti tabrakan
-        // Flexible agar nominal angkanya tidak tembus dinding
+        const SizedBox(width: 8),
         Flexible(
           child: Text(
             value,
-            textAlign: TextAlign.right, // Rata kanan ala struk kasir
+            textAlign: TextAlign.right,
             style: GoogleFonts.plusJakartaSans(
               fontSize: isTotal ? 20 : 14,
               fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
-              color: isTotal ? AppColors.primary : AppColors.onSurface,
+              color: isTotal ? (isDark ? const Color(0xFFFFDBCF) : AppColors.primary) : (isDark ? Colors.white : AppColors.onSurface),
             ),
-            maxLines: 1, // Kunci 1 baris
-            overflow: TextOverflow.ellipsis, // Titik-titik kalau tembus
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(bool isDark) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.history_toggle_off,
-            size: 80,
-            color: AppColors.surfaceVariant,
-          ),
+          Icon(Icons.history_toggle_off, size: 80, color: isDark ? Colors.white12 : AppColors.surfaceVariant),
           const SizedBox(height: 16),
           Text(
             'Belum ada riwayat',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.onSurfaceVariant,
-            ),
+            style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white38 : AppColors.onSurfaceVariant),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildHistoryCard(Map<String, dynamic> item) {
+  Widget _buildHistoryCard(Map<String, dynamic> item, bool isDark) {
     bool isDone = item['status'] == 'completed' || item['status'] == 'selesai';
-
     return GestureDetector(
       onTap: () => controller.openTicket(item),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? Colors.grey[900] : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.surfaceVariant.withOpacity(0.5)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
+          border: Border.all(color: isDark ? Colors.white10 : AppColors.surfaceVariant.withOpacity(0.5)),
+          boxShadow: isDark ? [] : [
+            BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
           ],
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF4F3F1),
-                borderRadius: BorderRadius.circular(16),
-              ),
+              decoration: BoxDecoration(color: isDark ? Colors.grey[800] : const Color(0xFFF4F3F1), borderRadius: BorderRadius.circular(16)),
               child: Text(
                 item['queue_number'] ?? '-',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.primary,
-                ),
+                style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800, color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary),
               ),
             ),
             const SizedBox(width: 16),
@@ -328,76 +256,55 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: isDone
-                          ? Colors.green.withOpacity(0.1)
-                          : const Color(0xFFFFDBCF),
+                      color: isDone ? Colors.green.withOpacity(0.1) : (isDark ? Colors.white10 : const Color(0xFFFFDBCF)),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       item['status'].toString().toUpperCase(),
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                        color: isDone ? Colors.green : AppColors.primary,
-                      ),
+                      style: GoogleFonts.plusJakartaSans(fontSize: 8, fontWeight: FontWeight.bold, color: isDone ? Colors.green : (isDark ? Colors.white70 : AppColors.primary)),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    item['poli']?['nama_poli'] ??
-                        item['poli']?['name'] ??
-                        'Poli Klinik',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.onSurface,
-                    ),
+                    item['poli']?['nama_poli'] ?? item['poli']?['name'] ?? 'Poli Klinik',
+                    style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? Colors.white : AppColors.onSurface),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '${item['tanggal']} • ${item['jam']}',
-                    style: GoogleFonts.beVietnamPro(
-                      fontSize: 12,
-                      color: AppColors.onSurfaceVariant,
-                    ),
+                    style: GoogleFonts.beVietnamPro(fontSize: 12, color: isDark ? Colors.white60 : AppColors.onSurfaceVariant),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: AppColors.secondary),
+            Icon(Icons.chevron_right, color: isDark ? Colors.white38 : AppColors.secondary),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBottomNav() {
+  Widget _buildBottomNav(bool isDark) {
     return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(40),
-        topRight: Radius.circular(40),
-      ),
+      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           height: 90,
-          color: const Color(0xFFFAF9F6).withOpacity(0.8),
+          color: isDark ? Colors.black.withOpacity(0.8) : const Color(0xFFFAF9F6).withOpacity(0.8),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Obx(
             () => Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildNavItem(0, 'Home', Icons.home),
-                _buildNavItem(1, 'History', Icons.history),
-                _buildNavItem(2, 'Notifs', Icons.notifications),
-                _buildNavItem(3, 'Profile', Icons.person),
+                _buildNavItem(0, 'Home', Icons.home, isDark),
+                _buildNavItem(1, 'History', Icons.history, isDark),
+                _buildNavItem(2, 'Notifs', Icons.notifications, isDark),
+                _buildNavItem(3, 'Profile', Icons.person, isDark),
               ],
             ),
           ),
@@ -406,7 +313,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon) {
+  Widget _buildNavItem(int index, String label, IconData icon, bool isDark) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
@@ -414,9 +321,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFFFF7F50).withOpacity(0.2)
-              : Colors.transparent,
+          color: isSelected ? const Color(0xFFFF7F50).withOpacity(0.2) : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
@@ -424,9 +329,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
           children: [
             Icon(
               icon,
-              color: isSelected
-                  ? AppColors.primary
-                  : AppColors.secondary.withOpacity(0.5),
+              color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -435,9 +338,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
               style: GoogleFonts.beVietnamPro(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected
-                    ? AppColors.primary
-                    : AppColors.secondary.withOpacity(0.5),
+                color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
               ),
             ),
           ],

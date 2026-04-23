@@ -10,14 +10,15 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Get.isDarkMode;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.theme.scaffoldBackgroundColor,
       extendBody: true,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            _buildCustomAppBar(),
+            _buildCustomAppBar(isDark),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -25,18 +26,18 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 16),
-                    _buildHeroSection(),
+                    _buildHeroSection(isDark),
                     const SizedBox(height: 24),
-                    _buildMainQueueCard(),
+                    _buildMainQueueCard(isDark),
                     const SizedBox(height: 16),
-                    _buildTimelineCard(),
+                    _buildTimelineCard(isDark),
                     const SizedBox(height: 16),
-                    _buildBentoDetails(),
+                    _buildBentoDetails(isDark),
                     const SizedBox(height: 16),
-                    _buildInfoBanner(),
+                    _buildInfoBanner(isDark),
                     const SizedBox(height: 16),
                     _buildImageAnchor(),
-                    const SizedBox(height: 120), // Spacing for bottom nav
+                    const SizedBox(height: 120),
                   ],
                 ),
               ),
@@ -44,13 +45,11 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
+      bottomNavigationBar: _buildBottomNav(isDark),
     );
   }
 
-  // --- KOMPONEN UI ---
-
- Widget _buildCustomAppBar() {
+  Widget _buildCustomAppBar(bool isDark) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
       child: Row(
@@ -58,28 +57,24 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         children: [
           Row(
             children: [
-              // 👇 INI DIA FOTO PROFIL DEFAULT-NYA BOS 👇
               const CircleAvatar(
                 radius: 22,
-                backgroundColor: Colors
-                    .teal, // Atau ganti AppColors.primary kalau lu pake variabel warna
+                backgroundColor: Colors.teal,
                 child: Icon(Icons.person, size: 28, color: Colors.white),
               ),
-
-              // 👆 UDAH GAK PAKE GAMBAR INTERNET LAGI 👆
               const SizedBox(width: 12),
               Text(
                 'G&B Care Clinic',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.secondary,
+                  color: isDark ? Colors.white : AppColors.secondary,
                 ),
               ),
             ],
           ),
           IconButton(
-            icon: const Icon(Icons.qr_code_scanner, color: AppColors.secondary),
+            icon: Icon(Icons.qr_code_scanner, color: isDark ? Colors.white70 : AppColors.secondary),
             onPressed: controller.openQRScanner,
           ),
         ],
@@ -87,7 +82,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildHeroSection() {
+  Widget _buildHeroSection(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -96,7 +91,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
           style: GoogleFonts.beVietnamPro(
             fontSize: 10,
             fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+            color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary,
             letterSpacing: 1.5,
           ),
         ),
@@ -106,7 +101,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
           style: GoogleFonts.plusJakartaSans(
             fontSize: 28,
             fontWeight: FontWeight.w800,
-            color: AppColors.onSurface,
+            color: isDark ? Colors.white : AppColors.onSurface,
             height: 1.1,
           ),
         ),
@@ -114,14 +109,14 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildMainQueueCard() {
+  Widget _buildMainQueueCard(bool isDark) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
       decoration: BoxDecoration(
-        color: const Color(0xFFFF7F50), // primary-container
+        color: isDark ? const Color(0xFF571B05) : const Color(0xFFFF7F50),
         borderRadius: BorderRadius.circular(24),
-        boxShadow: [
+        boxShadow: isDark ? [] : [
           BoxShadow(
             color: const Color(0xFFFF7F50).withOpacity(0.3),
             blurRadius: 24,
@@ -146,7 +141,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 32,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF380C00),
+              color: isDark ? Colors.white : const Color(0xFF380C00),
               height: 1,
             ),
           ),
@@ -156,7 +151,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 72,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFF380C00),
+                color: isDark ? const Color(0xFFFFDBCF) : const Color(0xFF380C00),
                 height: 1,
               ),
             ),
@@ -164,19 +159,19 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
           Container(
             height: 3,
             width: 40,
-            color: const Color(0xFF380C00).withOpacity(0.2),
+            color: isDark ? Colors.white24 : const Color(0xFF380C00).withOpacity(0.2),
             margin: const EdgeInsets.symmetric(vertical: 24),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFF380C00).withOpacity(0.1),
+              color: isDark ? Colors.white10 : const Color(0xFF380C00).withOpacity(0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.list_alt, color: Color(0xFF380C00), size: 18),
+                Icon(Icons.list_alt, color: isDark ? Colors.white70 : const Color(0xFF380C00), size: 18),
                 const SizedBox(width: 8),
                 Obx(
                   () => Text(
@@ -184,7 +179,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                     style: GoogleFonts.beVietnamPro(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF380C00),
+                      color: isDark ? Colors.white : const Color(0xFF380C00),
                     ),
                   ),
                 ),
@@ -196,11 +191,11 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildTimelineCard() {
+  Widget _buildTimelineCard(bool isDark) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F3F1),
+        color: isDark ? Colors.grey[900] : const Color(0xFFF4F3F1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -216,20 +211,17 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                     style: GoogleFonts.beVietnamPro(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.onSurfaceVariant,
+                      color: isDark ? Colors.white38 : AppColors.onSurfaceVariant,
                     ),
                   ),
-                  // Di dalam _buildMainQueueCard()
                   Obx(
                     () => Text(
-                      controller
-                          .myQueueNumber
-                          .value, // Pakai .value dari controller baru
+                      controller.myQueueNumber.value,
                       style: GoogleFonts.plusJakartaSans(
-                        fontSize: 72,
+                        fontSize: 32,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF380C00),
-                        height: 1,
+                        color: isDark ? const Color(0xFFFFDBCF) : const Color(0xFF380C00),
+                        height: 1.2,
                       ),
                     ),
                   ),
@@ -237,30 +229,27 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
               ),
               Container(
                 padding: const EdgeInsets.all(12),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFFDBCF),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF571B05) : const Color(0xFFFFDBCF),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.hourglass_top,
-                  color: AppColors.primary,
+                  color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary,
                   size: 24,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 24),
-          // --- Custom Horizontal Timeline ---
           Stack(
             alignment: Alignment.center,
             children: [
-              // Background Line
               Container(
                 height: 2,
                 width: double.infinity,
-                color: AppColors.surfaceVariant,
+                color: isDark ? Colors.white10 : AppColors.surfaceVariant,
               ),
-              // Progress Line
               Positioned(
                 left: 0,
                 child: Container(
@@ -269,14 +258,13 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                   color: AppColors.primary,
                 ),
               ),
-              // Dots
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildTimelineDot(isCompleted: true),
                   _buildTimelineDot(isCompleted: true),
-                  _buildTimelineDot(isCurrent: true),
-                  _buildTimelineDot(isFuture: true),
+                  _buildTimelineDot(isCurrent: true, isDark: isDark),
+                  _buildTimelineDot(isFuture: true, isDark: isDark),
                 ],
               ),
             ],
@@ -290,7 +278,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                 style: GoogleFonts.beVietnamPro(
                   fontSize: 9,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.onSurface,
+                  color: isDark ? Colors.white60 : AppColors.onSurface,
                 ),
               ),
               Text(
@@ -298,7 +286,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                 style: GoogleFonts.beVietnamPro(
                   fontSize: 9,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.onSurface,
+                  color: isDark ? Colors.white60 : AppColors.onSurface,
                 ),
               ),
               Text(
@@ -314,7 +302,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                 style: GoogleFonts.beVietnamPro(
                   fontSize: 9,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey,
+                  color: isDark ? Colors.white24 : Colors.grey,
                 ),
               ),
             ],
@@ -328,6 +316,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     bool isCompleted = false,
     bool isCurrent = false,
     bool isFuture = false,
+    bool isDark = false,
   }) {
     if (isCompleted) {
       return Container(
@@ -336,7 +325,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         decoration: BoxDecoration(
           color: AppColors.primary,
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 2),
+          border: Border.all(color: isDark ? Colors.grey[900]! : Colors.white, width: 2),
         ),
         child: const Icon(Icons.check, color: Colors.white, size: 10),
       );
@@ -345,7 +334,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         width: 20,
         height: 20,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? Colors.grey[900] : Colors.white,
           shape: BoxShape.circle,
           border: Border.all(color: AppColors.primary, width: 3),
         ),
@@ -365,14 +354,14 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         width: 12,
         height: 12,
         decoration: BoxDecoration(
-          color: AppColors.surfaceVariant,
+          color: isDark ? Colors.white12 : AppColors.surfaceVariant,
           shape: BoxShape.circle,
         ),
       );
     }
   }
 
-  Widget _buildBentoDetails() {
+  Widget _buildBentoDetails(bool isDark) {
     return Row(
       children: [
         Expanded(
@@ -380,16 +369,16 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
             padding: const EdgeInsets.all(20),
             height: 140,
             decoration: BoxDecoration(
-              color: const Color(0xFFE0F7F7),
+              color: isDark ? const Color(0xFF003333) : const Color(0xFFE0F7F7),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(
+                Icon(
                   Icons.medical_services,
-                  color: AppColors.secondary,
+                  color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
                   size: 28,
                 ),
                 Column(
@@ -400,7 +389,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.secondary,
+                        color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
                       ),
                     ),
                     Text(
@@ -408,7 +397,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF004F54),
+                        color: isDark ? Colors.white : const Color(0xFF004F54),
                       ),
                     ),
                   ],
@@ -423,7 +412,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
             padding: const EdgeInsets.all(20),
             height: 140,
             decoration: BoxDecoration(
-              color: const Color(0xFFE9E8E5),
+              color: isDark ? Colors.grey[900] : const Color(0xFFE9E8E5),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
@@ -433,9 +422,9 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.meeting_room,
-                      color: AppColors.onSurfaceVariant,
+                      color: isDark ? Colors.white38 : AppColors.onSurfaceVariant,
                       size: 24,
                     ),
                     Container(
@@ -444,7 +433,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.05),
+                        color: isDark ? Colors.white10 : Colors.black.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
@@ -452,6 +441,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white70 : Colors.black,
                         ),
                       ),
                     ),
@@ -465,7 +455,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.onSurfaceVariant,
+                        color: isDark ? Colors.white38 : AppColors.onSurfaceVariant,
                       ),
                     ),
                     Text(
@@ -473,7 +463,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.onSurface,
+                        color: isDark ? Colors.white : AppColors.onSurface,
                       ),
                     ),
                   ],
@@ -486,13 +476,13 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildInfoBanner() {
+  Widget _buildInfoBanner(bool isDark) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.grey[900] : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.surfaceVariant.withOpacity(0.5)),
+        border: Border.all(color: isDark ? Colors.white10 : AppColors.surfaceVariant.withOpacity(0.5)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -519,7 +509,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.onSurface,
+                    color: isDark ? Colors.white : AppColors.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -527,7 +517,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                   'Enjoy complimentary herbal tea at our lounge or browse the wellness library in the digital app.',
                   style: GoogleFonts.beVietnamPro(
                     fontSize: 12,
-                    color: AppColors.onSurfaceVariant,
+                    color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
                     height: 1.5,
                   ),
                 ),
@@ -548,7 +538,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         image: const DecorationImage(
           image: NetworkImage(
             'https://images.unsplash.com/photo-1554995207-c18c203602cb?q=80&w=600&auto=format&fit=crop',
-          ), // Lounge room placeholder
+          ),
           fit: BoxFit.cover,
         ),
       ),
@@ -575,7 +565,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildBottomNav() {
+  Widget _buildBottomNav(bool isDark) {
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(40),
@@ -585,16 +575,16 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           height: 90,
-          color: const Color(0xFFFAF9F6).withOpacity(0.8),
+          color: isDark ? Colors.black.withOpacity(0.8) : const Color(0xFFFAF9F6).withOpacity(0.8),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Obx(
             () => Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildNavItem(0, 'Home', Icons.home),
-                _buildNavItem(1, 'History', Icons.history),
-                _buildNavItem(2, 'Notifs', Icons.notifications),
-                _buildNavItem(3, 'Profile', Icons.person),
+                _buildNavItem(0, 'Home', Icons.home, isDark),
+                _buildNavItem(1, 'History', Icons.history, isDark),
+                _buildNavItem(2, 'Notifs', Icons.notifications, isDark),
+                _buildNavItem(3, 'Profile', Icons.person, isDark),
               ],
             ),
           ),
@@ -603,7 +593,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon) {
+  Widget _buildNavItem(int index, String label, IconData icon, bool isDark) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
@@ -623,7 +613,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
               icon,
               color: isSelected
                   ? AppColors.primary
-                  : AppColors.secondary.withOpacity(0.5),
+                  : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -634,7 +624,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                 color: isSelected
                     ? AppColors.primary
-                    : AppColors.secondary.withOpacity(0.5),
+                    : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
                 letterSpacing: 1,
               ),
             ),

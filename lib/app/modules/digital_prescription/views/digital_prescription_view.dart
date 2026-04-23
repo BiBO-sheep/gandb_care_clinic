@@ -8,17 +8,17 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
 
   @override
   Widget build(BuildContext context) {
-    // Menangkap seluruh object record dari arguments
+    bool isDark = Get.isDarkMode;
     final dynamic record = Get.arguments ?? {};
     final List<dynamic> prescriptions = record['prescriptions'] ?? [];
     final String diagnosis = record['diagnosis'] ?? 'Tidak ada diagnosis';
     final String doctorName = record['doctor']?['name'] ?? 'Dokter tidak tersedia';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF9F6),
+      backgroundColor: context.theme.scaffoldBackgroundColor,
       extendBody: true,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF9F6),
+        backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
         title: Row(
@@ -45,13 +45,13 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF006A6A),
+                    color: isDark ? Colors.white : const Color(0xFF006A6A),
                   ),
                 ),
               ],
             ),
             IconButton(
-              icon: const Icon(Icons.close, color: Color(0xFF006A6A)),
+              icon: Icon(Icons.close, color: isDark ? Colors.white70 : const Color(0xFF006A6A)),
               onPressed: () => Get.back(),
             ),
           ],
@@ -68,16 +68,14 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
-                  color: const Color(0xFF006A6A),
+                  color: isDark ? Colors.white : const Color(0xFF006A6A),
                 ),
               ),
               const SizedBox(height: 16),
-              
-              // Info Box (Diagnosis & Doctor)
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE0F7F7),
+                  color: isDark ? const Color(0xFF004D4D) : const Color(0xFFE0F7F7),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
@@ -85,14 +83,14 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.medical_services, color: Color(0xFF006A6A), size: 20),
+                        Icon(Icons.medical_services, color: isDark ? const Color(0xFF93F2F2) : const Color(0xFF006A6A), size: 20),
                         const SizedBox(width: 8),
                         Text(
                           'DIAGNOSIS',
                           style: GoogleFonts.beVietnamPro(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF006A6A),
+                            color: isDark ? const Color(0xFF93F2F2) : const Color(0xFF006A6A),
                             letterSpacing: 1.5,
                           ),
                         ),
@@ -104,23 +102,23 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF006A6A),
+                        color: isDark ? Colors.white : const Color(0xFF006A6A),
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      child: Divider(color: Colors.white, height: 1),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Divider(color: isDark ? Colors.white10 : Colors.white, height: 1),
                     ),
                     Row(
                       children: [
-                        const Icon(Icons.person, color: Color(0xFF006A6A), size: 20),
+                        Icon(Icons.person, color: isDark ? const Color(0xFF93F2F2) : const Color(0xFF006A6A), size: 20),
                         const SizedBox(width: 8),
                         Text(
                           'DOKTER',
                           style: GoogleFonts.beVietnamPro(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: const Color(0xFF006A6A),
+                            color: isDark ? const Color(0xFF93F2F2) : const Color(0xFF006A6A),
                             letterSpacing: 1.5,
                           ),
                         ),
@@ -132,27 +130,26 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF006A6A),
+                        color: isDark ? Colors.white : const Color(0xFF006A6A),
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 32),
-              
               if (prescriptions.isEmpty)
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 40),
                     child: Column(
                       children: [
-                        Icon(Icons.medical_information_outlined, size: 60, color: Colors.grey[400]),
+                        Icon(Icons.medical_information_outlined, size: 60, color: isDark ? Colors.grey[700] : Colors.grey[400]),
                         const SizedBox(height: 16),
                         Text(
                           'Tidak ada resep obat',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 16,
-                            color: Colors.grey[600],
+                            color: isDark ? Colors.grey[500] : Colors.grey[600],
                           ),
                         ),
                       ],
@@ -160,9 +157,8 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                   ),
                 )
               else
-                ...prescriptions.map((med) => _buildMedicineTile(med)).toList(),
-                
-              const SizedBox(height: 100), // spacing
+                ...prescriptions.map((med) => _buildMedicineTile(med, isDark)).toList(),
+              const SizedBox(height: 100),
             ],
           ),
         ),
@@ -170,14 +166,14 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
     );
   }
 
-  Widget _buildMedicineTile(dynamic med) {
+  Widget _buildMedicineTile(dynamic med, bool isDark) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.grey[900] : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
+        boxShadow: isDark ? [] : [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
             blurRadius: 10,
@@ -191,12 +187,12 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFFAF9F6),
+              color: isDark ? Colors.grey[800] : const Color(0xFFFAF9F6),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.medication,
-              color: Color(0xFF006A6A),
+              color: isDark ? const Color(0xFF93F2F2) : const Color(0xFF006A6A),
               size: 28,
             ),
           ),
@@ -210,7 +206,7 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF006A6A),
+                    color: isDark ? Colors.white : const Color(0xFF006A6A),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -222,7 +218,7 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                       med['dosage'] ?? 'Dosis',
                       style: GoogleFonts.beVietnamPro(
                         fontSize: 14,
-                        color: Colors.grey[700],
+                        color: isDark ? Colors.white60 : Colors.grey[700],
                       ),
                     ),
                   ],
@@ -231,12 +227,12 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE0F7F7),
+                    color: isDark ? const Color(0xFF003333) : const Color(0xFFE0F7F7),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.schedule, size: 14, color: Color(0xFF006A6A)),
+                      Icon(Icons.schedule, size: 14, color: isDark ? const Color(0xFF93F2F2) : const Color(0xFF006A6A)),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
@@ -244,7 +240,7 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                           style: GoogleFonts.beVietnamPro(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
-                            color: const Color(0xFF006A6A),
+                            color: isDark ? const Color(0xFF93F2F2) : const Color(0xFF006A6A),
                           ),
                         ),
                       ),

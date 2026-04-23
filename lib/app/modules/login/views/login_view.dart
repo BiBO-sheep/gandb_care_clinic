@@ -9,13 +9,14 @@ class LoginView extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
+    bool isDark = Get.isDarkMode;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.onSurface),
+          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : AppColors.onSurface),
           onPressed: () => Get.back(),
         ),
         title: Row(
@@ -28,11 +29,7 @@ class LoginView extends GetView<LoginController> {
                 color: AppColors.secondary,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
-                Icons.medical_services,
-                color: Colors.white,
-                size: 18,
-              ),
+              child: const Icon(Icons.medical_services, color: Colors.white, size: 18),
             ),
             const SizedBox(width: 8),
             Text(
@@ -40,7 +37,7 @@ class LoginView extends GetView<LoginController> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 18,
                 fontWeight: FontWeight.w800,
-                color: AppColors.secondary,
+                color: isDark ? Colors.white : AppColors.secondary,
               ),
             ),
           ],
@@ -53,37 +50,27 @@ class LoginView extends GetView<LoginController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // --- HERO IMAGE ---
               Container(
                 width: 96,
                 height: 96,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: const DecorationImage(
-                    // Placeholder gambar medis, ganti dengan asset lokal jika ada
-                    image: NetworkImage(
-                      'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=200&auto=format&fit=crop',
-                    ),
+                    image: NetworkImage('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=200&auto=format&fit=crop'),
                     fit: BoxFit.cover,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryContainer.withOpacity(0.2),
-                      blurRadius: 40,
-                      spreadRadius: 10,
-                    ),
+                  boxShadow: isDark ? [] : [
+                    BoxShadow(color: AppColors.primaryContainer.withOpacity(0.2), blurRadius: 40, spreadRadius: 10),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
-
-              // --- TEXT ---
               Text(
                 'Welcome back',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.onSurface,
+                  color: isDark ? Colors.white : AppColors.onSurface,
                 ),
               ),
               const SizedBox(height: 8),
@@ -92,32 +79,30 @@ class LoginView extends GetView<LoginController> {
                 style: GoogleFonts.beVietnamPro(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.onSurfaceVariant,
+                  color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 40),
-
-              // --- FORM INPUT ---
-              _buildLabel('EMAIL OR PHONE'),
+              _buildLabel('EMAIL OR PHONE', isDark),
               TextField(
                 controller: controller.emailController,
-                decoration: _inputDecoration('Enter your contact details'),
+                style: TextStyle(color: isDark ? Colors.white : Colors.black),
+                decoration: _inputDecoration('Enter your contact details', isDark),
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 20),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildLabel('PASSWORD'),
+                  _buildLabel('PASSWORD', isDark),
                   GestureDetector(
-                    onTap: () {}, // Tambah logika forgot password nanti
+                    onTap: () {},
                     child: Text(
                       'Forgot?',
                       style: GoogleFonts.beVietnamPro(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
+                        color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary,
                       ),
                     ),
                   ),
@@ -128,13 +113,12 @@ class LoginView extends GetView<LoginController> {
                 () => TextField(
                   controller: controller.passwordController,
                   obscureText: controller.isPasswordHidden.value,
-                  decoration: _inputDecoration('••••••••').copyWith(
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
+                  decoration: _inputDecoration('••••••••', isDark).copyWith(
                     suffixIcon: IconButton(
                       icon: Icon(
-                        controller.isPasswordHidden.value
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        color: AppColors.onSurfaceVariant.withOpacity(0.6),
+                        controller.isPasswordHidden.value ? Icons.visibility_off : Icons.visibility,
+                        color: isDark ? Colors.white54 : AppColors.onSurfaceVariant.withOpacity(0.6),
                       ),
                       onPressed: controller.togglePasswordVisibility,
                     ),
@@ -142,130 +126,62 @@ class LoginView extends GetView<LoginController> {
                 ),
               ),
               const SizedBox(height: 32),
-
-              // --- LOGIN BUTTON ---
               Obx(
                 () => SizedBox(
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: controller.isLoading.value
-                        ? null
-                        : controller.login,
+                    onPressed: controller.isLoading.value ? null : controller.login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      elevation: 5,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                      elevation: isDark ? 0 : 5,
                       shadowColor: AppColors.primary.withOpacity(0.4),
                     ),
                     child: controller.isLoading.value
-                        ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 3,
-                            ),
-                          )
-                        : Text(
-                            'Login',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                        ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3))
+                        : Text('Login', style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ),
               const SizedBox(height: 24),
-
-              // --- DIVIDER OR ---
               Row(
                 children: [
-                  Expanded(
-                    child: Divider(
-                      color: AppColors.onSurfaceVariant.withOpacity(0.2),
-                    ),
-                  ),
+                  Expanded(child: Divider(color: isDark ? Colors.white12 : AppColors.onSurfaceVariant.withOpacity(0.2))),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      'OR',
-                      style: GoogleFonts.beVietnamPro(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.onSurfaceVariant.withOpacity(0.4),
-                      ),
-                    ),
+                    child: Text('OR', style: GoogleFonts.beVietnamPro(fontSize: 12, fontWeight: FontWeight.bold, color: isDark ? Colors.white38 : AppColors.onSurfaceVariant.withOpacity(0.4))),
                   ),
-                  Expanded(
-                    child: Divider(
-                      color: AppColors.onSurfaceVariant.withOpacity(0.2),
-                    ),
-                  ),
+                  Expanded(child: Divider(color: isDark ? Colors.white12 : AppColors.onSurfaceVariant.withOpacity(0.2))),
                 ],
               ),
               const SizedBox(height: 24),
-
-              // --- GOOGLE LOGIN BUTTON ---
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: OutlinedButton.icon(
                   onPressed: controller.loginWithGoogle,
                   style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.grey[100],
-                    side: BorderSide(
-                      color: AppColors.onSurfaceVariant.withOpacity(0.1),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
+                    backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
+                    side: BorderSide(color: isDark ? Colors.white12 : AppColors.onSurfaceVariant.withOpacity(0.1)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                   ),
-                  // Menggunakan icon standar sebagai ganti logo SVG agar tidak perlu library tambahan
-                  icon: const Icon(
-                    Icons.g_mobiledata,
-                    size: 36,
-                    color: Colors.blue,
-                  ),
+                  icon: const Icon(Icons.g_mobiledata, size: 36, color: Colors.blue),
                   label: Text(
                     'Continue with Google',
-                    style: GoogleFonts.beVietnamPro(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.onSurface,
-                    ),
+                    style: GoogleFonts.beVietnamPro(fontSize: 15, fontWeight: FontWeight.w600, color: isDark ? Colors.white : AppColors.onSurface),
                   ),
                 ),
               ),
               const SizedBox(height: 40),
-
-              // --- FOOTER SIGN UP ---
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'New to the clinic? ',
-                    style: GoogleFonts.beVietnamPro(
-                      fontSize: 14,
-                      color: AppColors.onSurfaceVariant,
-                    ),
-                  ),
+                  Text('New to the clinic? ', style: GoogleFonts.beVietnamPro(fontSize: 14, color: isDark ? Colors.white70 : AppColors.onSurfaceVariant)),
                   GestureDetector(
-                    onTap: () => Get.toNamed(
-                      '/register',
-                    ), // Tambah navigasi ke Register nanti
-                    child: Text(
-                      'Sign Up',
-                      style: GoogleFonts.beVietnamPro(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.secondary,
-                      ),
-                    ),
+                    onTap: () => Get.toNamed('/register'),
+                    child: Text('Sign Up', style: GoogleFonts.beVietnamPro(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary)),
                   ),
                 ],
               ),
@@ -276,8 +192,7 @@ class LoginView extends GetView<LoginController> {
     );
   }
 
-  // Widget Helper untuk Label Form
-  Widget _buildLabel(String text) {
+  Widget _buildLabel(String text, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(left: 16, bottom: 8),
       child: Align(
@@ -288,32 +203,22 @@ class LoginView extends GetView<LoginController> {
             fontSize: 12,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.2,
-            color: AppColors.secondary,
+            color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
           ),
         ),
       ),
     );
   }
 
-  // Helper untuk Desain Input Field
-  InputDecoration _inputDecoration(String hint) {
+  InputDecoration _inputDecoration(String hint, bool isDark) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: GoogleFonts.beVietnamPro(
-        color: AppColors.onSurfaceVariant.withOpacity(0.5),
-      ),
+      hintStyle: GoogleFonts.beVietnamPro(color: isDark ? Colors.white30 : AppColors.onSurfaceVariant.withOpacity(0.5)),
       filled: true,
-      fillColor: Colors
-          .grey[200], // Sesuai warna bg-surface-container-high di Tailwind
+      fillColor: isDark ? Colors.grey[900] : Colors.grey[200],
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: const BorderSide(color: AppColors.secondary, width: 2),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary, width: 2)),
     );
   }
 }
