@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:gandb_care_clinic/app/data/models/appointment_model.dart';
+import 'package:gandb_care_clinic/app/data/models/health_tip_model.dart';
 import 'package:gandb_care_clinic/app/modules/home/views/home_shimmer_view.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,7 +19,9 @@ class HomeView extends GetView<HomeController> {
       extendBody: true,
       body: SafeArea(
         bottom: false,
-        child: _buildHomeContent(isDark),
+        child: Obx(() => controller.isLoading.value 
+          ? const HomeShimmerView() 
+          : _buildHomeContent(isDark)),
       ),
       bottomNavigationBar: _buildBottomNav(isDark),
     );
@@ -40,7 +44,7 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(height: 32),
                 _buildQuickActions(isDark),
                 const SizedBox(height: 32),
-                _buildDailyWellness(isDark),
+                _buildHealthTips(isDark),
                 const SizedBox(height: 32),
                 _buildPoliSlider(isDark),
                 const SizedBox(height: 100),
@@ -86,123 +90,163 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildWelcomeSection(bool isDark) {
-    return Obx(
-      () => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Hello, ${controller.patientName.value} 👋',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white : AppColors.onSurface,
-              letterSpacing: -0.5,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Hello, ${controller.patientName.value} 👋',
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : AppColors.onSurface,
+            letterSpacing: -0.5,
           ),
-          const SizedBox(height: 4),
-          Text(
-            'Your health journey is looking great today.',
-            style: GoogleFonts.beVietnamPro(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
-            ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Your health journey is looking great today.',
+          style: GoogleFonts.beVietnamPro(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildAppointmentCard(bool isDark) {
-    return GestureDetector(
-      onTap: () => Get.toNamed('/queue-monitor'),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [AppColors.primary, AppColors.primaryContainer],
-          ),
-          boxShadow: isDark ? [] : [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.3),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
+    return Obx(() {
+      final appointment = controller.upcomingAppointment.value;
+      
+      if (appointment == null) {
+        return _buildNoAppointmentCard(isDark);
+      }
+
+      return GestureDetector(
+        onTap: () => Get.toNamed('/queue-monitor'),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.primary, AppColors.primaryContainer],
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'UPCOMING APPOINTMENT',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 1.5,
+            boxShadow: isDark ? [] : [
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'UPCOMING APPOINTMENT',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 1.5,
+                      ),
                     ),
                   ),
-                ),
-                const Icon(Icons.event, color: Colors.white, size: 20),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'General Check-up',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.medical_services, color: Colors.white70, size: 16),
-                const SizedBox(width: 8),
-                Text(
-                  'Dr. Sarah Jenkins • Cardiology Dept.',
-                  style: GoogleFonts.beVietnamPro(
-                    fontSize: 13,
-                    color: Colors.white.withOpacity(0.9),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  Expanded(child: _buildCardDetail('DATE & TIME', 'Tomorrow, 10:30 AM')),
-                  Container(
-                    height: 30,
-                    width: 1,
-                    color: Colors.white.withOpacity(0.2),
-                  ),
-                  Expanded(child: _buildCardDetail('LOCATION', 'Room 302, Block B', alignment: CrossAxisAlignment.end)),
+                  const Icon(Icons.event, color: Colors.white, size: 20),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              Text(
+                appointment.poli.name,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.medical_services, color: Colors.white70, size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Dr. ${appointment.dokter?.name ?? 'Assigned Doctor'} • ${appointment.poli.ruangan}',
+                    style: GoogleFonts.beVietnamPro(
+                      fontSize: 13,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(child: _buildCardDetail('DATE & TIME', '${appointment.tanggal}, ${appointment.jam}')),
+                    Container(
+                      height: 30,
+                      width: 1,
+                      color: Colors.white.withOpacity(0.2),
+                    ),
+                    Expanded(child: _buildCardDetail('QUEUE ID', appointment.queueNumber, alignment: CrossAxisAlignment.end)),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
+      );
+    });
+  }
+
+  Widget _buildNoAppointmentCard(bool isDark) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey[900] : const Color(0xFFF4F3F1),
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.calendar_today_outlined, color: isDark ? Colors.white24 : Colors.grey, size: 48),
+          const SizedBox(height: 16),
+          Text(
+            'No Upcoming Appointment',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white70 : Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Keep track of your health journey by booking a new session.',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.beVietnamPro(
+              fontSize: 12,
+              color: isDark ? Colors.white38 : Colors.grey,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -299,12 +343,12 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildDailyWellness(bool isDark) {
+  Widget _buildHealthTips(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'DAILY WELLNESS',
+          'HEALTH TIPS',
           style: GoogleFonts.beVietnamPro(
             fontSize: 12,
             fontWeight: FontWeight.bold,
@@ -313,148 +357,125 @@ class HomeView extends GetView<HomeController> {
           ),
         ),
         const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: isDark ? Colors.grey[900] : Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.surfaceVariant.withOpacity(isDark ? 0.1 : 0.5)),
-            boxShadow: isDark ? [] : [
-              BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 4),
-                ),
-                child: const Icon(Icons.favorite, color: AppColors.primary, size: 28),
-              ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'HEART RATE',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white60 : AppColors.onSurfaceVariant,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                  Obx(
-                    () => Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Text(
-                          '${controller.heartRate.value}',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : AppColors.onSurface,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'BPM',
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: isDark ? Colors.white60 : AppColors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.secondary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  'NORMAL',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? const Color(0xFF90EFEF) : AppColors.secondary,
-                  ),
-                ),
-              ),
-            ],
+        SizedBox(
+          height: 200,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: controller.healthTips.length,
+            itemBuilder: (context, index) {
+              final tip = controller.healthTips[index];
+              return _buildTipCard(tip, isDark);
+            },
           ),
         ),
       ],
     );
   }
 
-  Widget _buildBottomNav(bool isDark) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          height: 90,
-          color: isDark ? Colors.black.withOpacity(0.8) : const Color(0xFFFAF9F6).withOpacity(0.8),
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Obx(
-            () => Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildNavItem(0, 'Home', Icons.home, isDark),
-                _buildNavItem(1, 'History', Icons.history, isDark),
-                _buildNavItem(2, 'Notifs', Icons.notifications, isDark),
-                _buildNavItem(3, 'Profile', Icons.person, isDark),
-              ],
+  Widget _buildTipCard(HealthTipModel tip, bool isDark) {
+    return Container(
+      width: 280,
+      margin: const EdgeInsets.only(right: 16),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey[900] : Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.surfaceVariant.withOpacity(isDark ? 0.1 : 0.5)),
+        boxShadow: isDark ? [] : [
+          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 6,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white10 : AppColors.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      _getIconData(tip.icon),
+                      color: AppColors.primary,
+                      size: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white10 : AppColors.secondary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      tip.category.toUpperCase(),
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 8,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? const Color(0xFF90EFEF) : AppColors.secondary,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    tip.title,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : AppColors.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    tip.description,
+                    style: GoogleFonts.beVietnamPro(
+                      fontSize: 11,
+                      color: isDark ? Colors.white60 : AppColors.onSurfaceVariant,
+                      height: 1.3,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+          Expanded(
+            flex: 4,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(24),
+                  bottomRight: Radius.circular(24),
+                ),
+                image: DecorationImage(
+                  image: NetworkImage(tip.image),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon, bool isDark) {
-    bool isSelected = controller.currentIndex.value == index;
-    return GestureDetector(
-      onTap: () => controller.changePage(index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFF7F50).withOpacity(0.2) : Colors.transparent,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label.toUpperCase(),
-              style: GoogleFonts.beVietnamPro(
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
-                letterSpacing: 1,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  IconData _getIconData(String iconName) {
+    switch (iconName) {
+      case 'water_drop': return Icons.water_drop;
+      case 'directions_run': return Icons.directions_run;
+      case 'restaurant': return Icons.restaurant;
+      case 'bedtime': return Icons.bedtime;
+      case 'spa': return Icons.spa;
+      default: return Icons.health_and_safety;
+    }
   }
 
   Widget _buildPoliSlider(bool isDark) {
@@ -484,26 +505,18 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
         const SizedBox(height: 16),
-        Obx(() {
-          if (controller.isLoading.value) {
-            return const SizedBox(height: 160, child: Center(child: CircularProgressIndicator(color: AppColors.primary)));
-          }
-          if (controller.listPoli.isEmpty) {
-            return Text('Data poli belum tersedia', style: GoogleFonts.beVietnamPro(color: isDark ? Colors.white60 : Colors.black54));
-          }
-          return SizedBox(
-            height: 160,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
-              itemCount: controller.listPoli.length,
-              itemBuilder: (context, index) {
-                final poli = controller.listPoli[index];
-                return _buildPoliCard(poli, isDark);
-              },
-            ),
-          );
-        }),
+        SizedBox(
+          height: 160,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: controller.listPoli.length,
+            itemBuilder: (context, index) {
+              final poli = controller.listPoli[index];
+              return _buildPoliCard(poli, isDark);
+            },
+          ),
+        ),
       ],
     );
   }
@@ -561,5 +574,65 @@ class HomeView extends GetView<HomeController> {
         ],
       ),
     );
+  }
+
+  Widget _buildBottomNav(bool isDark) {
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          height: 90,
+          color: isDark ? Colors.black.withOpacity(0.8) : const Color(0xFFFAF9F6).withOpacity(0.8),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildNavItem(0, 'Home', Icons.home, isDark),
+              _buildNavItem(1, 'History', Icons.history, isDark),
+              _buildNavItem(2, 'Notifs', Icons.notifications, isDark),
+              _buildNavItem(3, 'Profile', Icons.person, isDark),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, String label, IconData icon, bool isDark) {
+    return Obx(() {
+      bool isSelected = controller.currentIndex.value == index;
+      return GestureDetector(
+        onTap: () => controller.changePage(index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFFFF7F50).withOpacity(0.2) : Colors.transparent,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
+                size: 24,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label.toUpperCase(),
+                style: GoogleFonts.beVietnamPro(
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                  color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
+                  letterSpacing: 1,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 }

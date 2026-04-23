@@ -1,96 +1,100 @@
 import 'package:flutter/material.dart';
+import 'package:gandb_care_clinic/app/data/models/appointment_model.dart';
+import 'package:gandb_care_clinic/app/data/models/health_tip_model.dart';
 import 'package:gandb_care_clinic/core/theme/app_colors.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
-// Pastikan path-nya benar menuju file api_config.dart
 import '../../../../api_config.dart';
 
 class HomeController extends GetxController {
-  // ==========================================
-  // 1. VARIABEL UI BAWAAN LU (Biar Gak Error)
-  // ==========================================
   var patientName = 'Pasien'.obs;
-  var heartRate = 82.obs;
   var currentIndex = 0.obs;
-
-  // ==========================================
-  // 2. VARIABEL API DARI LARAVEL
-  // ==========================================
   var isLoading = true.obs;
+  
+  // Data for Dashboard
   var listPoli = [].obs;
+  var upcomingAppointment = Rxn<AppointmentModel>();
+  var healthTips = <HealthTipModel>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    fetchPoliAPI(); // Tarik data pas halaman dibuka
+    refreshData();
   }
 
-  // ==========================================
-  // 3. FUNGSI KLIK TOMBOL BAWAAN LU (UDAH DIPERBAIKI)
-  // ==========================================
-  void changePage(int index) {
-    currentIndex.value = index;
-    if (index == 0) {
-      // Gak usah ngapa-ngapain, udah di Home
-    } else if (index == 1) {
-      Get.offAllNamed('/payment-history');
-    } else if (index == 2) {
-      // 👇 INI DIA KUNCINYA BIAR BISA MASUK HALAMAN NOTIF BOS 👇
-      Get.offAllNamed('/notifications');
-    } else if (index == 3) {
-      Get.offAllNamed('/profile');
-    }
+  Future<void> refreshData() async {
+    await fetchUser();
+    await fetchDashboardData();
+    await fetchPoliAPI();
   }
 
-  void openQRScanner() {
-    Get.snackbar(
-      'Info',
-      'Membuka Scanner...',
-      snackPosition: SnackPosition.TOP,
-    );
-  }
-
-  void onQuickActionTapped(String action) {
-    if (action == 'my_history' || action == 'My History') {
-      Get.toNamed('/exam-results');
-    } else if (action == 'Book Appointment') {
-      Get.toNamed('/select-clinic');
-    } else if (action == 'Poli Info') {
-      Get.snackbar(
-        'Informasi',
-        'Geser ke bawah untuk melihat ${listPoli.length} Poli yang tersedia!',
-        backgroundColor: Colors.white,
-        colorText: AppColors.primary,
-      );
-    } else {
-      Get.snackbar('Aksi', 'Membuka menu $action...');
-    }
-  }
-
-  // ==========================================
-  // 4. FUNGSI TARIK DATA DARI LARAVEL (ANTI-CRASH)
-  // ==========================================
-  Future<void> fetchPoliAPI() async {
+  Future<void> fetchUser() async {
     try {
-      isLoading.value = true; // 1. Set loading nyala
-
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
+      if (token == null) return;
 
-      if (token == null) {
-        Get.offAllNamed('/login');
-        return;
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/user'),
+        headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        patientName.value = data['data']['name'] ?? 'Pasien';
       }
+    } catch (e) {
+      print("Error fetching user: $e");
+    }
+  }
+
+  Future<void> fetchDashboardData() async {
+    try {
+      isLoading.value = true;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+      if (token == null) return;
+
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/dashboard'),
+        headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        
+        // Parse Upcoming Appointment
+        if (data['upcoming_appointment'] != null) {
+          upcomingAppointment.value = AppointmentModel.fromJson(data['upcoming_appointment']);
+        } else {
+          upcomingAppointment.value = null;
+        }
+
+        // Parse Health Tips
+        if (data['health_tips'] != null) {
+          healthTips.value = (data['health_tips'] as List)
+              .map((e) => HealthTipModel.fromJson(e))
+              .toList();
+        }
+      }
+    } catch (e) {
+      print("Error fetching dashboard data: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchPoliAPI() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+      if (token == null) return;
 
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}/poli'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
+        headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
       );
 
       if (response.statusCode == 200) {
@@ -98,10 +102,25 @@ class HomeController extends GetxController {
         listPoli.value = data['data'] ?? [];
       }
     } catch (e) {
-      print("🚨 ERROR FATAL PAS AMBIL DATA POLI: $e");
-    } finally {
-      isLoading.value = false;
+      print("Error fetching poli: $e");
     }
+  }
+
+  void changePage(int index) {
+    currentIndex.value = index;
+    if (index == 1) Get.offAllNamed('/payment-history');
+    else if (index == 2) Get.offAllNamed('/notifications');
+    else if (index == 3) Get.offAllNamed('/profile');
+  }
+
+  void openQRScanner() => Get.snackbar('Info', 'Membuka Scanner...');
+
+  void onQuickActionTapped(String action) {
+    if (action == 'My History') Get.toNamed('/exam-results');
+    else if (action == 'Book Appointment') Get.toNamed('/select-clinic');
+    else if (action == 'Poli Info') {
+      Get.snackbar('Informasi', 'Geser ke bawah untuk melihat ${listPoli.length} Poli!', backgroundColor: Colors.white, colorText: AppColors.primary);
+    } else Get.snackbar('Aksi', 'Membuka menu $action...');
   }
 
   Future<void> logout() async {
