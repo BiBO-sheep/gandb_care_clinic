@@ -1,84 +1,138 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../api_config.dart';
 
 class NotificationsController extends GetxController {
-  // Tab Notifications yang aktif (Index 2)
   var currentIndex = 2.obs;
 
-  // Data Notifikasi (Dibuat observable agar reaktif saat di-mark as read)
-  var todayNotifs = [
-    {
-      'title': 'Appointment Reminder',
-      'time': '09:12 AM',
-      'desc':
-          'Your appointment for General Consultation is tomorrow at 09:30 AM.',
-      'icon': Icons.calendar_month,
-      'color': const Color(0xFFA43C12), // primary
-      'bgColor': const Color(0xFFFFDBCF), // primary-fixed
-      'isRead': false,
-    },
-    {
-      'title': 'Lab Results Available',
-      'time': '08:05 AM',
-      'desc':
-          'Your blood panel screening results are now available for review in the dashboard.',
-      'icon': Icons.description,
-      'color': const Color(0xFF006A6A), // secondary
-      'bgColor': const Color(
-        0xFF90EFEF,
-      ).withOpacity(0.5), // secondary-container
-      'isRead': false,
-    },
-  ].obs;
+  // State API
+  var isLoading = true.obs;
+  var allNotifs = [].obs;
 
-  var yesterdayNotifs = [
-    {
-      'title': 'Clinic Update',
-      'time': 'Yesterday',
-      'desc':
-          'G&B Care Clinic is now open on Sundays from 10:00 AM to 04:00 PM for urgent care.',
-      'icon': Icons.campaign,
-      'color': const Color(0xFF006970), // tertiary
-      'bgColor': const Color(0xFF7AF4FF).withOpacity(0.3),
-      'isRead': true,
-    },
-  ].obs;
+  // State yang dikelompokkan
+  var todayNotifs = [].obs;
+  var earlierNotifs = [].obs;
 
-  var earlierNotifs = [
-    {
-      'title': 'System Maintenance',
-      'time': '3 days ago',
-      'desc':
-          'We have successfully updated our billing portal for a smoother experience.',
-      'icon': Icons.notifications,
-      'color': const Color(0xFF8B7169), // outline
-      'bgColor': const Color(0xFFE9E8E5), // surface-container-high
-      'isRead': true,
-    },
-  ].obs;
+  @override
+  void onInit() {
+    super.onInit();
+    fetchNotifications();
+  }
 
-  void markAllAsRead() {
-    for (var i = 0; i < todayNotifs.length; i++) {
-      var notif = todayNotifs[i];
-      notif['isRead'] = true;
-      todayNotifs[i] = notif; // Trigger update untuk Obx
+  // --- FUNGSI TARIK DATA NOTIF DARI API ---
+  Future<void> fetchNotifications() async {
+    try {
+      isLoading.value = true;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) return;
+
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/notifications'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        // Asumsi data array ada di data['data'] atau langsung di root
+        final List fetchedData = data['data'] ?? data;
+
+        allNotifs.value = fetchedData;
+        _groupNotifications(fetchedData);
+      }
+    } catch (e) {
+      print("🚨 ERROR AMBIL NOTIF: $e");
+    } finally {
+      isLoading.value = false;
     }
-    Get.snackbar(
-      'Success',
-      'All notifications marked as read',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF90EFEF),
-      colorText: const Color(0xFF006A6A),
-    );
+  }
+
+  // --- LOGIKA PENGELOMPOKAN TANGGAL ---
+  void _groupNotifications(List data) {
+    todayNotifs.clear();
+    earlierNotifs.clear();
+
+    DateTime now = DateTime.now();
+
+    for (var notif in data) {
+      // Ambil tanggal dari Laravel (created_at)
+      DateTime notifDate = DateTime.parse(notif['created_at']).toLocal();
+
+      // Data yang disimpen di kolom 'data' JSON Laravel
+      var notifData = notif['data'];
+
+      // Cek apakah notif ini dibuat hari ini
+      bool isToday =
+          notifDate.year == now.year &&
+          notifDate.month == now.month &&
+          notifDate.day == now.day;
+
+      var formattedNotif = {
+        'id': notif['id'],
+        'title': notifData['title'] ?? 'Pemberitahuan',
+        'desc': notifData['message'] ?? 'Anda memiliki pesan baru.',
+        'time':
+            '${notifDate.hour.toString().padLeft(2, '0')}:${notifDate.minute.toString().padLeft(2, '0')}',
+        'type': notifData['type'] ?? 'info', // 'appointment', 'invoice', dll
+        'isRead': notif['read_at'] != null,
+      };
+
+      if (isToday) {
+        todayNotifs.add(formattedNotif);
+      } else {
+        earlierNotifs.add(formattedNotif);
+      }
+    }
+  }
+
+  // --- FUNGSI MARK ALL AS READ (TEMBAK API) ---
+  Future<void> markAllAsRead() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      // Update UI langsung biar keliatan cepet (Optimistic UI)
+      for (var i = 0; i < todayNotifs.length; i++) {
+        todayNotifs[i]['isRead'] = true;
+      }
+      for (var i = 0; i < earlierNotifs.length; i++) {
+        earlierNotifs[i]['isRead'] = true;
+      }
+      todayNotifs.refresh();
+      earlierNotifs.refresh();
+
+      // Tembak server buat update database
+      await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/notifications/mark-read'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+        },
+      );
+
+      Get.snackbar(
+        'Success',
+        'Semua notifikasi telah ditandai sudah dibaca.',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } catch (e) {
+      print("🚨 ERROR MARK AS READ: $e");
+    }
   }
 
   void changePage(int index) {
     currentIndex.value = index;
-    if (index == 0) {
-      Get.offAllNamed('/home');
-    } else if (index == 1) {
-      Get.offAllNamed('/payment-history');
-    }
-    // Index 2 adalah halaman ini sendiri, tidak perlu navigasi
+    if (index == 0) Get.offAllNamed('/home');
+    if (index == 1) Get.offAllNamed('/payment-history');
+    if (index == 3) Get.offAllNamed('/profile'); // Pastikan profile lu nyambung
   }
 }

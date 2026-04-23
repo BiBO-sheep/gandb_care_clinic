@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:gandb_care_clinic/app/modules/home/views/home_shimmer_view.dart';
-import 'package:gandb_care_clinic/app/modules/profile/views/profile_view.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -17,26 +16,15 @@ class HomeView extends GetView<HomeController> {
       extendBody: true,
       body: SafeArea(
         bottom: false,
-        // --- INI RAHASIANYA BOS: BUNGKUS PAKE OBX ---
-        child: Obx(() {
-          // Kita bikin daftar halamannya di sini
-          final List<Widget> pages = [
-            _buildHomeContent(), // Index 0: Tampilan Home
-            _buildHistoryContent(), // Index 1: Tampilan History
-            _buildNotifContent(), // Index 2: Tampilan Notif
-            const ProfileView(), // Index 3: Tampilan Profile (Gua taruh tombol Logout sekalian)
-          ];
-
-          // Tampilkan halaman sesuai tombol bawah yang lagi dipencet
-          return pages[controller.currentIndex.value];
-        }),
+        // 👇 LANGSUNG TEMBAK HALAMAN HOME, GAK PAKE ARRAY OBX LAGI 👇
+        child: _buildHomeContent(),
       ),
       bottomNavigationBar: _buildBottomNav(),
     );
   }
 
   // =========================================
-  // 1. ISI HALAMAN HOME (Yang udah lu bikin)
+  // 1. ISI HALAMAN HOME
   // =========================================
   Widget _buildHomeContent() {
     return Column(
@@ -57,44 +45,13 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(height: 32),
                 _buildDailyWellness(),
                 const SizedBox(height: 32),
-                _buildPoliSlider(), // <-- Slider API kita tadi
-                const SizedBox(height: 100),
+                _buildPoliSlider(),
+                const SizedBox(height: 100), // Spasi buat bottom nav
               ],
             ),
           ),
         ),
       ],
-    );
-  }
-
-  // =========================================
-  // 2. HALAMAN DUMMY SEMENTARA
-  // =========================================
-  Widget _buildHistoryContent() {
-    return Center(
-      child: Text(
-        'Halaman History\n(Segera Hadir)',
-        textAlign: TextAlign.center,
-        style: GoogleFonts.plusJakartaSans(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: AppColors.secondary,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNotifContent() {
-    return Center(
-      child: Text(
-        'Halaman Notifikasi\n(Segera Hadir)',
-        textAlign: TextAlign.center,
-        style: GoogleFonts.plusJakartaSans(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: AppColors.secondary,
-        ),
-      ),
     );
   }
 
@@ -108,14 +65,11 @@ class HomeView extends GetView<HomeController> {
         children: [
           Row(
             children: [
-              // 👇 INI DIA FOTO PROFIL DEFAULT-NYA BOS 👇
               const CircleAvatar(
                 radius: 22,
-                backgroundColor: Colors
-                    .teal, // Atau ganti AppColors.primary kalau lu pake variabel warna
+                backgroundColor: Colors.teal,
                 child: Icon(Icons.person, size: 28, color: Colors.white),
               ),
-              // 👆 UDAH GAK PAKE GAMBAR INTERNET LAGI 👆
               const SizedBox(width: 12),
               Text(
                 'G&B Care Clinic',
@@ -164,10 +118,9 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // 👇 INI DIA YANG DITAMBAHIN GESTURE DETECTOR 👇
   Widget _buildAppointmentCard() {
     return GestureDetector(
-      onTap: () => Get.toNamed('/queue-monitor'), // Lari ke Queue Monitor
+      onTap: () => Get.toNamed('/queue-monitor'),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(24),
@@ -577,7 +530,6 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // --- KOMPONEN BARU: SLIDER POLI ---
   Widget _buildPoliSlider() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -606,7 +558,6 @@ class HomeView extends GetView<HomeController> {
         ),
         const SizedBox(height: 16),
 
-        // Bungkus dengan Obx agar bereaksi saat data loading/selesai
         Obx(() {
           if (controller.isLoading.value) {
             HomeShimmerView();
@@ -622,7 +573,6 @@ class HomeView extends GetView<HomeController> {
             return const Text('Data poli belum tersedia');
           }
 
-          // Slider Horizontal
           return SizedBox(
             height: 160,
             child: ListView.builder(
@@ -630,7 +580,6 @@ class HomeView extends GetView<HomeController> {
               physics: const BouncingScrollPhysics(),
               itemCount: controller.listPoli.length,
               itemBuilder: (context, index) {
-                // Ambil data satu per satu dari list Laravel
                 final poli = controller.listPoli[index];
                 return _buildPoliCard(poli);
               },
@@ -641,13 +590,10 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // --- DESAIN KARTU POLI (KEBAL ERROR) ---
   Widget _buildPoliCard(dynamic poli) {
-    // 1. Tangkap datanya dengan aman (Safety Check)
     final String namaPoli = poli['name']?.toString() ?? 'Poli Umum';
     final String ruanganPoli = poli['ruangan']?.toString() ?? 'Belum ada ruang';
 
-    // 2. Tentukan icon berdasarkan nama poli (Biar keren bos!)
     IconData iconPoli = Icons.medical_services;
     if (namaPoli.toLowerCase().contains('gigi')) iconPoli = Icons.sick;
     if (namaPoli.toLowerCase().contains('jantung'))
@@ -681,15 +627,11 @@ class HomeView extends GetView<HomeController> {
               color: AppColors.primary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              iconPoli, // Icon dinamis
-              color: AppColors.primary,
-              size: 24,
-            ),
+            child: Icon(iconPoli, color: AppColors.primary, size: 24),
           ),
           const Spacer(),
           Text(
-            namaPoli, // Data aman dari API
+            namaPoli,
             style: GoogleFonts.plusJakartaSans(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -700,7 +642,7 @@ class HomeView extends GetView<HomeController> {
           ),
           const SizedBox(height: 4),
           Text(
-            ruanganPoli, // Data aman dari API
+            ruanganPoli,
             style: GoogleFonts.beVietnamPro(
               fontSize: 11,
               fontWeight: FontWeight.w500,

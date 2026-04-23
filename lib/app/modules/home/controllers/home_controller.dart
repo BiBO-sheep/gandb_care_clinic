@@ -29,14 +29,19 @@ class HomeController extends GetxController {
   }
 
   // ==========================================
-  // 3. FUNGSI KLIK TOMBOL BAWAAN LU
+  // 3. FUNGSI KLIK TOMBOL BAWAAN LU (UDAH DIPERBAIKI)
   // ==========================================
   void changePage(int index) {
     currentIndex.value = index;
     if (index == 0) {
-      Get.offAllNamed('/home');
+      // Gak usah ngapa-ngapain, udah di Home
     } else if (index == 1) {
-      Get.toNamed('/payment-history');
+      Get.offAllNamed('/payment-history');
+    } else if (index == 2) {
+      // 👇 INI DIA KUNCINYA BIAR BISA MASUK HALAMAN NOTIF BOS 👇
+      Get.offAllNamed('/notifications');
+    } else if (index == 3) {
+      Get.offAllNamed('/profile');
     }
   }
 
@@ -90,14 +95,11 @@ class HomeController extends GetxController {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // Tameng: Pastikan data['data'] gak null sebelum dimasukin
         listPoli.value = data['data'] ?? [];
       }
     } catch (e) {
-      // 👇 INI PENTING: Biar kalau error, aplikasinya ngasih tau, bukan langsung mati!
       print("🚨 ERROR FATAL PAS AMBIL DATA POLI: $e");
     } finally {
-      // 2. WAJIB DI SINI: Apapun yang terjadi, matiin loadingnya!
       isLoading.value = false;
     }
   }
