@@ -75,23 +75,35 @@ class InvoiceView extends GetView<InvoiceController> {
   }
 
   // ==========================================
-  // KONTEN UTAMA INVOICE
+  // KONTEN UTAMA INVOICE (SUDAH DISESUAIKAN DENGAN API LARAVEL)
   // ==========================================
   Widget _buildInvoiceContent(Map<String, dynamic> data) {
-    // Parsing data dari JSON Laravel
-    final String diagnosis = data['diagnosis'] ?? '-';
-    final String patientName = data['patient_name'] ?? '-';
-    final String clinicName = data['clinic_name'] ?? 'G&B Care Clinic';
-    final String invoiceNumber = data['invoice_number'] ?? '-';
+    // 👇 MENGAMBIL DATA DARI JSON BARU LARAVEL 👇
+
+    // Tarik relasi bersarang (nested JSON)
+    final appointment = data['appointment'] ?? {};
+    final medicalRecord = appointment['medical_record'] ?? {};
+    final poli = appointment['poli'] ?? {};
+    final user = appointment['user'] ?? {};
+
+    // Data teks
+    final String diagnosis =
+        medicalRecord['diagnosis'] ?? 'Tidak ada catatan diagnosis';
+    final String patientName = user['name'] ?? 'Pasien';
+    final String clinicName = poli['name'] ?? 'G&B Care Clinic';
+    final String invoiceNumber = 'INV-${data['id'] ?? '000'}';
     final String status = data['status'] ?? 'unpaid';
     final bool isPaid = status.toLowerCase() == 'paid';
 
-    // Biaya
-    final consultationFee = data['consultation_fee'];
-    final medicineFee = data['medicine_fee'];
-    final grandTotal = data['grand_total'];
+    // Data Biaya (Di-parse ke double karena Laravel ngirim string "261000.00")
+    final consultationFee =
+        double.tryParse(data['total_consultation']?.toString() ?? '0') ?? 0;
+    final medicineFee =
+        double.tryParse(data['total_medicines']?.toString() ?? '0') ?? 0;
+    final grandTotal =
+        double.tryParse(data['grand_total']?.toString() ?? '0') ?? 0;
 
-    // List obat (opsional dari Laravel)
+    // List obat (kalau ada di API nanti)
     final List medicines = data['medicines'] ?? [];
 
     return SingleChildScrollView(
@@ -130,6 +142,7 @@ class InvoiceView extends GetView<InvoiceController> {
             ),
           ),
           const SizedBox(height: 8),
+
           // Badge Status
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -178,23 +191,15 @@ class InvoiceView extends GetView<InvoiceController> {
             ),
             child: Column(
               children: [
-                _buildInfoRow(
-                  Icons.person,
-                  'PASIEN',
-                  patientName,
-                ),
+                _buildInfoRow(Icons.person, 'PASIEN', patientName),
                 const SizedBox(height: 16),
                 _buildInfoRow(
                   Icons.local_hospital,
-                  'KLINIK',
+                  'KLINIK / POLI',
                   clinicName,
                 ),
                 const SizedBox(height: 16),
-                _buildInfoRow(
-                  Icons.tag,
-                  'NO. INVOICE',
-                  invoiceNumber,
-                ),
+                _buildInfoRow(Icons.tag, 'NO. INVOICE', invoiceNumber),
               ],
             ),
           ),
@@ -230,7 +235,7 @@ class InvoiceView extends GetView<InvoiceController> {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Diagnosis',
+                      'Diagnosis Dokter',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -293,44 +298,45 @@ class InvoiceView extends GetView<InvoiceController> {
 
                 // Biaya Konsultasi
                 _buildFeeRow(
-                  'Biaya Konsultasi',
+                  'Biaya Konsultasi & Tindakan',
                   controller.formatRupiah(consultationFee),
                 ),
                 const SizedBox(height: 12),
 
                 // Biaya Obat
                 _buildFeeRow(
-                  'Biaya Obat',
+                  'Biaya Resep Obat',
                   controller.formatRupiah(medicineFee),
                 ),
 
-                // List Obat Detail (jika ada)
                 if (medicines.isNotEmpty) ...[
                   const SizedBox(height: 8),
-                  ...medicines.map((obat) => Padding(
-                        padding: const EdgeInsets.only(left: 16, top: 4),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                '• ${obat['nama_obat'] ?? '-'} x${obat['jumlah'] ?? 1}',
-                                style: GoogleFonts.beVietnamPro(
-                                  fontSize: 12,
-                                  color: AppColors.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              controller.formatRupiah(obat['subtotal']),
-                              style: GoogleFonts.plusJakartaSans(
+                  ...medicines.map(
+                    (obat) => Padding(
+                      padding: const EdgeInsets.only(left: 16, top: 4),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '• ${obat['nama_obat'] ?? '-'} x${obat['jumlah'] ?? 1}',
+                              style: GoogleFonts.beVietnamPro(
                                 fontSize: 12,
                                 color: AppColors.onSurfaceVariant,
                               ),
                             ),
-                          ],
-                        ),
-                      )),
+                          ),
+                          Text(
+                            controller.formatRupiah(obat['subtotal']),
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              color: AppColors.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
 
                 const SizedBox(height: 16),
@@ -345,7 +351,7 @@ class InvoiceView extends GetView<InvoiceController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Total Pembayaran',
+                      'Total Tagihan',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -409,21 +415,15 @@ class InvoiceView extends GetView<InvoiceController> {
               decoration: BoxDecoration(
                 color: Colors.green.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: Colors.green.withOpacity(0.3),
-                ),
+                border: Border.all(color: Colors.green.withOpacity(0.3)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.verified,
-                    color: Colors.green,
-                    size: 28,
-                  ),
+                  const Icon(Icons.verified, color: Colors.green, size: 28),
                   const SizedBox(width: 12),
                   Text(
-                    'Pembayaran Lunas',
+                    'Tagihan Lunas',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
@@ -459,7 +459,6 @@ class InvoiceView extends GetView<InvoiceController> {
   // ==========================================
   // HELPER WIDGETS
   // ==========================================
-
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -576,11 +575,7 @@ class InvoiceView extends GetView<InvoiceController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.receipt_long,
-            size: 80,
-            color: AppColors.surfaceVariant,
-          ),
+          Icon(Icons.receipt_long, size: 80, color: AppColors.surfaceVariant),
           const SizedBox(height: 16),
           Text(
             'Invoice tidak ditemukan',

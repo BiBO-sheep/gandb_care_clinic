@@ -18,7 +18,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
         bottom: false,
         child: RefreshIndicator(
           color: AppColors.primary,
-          onRefresh: controller.fetchHistory, // Tarik layar untuk refresh
+          onRefresh: controller.fetchHistory,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -60,7 +60,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
                     );
                   }
 
-                  // 2. STATE SUMMARY (Jika sedang proses bayar)
+                  // 2. STATE SUMMARY (Jika sedang melihat rincian)
                   if (controller.invoiceData.value != null) {
                     return _buildPaymentSummary(controller.invoiceData.value!);
                   }
@@ -70,7 +70,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
                     return _buildEmptyState();
                   }
 
-                  // 3. STATE SUKSES (Ada data)
+                  // 4. STATE SUKSES (Ada data history)
                   return ListView.builder(
                     padding: const EdgeInsets.only(
                       left: 24,
@@ -102,14 +102,11 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Row(
           children: [
-            // 👇 FOTO PROFIL DEFAULT (Seragam & Anti Lemot) 👇
             const CircleAvatar(
-              radius: 18, // Disesuaikan dengan lebar & tinggi 36 yang lu bikin
+              radius: 18,
               backgroundColor: Colors.teal,
               child: Icon(Icons.person, size: 24, color: Colors.white),
             ),
-
-            // 👆 SAMPAI SINI BATESNYA 👆
             const SizedBox(width: 12),
             Text(
               'G&B Care Clinic',
@@ -127,7 +124,10 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
 
   Widget _buildPaymentSummary(Map<String, dynamic> data) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 20,
+        vertical: 16,
+      ), // Padding sedikit dikecilin biar lega
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -146,7 +146,11 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
             ),
             child: Column(
               children: [
-                const Icon(Icons.receipt_long, size: 64, color: AppColors.primary),
+                const Icon(
+                  Icons.receipt_long,
+                  size: 64,
+                  color: AppColors.primary,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'Rincian Pembayaran',
@@ -157,13 +161,21 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                _buildSummaryRow('Biaya Konsultasi', 'Rp ${controller.invoiceData.value?['consultation_fee'] ?? 0}'),
+
+                // Gunakan formatRupiah dan Key JSON yang benar dari Laravel
+                _buildSummaryRow(
+                  'Biaya Konsultasi',
+                  controller.formatRupiah(data['total_consultation']),
+                ),
                 const SizedBox(height: 16),
-                _buildSummaryRow('Biaya Obat', 'Rp ${controller.invoiceData.value?['medicine_fee'] ?? 0}'),
+                _buildSummaryRow(
+                  'Biaya Obat',
+                  controller.formatRupiah(data['total_medicines']),
+                ),
                 const Divider(height: 32),
                 _buildSummaryRow(
-                  'Total Pembayaran', 
-                  'Rp ${controller.invoiceData.value?['total_amount'] ?? 0}',
+                  'Total Pembayaran',
+                  controller.formatRupiah(data['grand_total']),
                   isTotal: true,
                 ),
               ],
@@ -195,8 +207,8 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
           Center(
             child: TextButton(
               onPressed: () {
-                controller.invoiceData.value = null;
-                controller.fetchHistory();
+                controller.invoiceData.value = null; // Tutup mode summary
+                controller.fetchHistory(); // Balik ke mode list history
               },
               child: Text(
                 'Kembali ke Riwayat',
@@ -207,29 +219,42 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
               ),
             ),
           ),
+          const SizedBox(height: 80), // Jarak aman dari Bottom Nav
         ],
       ),
     );
   }
 
+  // 👇 INI OBAT ANTI OVERFLOW BOS! SUPER KEBAL 👇
   Widget _buildSummaryRow(String label, String value, {bool isTotal = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center, // Sejajarkan di tengah
       children: [
-        Text(
-          label,
-          style: GoogleFonts.beVietnamPro(
-            fontSize: isTotal ? 16 : 14,
-            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: isTotal ? AppColors.onSurface : AppColors.onSurfaceVariant,
+        // Expanded agar label teksnya mau mengalah jika kepanjangan
+        Expanded(
+          child: Text(
+            label,
+            style: GoogleFonts.beVietnamPro(
+              fontSize: isTotal ? 16 : 14,
+              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+              color: isTotal ? AppColors.onSurface : AppColors.onSurfaceVariant,
+            ),
           ),
         ),
-        Text(
-          value,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: isTotal ? 20 : 14,
-            fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
-            color: isTotal ? AppColors.primary : AppColors.onSurface,
+        const SizedBox(width: 8), // Spasi anti tabrakan
+        // Flexible agar nominal angkanya tidak tembus dinding
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.right, // Rata kanan ala struk kasir
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: isTotal ? 20 : 14,
+              fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
+              color: isTotal ? AppColors.primary : AppColors.onSurface,
+            ),
+            maxLines: 1, // Kunci 1 baris
+            overflow: TextOverflow.ellipsis, // Titik-titik kalau tembus
           ),
         ),
       ],
@@ -261,10 +286,10 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
   }
 
   Widget _buildHistoryCard(Map<String, dynamic> item) {
-    bool isDone = item['status'] == 'completed';
+    bool isDone = item['status'] == 'completed' || item['status'] == 'selesai';
 
     return GestureDetector(
-      onTap: () => controller.openTicket(item), // Buka tiket lagi
+      onTap: () => controller.openTicket(item),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(20),
@@ -324,12 +349,16 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    item['poli']?['nama_poli'] ?? 'Poli Klinik',
+                    item['poli']?['nama_poli'] ??
+                        item['poli']?['name'] ??
+                        'Poli Klinik',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: AppColors.onSurface,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(

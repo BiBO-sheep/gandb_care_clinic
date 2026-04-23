@@ -3,20 +3,19 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
-// Pastikan path-nya benar menuju file api_config.dart
 import '../../../../api_config.dart';
 
 class ConfirmAppointmentController extends GetxController {
-  // Variabel penampung data dari halaman Select Time
+  // --- VARIABEL PENAMPUNG DATA ---
   late int poliId;
+  late int dokterId; // Nangkep ID Dokter buat dikirim ke Laravel
   late String clinicName;
+  late String doctorName; // Cukup 1 aja, gak boleh dobel
   late String date;
   late String time;
+  late String estFee; // Nanti kita tangkap dari halaman sebelumnya
 
-  // Data Rangkuman (Disesuaikan dengan Opsi A: System Allocation)
-  final String doctorName = 'Assigned on Arrival';
-  final String estFee = 'Rp 150.000'; // Biaya estimasi
+  // Data statis lokasi
   final String location = 'G&B Care Clinic — Main Hub\nJl. Kesehatan No. 123';
 
   var isConfirming = false.obs;
@@ -24,10 +23,19 @@ class ConfirmAppointmentController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Tangkap data yang dibawa dari halaman Select Time
+    // Tangkap data yang dibawa dari halaman sebelumnya
     final args = Get.arguments as Map<String, dynamic>?;
+
     poliId = args?['poli_id'] ?? 1;
+    dokterId = args?['dokter_id'] ?? 1; // Pastikan ini ada
     clinicName = args?['clinic_name'] ?? 'Poli Umum';
+
+    // Nangkep nama dokter, kalau kosong kasih default
+    doctorName = args?['doctor_name'] ?? 'Dokter (Assigned on Arrival)';
+
+    // 👇 NANGKEP HARGA DOKTER ASLI DARI DATABASE 👇
+    estFee = args?['price']?.toString() ?? 'Rp 150.000';
+
     date = args?['date'] ?? 'Sep 12, 2024';
     time = args?['time'] ?? '09:30';
   }
@@ -37,7 +45,6 @@ class ConfirmAppointmentController extends GetxController {
     isConfirming.value = true;
 
     try {
-      // 1. Ambil Kunci Token
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('token');
 
@@ -46,19 +53,23 @@ class ConfirmAppointmentController extends GetxController {
         return;
       }
 
-      // 2. Tembak API Laravel
+      // Tembak API Laravel
       final response = await http.post(
         Uri.parse('${ApiConfig.baseUrl}/appointments'),
         headers: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',
         },
-        body: {'poli_id': poliId.toString(), 'tanggal': date, 'jam': time},
+        body: {
+          'poli_id': poliId.toString(),
+          'dokter_id': dokterId
+              .toString(), // 👈 WAJIB DIKIRIM BIAR WEB ADMIN GAK KOSONG
+          'tanggal': date,
+          'jam': time,
+        },
       );
 
-      // 3. Cek Balasan dari Laravel
       if (response.statusCode == 201 || response.statusCode == 200) {
-        // --- PROSES TANGKAP DATA RESPONSE ---
         final responseData = jsonDecode(response.body);
         final appointment = responseData['data'];
 
@@ -70,15 +81,15 @@ class ConfirmAppointmentController extends GetxController {
           colorText: Colors.white,
         );
 
-        // --- PINDAH KE TIKET DENGAN MEMBAWA ARGUMENTS ASLI ---
+        // Pindah ke tiket dengan bawa arguments asli
         Get.offAllNamed(
           '/digital-ticket',
           arguments: {
             'id': appointment['id'],
             'queue_number': appointment['queue_number'],
-            'patient_name':
-                appointment['user']['name'], // Nama dari table users via relasi di Laravel
+            'patient_name': appointment['user']['name'],
             'service': clinicName,
+            'doctor': doctorName,
             'date': date,
             'time': time,
           },

@@ -318,13 +318,16 @@ class InvoiceController extends GetxController {
   String formatRupiah(dynamic amount) {
     if (amount == null) return 'Rp 0';
     int value = 0;
+    
     if (amount is int) {
       value = amount;
     } else if (amount is double) {
       value = amount.toInt();
     } else {
-      value = int.tryParse(amount.toString()) ?? 0;
+      // 👇 INI OBATNYA BOS! Kalau dia string "311000.00", kita ubah dulu ke double, baru ke int
+      value = double.tryParse(amount.toString())?.toInt() ?? 0;
     }
+    
     // Format manual ribuan
     String result = value.toString();
     String formatted = '';

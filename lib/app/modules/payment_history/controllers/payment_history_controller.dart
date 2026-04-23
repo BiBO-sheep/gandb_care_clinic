@@ -9,36 +9,29 @@ import '../../../../api_config.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PaymentHistoryController extends GetxController {
-  // Observables untuk State Management
   var isLoading = true.obs;
   var historyList = [].obs;
-  var currentIndex = 1.obs; // Tab Bottom Nav
-  var errorMessage = ''.obs; // Tambahkan untuk pesan error
-  
-  // Observable untuk detail pembayaran (Summary)
+  var currentIndex = 1.obs;
+  var errorMessage = ''.obs;
+
   var invoiceData = Rxn<Map<String, dynamic>>();
 
   @override
   void onInit() {
     super.onInit();
-    
-    // TANGKAP ARGUMEN (ID APPOINTMENT) JIKA ADA
     final dynamic args = Get.arguments;
     if (args != null) {
-      // Jika ada argumen, asumsikan itu ID untuk ringkasan pembayaran
       String appointmentId = args.toString();
       fetchPaymentSummary(appointmentId);
     } else {
-      // Jika tidak ada argumen, tampilkan daftar riwayat biasa
       fetchHistory();
     }
   }
 
-  // Fungsi narik ringkasan pembayaran dari Laravel
   Future<void> fetchPaymentSummary(String id) async {
     isLoading.value = true;
-    errorMessage.value = ''; // Reset error message
-    
+    errorMessage.value = '';
+
     final url = '${ApiConfig.baseUrl}/payment-summary/$id';
     print('Memanggil API: $url');
 
@@ -62,11 +55,13 @@ class PaymentHistoryController extends GetxController {
         if (responseData['success'] == true) {
           invoiceData.value = responseData['data'];
         } else {
-          errorMessage.value = responseData['message'] ?? 'Gagal memuat rincian pembayaran';
+          errorMessage.value =
+              responseData['message'] ?? 'Gagal memuat rincian pembayaran';
           Get.snackbar('Error', errorMessage.value);
         }
       } else {
-        errorMessage.value = 'Error ${response.statusCode}: ${response.reasonPhrase}';
+        errorMessage.value =
+            'Error ${response.statusCode}: ${response.reasonPhrase}';
         Get.snackbar('Error', 'Gagal memuat rincian pembayaran');
       }
     } catch (e) {
@@ -78,10 +73,9 @@ class PaymentHistoryController extends GetxController {
     }
   }
 
-  // Fungsi narik data daftar riwayat dari Laravel
   Future<void> fetchHistory() async {
     isLoading.value = true;
-    errorMessage.value = ''; // Reset error message
+    errorMessage.value = '';
 
     final url = '${ApiConfig.baseUrl}/history';
     print('Memanggil API: $url');
@@ -98,14 +92,12 @@ class PaymentHistoryController extends GetxController {
         },
       );
 
-      print('Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
-
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         historyList.value = responseData['data'];
       } else {
-        errorMessage.value = 'Error ${response.statusCode}: ${response.reasonPhrase}';
+        errorMessage.value =
+            'Error ${response.statusCode}: ${response.reasonPhrase}';
         Get.snackbar('Error', 'Gagal memuat riwayat');
       }
     } catch (e) {
@@ -117,7 +109,6 @@ class PaymentHistoryController extends GetxController {
     }
   }
 
-  // Buka tiket lama
   void openTicket(Map<String, dynamic> item) {
     Get.toNamed(
       '/digital-ticket',
@@ -125,9 +116,7 @@ class PaymentHistoryController extends GetxController {
         'id': item['id'],
         'queue_number': item['queue_number'],
         'patient_name': item['user']?['name'] ?? 'Patient',
-        'service':
-            item['poli']?['nama_poli'] ??
-            'Klinik', // Sesuaikan nama kolom poli di DB lu
+        'service': item['poli']?['nama_poli'] ?? 'Klinik',
         'date': item['tanggal'],
         'time': item['jam'],
       },
@@ -137,10 +126,10 @@ class PaymentHistoryController extends GetxController {
   void changePage(int index) {
     currentIndex.value = index;
     if (index == 0) Get.offAllNamed('/home');
-    // Nanti tambahin rute lain kalau udah jadi
+    if (index == 2) Get.offAllNamed('/notifications');
+    if (index == 3) Get.offAllNamed('/profile');
   }
 
-  // === UI BOTTOM SHEET METODE PEMBAYARAN ===
   void showPaymentMethods() {
     Get.bottomSheet(
       Container(
@@ -226,7 +215,7 @@ class PaymentHistoryController extends GetxController {
 
   Future<void> processPayment(String method) async {
     print('Memproses pembayaran dengan: $method');
-    Get.back(); // Tutup bottom sheet
+    Get.back();
 
     if (method == 'cashier') {
       Get.snackbar(
@@ -242,18 +231,15 @@ class PaymentHistoryController extends GetxController {
 
     if (method == 'qris' || method == 'bank_transfer') {
       final invoiceId = invoiceData.value?['id'];
-      
+
       if (invoiceId == null) {
         Get.snackbar('Error', 'Data invoice tidak ditemukan.');
         return;
       }
 
-      // 1. Tampilkan Indikator Loading
       Get.dialog(
         const Center(
-          child: CircularProgressIndicator(
-            color: AppColors.primary,
-          ),
+          child: CircularProgressIndicator(color: AppColors.primary),
         ),
         barrierDismissible: false,
       );
@@ -262,7 +248,6 @@ class PaymentHistoryController extends GetxController {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String? token = prefs.getString('token');
 
-        // 2. HTTP POST ke Backend Laravel
         final response = await http.post(
           Uri.parse('${ApiConfig.baseUrl}/payment/process'),
           headers: {
@@ -270,43 +255,60 @@ class PaymentHistoryController extends GetxController {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
           },
-          body: jsonEncode({
-            'invoice_id': invoiceId,
-            'method': method,
-          }),
+          body: jsonEncode({'invoice_id': invoiceId, 'method': method}),
         );
 
-        // 3. Tutup Loading
         if (Get.isDialogOpen ?? false) Get.back();
-
-        print('Response Payment: ${response.body}');
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
-          
+
           if (data['success'] == true && data['snap_url'] != null) {
-            // 4. Buka Snap URL menggunakan url_launcher
             final Uri url = Uri.parse(data['snap_url']);
             if (await canLaunchUrl(url)) {
-              await launchUrl(
-                url,
-                mode: LaunchMode.externalApplication, // Buka di browser HP
-              );
+              await launchUrl(url, mode: LaunchMode.externalApplication);
             } else {
               Get.snackbar('Error', 'Tidak dapat membuka halaman pembayaran.');
             }
           } else {
-            Get.snackbar('Gagal', data['message'] ?? 'Terjadi kesalahan saat memproses pembayaran.');
+            Get.snackbar(
+              'Gagal',
+              data['message'] ?? 'Terjadi kesalahan saat memproses pembayaran.',
+            );
           }
         } else {
           Get.snackbar('Error', 'Server Error: ${response.statusCode}');
         }
       } catch (e) {
-        // Tutup Loading jika terjadi error
         if (Get.isDialogOpen ?? false) Get.back();
-        print('Exception Payment: $e');
         Get.snackbar('Error', 'Koneksi bermasalah: $e');
       }
     }
+  }
+
+  // 👇 INI OBATNYA BOS: FORMAT RUPIAH ANTI KESELEK 👇
+  String formatRupiah(dynamic amount) {
+    if (amount == null) return 'Rp 0';
+    int value = 0;
+
+    if (amount is int) {
+      value = amount;
+    } else if (amount is double) {
+      value = amount.toInt();
+    } else {
+      value = double.tryParse(amount.toString())?.toInt() ?? 0;
+    }
+
+    String result = value.toString();
+    String formatted = '';
+    int count = 0;
+    for (int i = result.length - 1; i >= 0; i--) {
+      count++;
+      formatted = result[i] + formatted;
+      if (count % 3 == 0 && i != 0) {
+        formatted = '.$formatted';
+      }
+    }
+    return 'Rp $formatted';
   }
 }

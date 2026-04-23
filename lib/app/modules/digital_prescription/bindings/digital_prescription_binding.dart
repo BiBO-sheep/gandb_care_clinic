@@ -1,4 +1,4 @@
-import 'package:gandb_care_clinic/app/modules/digital_prescription/controllers/digital+prescription_controller.dart';
+import 'package:gandb_care_clinic/app/modules/digital_prescription/controllers/digital_prescription_controller.dart';
 import 'package:get/get.dart';
 
 class DigitalPrescriptionBinding extends Bindings {
