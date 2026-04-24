@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -9,6 +10,12 @@ class QueueMonitorController extends GetxController {
   var myQueueNumber = '...'.obs;
   var nowServing = '...'.obs;
   var estimatedWaitTime = 0.obs;
+
+  // Variabel baru buat nangkep data asli dari Laravel
+  var doctorName = 'Loading...'.obs;
+  var clinicName = 'Loading...'.obs;
+  var roomName = '...'.obs;
+
   var isLoading = true.obs;
   var currentIndex = 0.obs;
 
@@ -46,20 +53,40 @@ class QueueMonitorController extends GetxController {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        // Update state dari database
+        // Update state dasar dari database
         myQueueNumber.value = data['my_queue'] ?? 'N/A';
         nowServing.value = data['now_serving'] ?? '1';
 
+        // Nangkep detail appointment dari JSON Laravel (kalau ada)
+        if (data['appointment'] != null) {
+          final appt = data['appointment'];
+          doctorName.value = appt['dokter']?['name'] ?? 'Dokter Klinik';
+          clinicName.value =
+              appt['poli']?['name'] ??
+              appt['poli']?['nama_poli'] ??
+              'Poli Umum';
+          roomName.value = appt['poli']?['ruangan'] ?? 'Ruang Klinik';
+        }
+
         // Logika estimasi: (Antrean Saya - Sekarang) * 10 menit
-        int myNum = int.tryParse(myQueueNumber.value.replaceAll('A-', '')) ?? 0;
-        int servNum = int.tryParse(nowServing.value.replaceAll('A-', '')) ?? 0;
+        int myNum =
+            int.tryParse(
+              myQueueNumber.value.replaceAll(RegExp(r'[^0-9]'), ''),
+            ) ??
+            0;
+        int servNum =
+            int.tryParse(nowServing.value.replaceAll(RegExp(r'[^0-9]'), '')) ??
+            0;
         int diff = myNum - servNum;
         estimatedWaitTime.value = diff > 0 ? diff * 10 : 0;
 
         if (myQueueNumber.value == nowServing.value && myNum != 0) {
           Get.snackbar(
             'Giliran Anda!',
-            'Silakan menuju ruang konsultasi sekarang.',
+            'Silakan menuju ${roomName.value} sekarang.',
+            backgroundColor: const Color(0xFF006A6A),
+            colorText: Colors.white,
+            duration: const Duration(seconds: 5),
           );
         }
       }
@@ -75,15 +102,18 @@ class QueueMonitorController extends GetxController {
     if (index == 0) {
       Get.offAllNamed('/home');
     } else if (index == 1) {
-      // 👇 INI HARUS ADA SUPAYA BISA PINDAH KE HALAMAN HISTORY
       Get.toNamed('/payment-history');
+    } else if (index == 2) {
+      Get.toNamed('/notifications');
+    } else if (index == 3) {
+      Get.toNamed('/profile');
     }
   }
-  
+
   void openQRScanner() {
     Get.snackbar(
-      'QR Scanner',
-      'Membuka pemindai...',
+      'Informasi',
+      'Fitur Scan QR telah dinonaktifkan. Silakan periksa nomor antrean Anda di layar.',
       snackPosition: SnackPosition.TOP,
     );
   }

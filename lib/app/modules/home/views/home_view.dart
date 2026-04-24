@@ -19,9 +19,11 @@ class HomeView extends GetView<HomeController> {
       extendBody: true,
       body: SafeArea(
         bottom: false,
-        child: Obx(() => controller.isLoading.value 
-          ? const HomeShimmerView() 
-          : _buildHomeContent(isDark)),
+        child: Obx(
+          () => controller.isLoading.value
+              ? const HomeShimmerView()
+              : _buildHomeContent(isDark),
+        ),
       ),
       bottomNavigationBar: _buildBottomNav(isDark),
     );
@@ -46,7 +48,9 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(height: 32),
                 _buildHealthTips(isDark),
                 const SizedBox(height: 32),
-                _buildPoliSlider(isDark),
+                _buildPoliGrid(
+                  isDark,
+                ), // 👈 Udah diganti jadi Grid biar nampil semua
                 const SizedBox(height: 100),
               ],
             ),
@@ -81,7 +85,10 @@ class HomeView extends GetView<HomeController> {
             ],
           ),
           IconButton(
-            icon: Icon(Icons.qr_code_scanner, color: isDark ? Colors.white70 : AppColors.secondary),
+            icon: Icon(
+              Icons.qr_code_scanner,
+              color: isDark ? Colors.white70 : AppColors.secondary,
+            ),
             onPressed: controller.openQRScanner,
           ),
         ],
@@ -118,7 +125,7 @@ class HomeView extends GetView<HomeController> {
   Widget _buildAppointmentCard(bool isDark) {
     return Obx(() {
       final appointment = controller.upcomingAppointment.value;
-      
+
       if (appointment == null) {
         return _buildNoAppointmentCard(isDark);
       }
@@ -135,13 +142,15 @@ class HomeView extends GetView<HomeController> {
               end: Alignment.bottomRight,
               colors: [AppColors.primary, AppColors.primaryContainer],
             ),
-            boxShadow: isDark ? [] : [
-              BoxShadow(
-                color: AppColors.primary.withOpacity(0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
+            boxShadow: isDark
+                ? []
+                : [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,7 +159,10 @@ class HomeView extends GetView<HomeController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(20),
@@ -180,7 +192,11 @@ class HomeView extends GetView<HomeController> {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Icon(Icons.medical_services, color: Colors.white70, size: 16),
+                  const Icon(
+                    Icons.medical_services,
+                    color: Colors.white70,
+                    size: 16,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     'Dr. ${appointment.dokter?.name ?? 'Assigned Doctor'} • ${appointment.poli.ruangan}',
@@ -200,13 +216,24 @@ class HomeView extends GetView<HomeController> {
                 ),
                 child: Row(
                   children: [
-                    Expanded(child: _buildCardDetail('DATE & TIME', '${appointment.tanggal}, ${appointment.jam}')),
+                    Expanded(
+                      child: _buildCardDetail(
+                        'DATE & TIME',
+                        '${appointment.tanggal}, ${appointment.jam}',
+                      ),
+                    ),
                     Container(
                       height: 30,
                       width: 1,
                       color: Colors.white.withOpacity(0.2),
                     ),
-                    Expanded(child: _buildCardDetail('QUEUE ID', appointment.queueNumber, alignment: CrossAxisAlignment.end)),
+                    Expanded(
+                      child: _buildCardDetail(
+                        'QUEUE ID',
+                        appointment.queueNumber,
+                        alignment: CrossAxisAlignment.end,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -227,7 +254,11 @@ class HomeView extends GetView<HomeController> {
       ),
       child: Column(
         children: [
-          Icon(Icons.calendar_today_outlined, color: isDark ? Colors.white24 : Colors.grey, size: 48),
+          Icon(
+            Icons.calendar_today_outlined,
+            color: isDark ? Colors.white24 : Colors.grey,
+            size: 48,
+          ),
           const SizedBox(height: 16),
           Text(
             'No Upcoming Appointment',
@@ -251,7 +282,11 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildCardDetail(String title, String value, {CrossAxisAlignment alignment = CrossAxisAlignment.start}) {
+  Widget _buildCardDetail(
+    String title,
+    String value, {
+    CrossAxisAlignment alignment = CrossAxisAlignment.start,
+  }) {
     return Column(
       crossAxisAlignment: alignment,
       children: [
@@ -299,17 +334,41 @@ class HomeView extends GetView<HomeController> {
           crossAxisSpacing: 16,
           childAspectRatio: 1.2,
           children: [
-            _buildActionItem('Book\nAppointment', Icons.add_circle, const Color(0xFF90EFEF), AppColors.secondary, isDark),
-            _buildActionItem('My History', Icons.history, const Color(0xFFFFDBCF), AppColors.primary, isDark),
-            _buildActionItem('Poli Info', Icons.info, const Color(0xFF7AF4FF), const Color(0xFF006970), isDark),
-            _buildActionItem('Active\nPrescription', Icons.medication, const Color(0xFF93F2F2), const Color(0xFF006A6A), isDark),
+            _buildActionItem(
+              'Book\nAppointment',
+              Icons.add_circle,
+              const Color(0xFF90EFEF),
+              AppColors.secondary,
+              isDark,
+            ),
+            _buildActionItem(
+              'My History',
+              Icons.history,
+              const Color(0xFFFFDBCF),
+              AppColors.primary,
+              isDark,
+            ),
+            _buildActionItem(
+              'Poli Info',
+              Icons.info,
+              const Color(0xFF7AF4FF),
+              const Color(0xFF006970),
+              isDark,
+            ),
+            // Tombol Active Prescription sudah resmi dihapus sesuai permintaan Bos Besar! 💥
           ],
         ),
       ],
     );
   }
 
-  Widget _buildActionItem(String title, IconData icon, Color bgColor, Color iconColor, bool isDark) {
+  Widget _buildActionItem(
+    String title,
+    IconData icon,
+    Color bgColor,
+    Color iconColor,
+    bool isDark,
+  ) {
     return GestureDetector(
       onTap: () => controller.onQuickActionTapped(title.replaceAll('\n', ' ')),
       child: Container(
@@ -380,10 +439,18 @@ class HomeView extends GetView<HomeController> {
       decoration: BoxDecoration(
         color: isDark ? Colors.grey[900] : Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.surfaceVariant.withOpacity(isDark ? 0.1 : 0.5)),
-        boxShadow: isDark ? [] : [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
-        ],
+        border: Border.all(
+          color: AppColors.surfaceVariant.withOpacity(isDark ? 0.1 : 0.5),
+        ),
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.02),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Row(
         children: [
@@ -397,7 +464,9 @@ class HomeView extends GetView<HomeController> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.white10 : AppColors.primary.withOpacity(0.1),
+                      color: isDark
+                          ? Colors.white10
+                          : AppColors.primary.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -408,9 +477,14 @@ class HomeView extends GetView<HomeController> {
                   ),
                   const SizedBox(height: 12),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.white10 : AppColors.secondary.withOpacity(0.1),
+                      color: isDark
+                          ? Colors.white10
+                          : AppColors.secondary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -418,7 +492,9 @@ class HomeView extends GetView<HomeController> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 8,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? const Color(0xFF90EFEF) : AppColors.secondary,
+                        color: isDark
+                            ? const Color(0xFF90EFEF)
+                            : AppColors.secondary,
                         letterSpacing: 1,
                       ),
                     ),
@@ -437,7 +513,9 @@ class HomeView extends GetView<HomeController> {
                     tip.description,
                     style: GoogleFonts.beVietnamPro(
                       fontSize: 11,
-                      color: isDark ? Colors.white60 : AppColors.onSurfaceVariant,
+                      color: isDark
+                          ? Colors.white60
+                          : AppColors.onSurfaceVariant,
                       height: 1.3,
                     ),
                     maxLines: 2,
@@ -449,16 +527,42 @@ class HomeView extends GetView<HomeController> {
           ),
           Expanded(
             flex: 4,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-                image: DecorationImage(
-                  image: NetworkImage(tip.image),
-                  fit: BoxFit.cover,
-                ),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(24),
+                bottomRight: Radius.circular(24),
+              ),
+              child: Image.network(
+                tip.image,
+                fit: BoxFit.cover,
+                height: double.infinity,
+                width: double.infinity,
+                // 👇 INI OBATNYA BOS! Kalau link gambar mati, diganti gradasi cantik 👇
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          isDark
+                              ? Colors.grey[800]!
+                              : AppColors.primary.withOpacity(0.3),
+                          isDark
+                              ? Colors.grey[900]!
+                              : AppColors.secondary.withOpacity(0.3),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.health_and_safety,
+                        color: isDark ? Colors.white24 : Colors.white70,
+                        size: 32,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
@@ -469,16 +573,23 @@ class HomeView extends GetView<HomeController> {
 
   IconData _getIconData(String iconName) {
     switch (iconName) {
-      case 'water_drop': return Icons.water_drop;
-      case 'directions_run': return Icons.directions_run;
-      case 'restaurant': return Icons.restaurant;
-      case 'bedtime': return Icons.bedtime;
-      case 'spa': return Icons.spa;
-      default: return Icons.health_and_safety;
+      case 'water_drop':
+        return Icons.water_drop;
+      case 'directions_run':
+        return Icons.directions_run;
+      case 'restaurant':
+        return Icons.restaurant;
+      case 'bedtime':
+        return Icons.bedtime;
+      case 'spa':
+        return Icons.spa;
+      default:
+        return Icons.health_and_safety;
     }
   }
 
-  Widget _buildPoliSlider(bool isDark) {
+  // 👇 INI UDAH DIROMBAK JADI GRID BIAR NAMPILIN SEMUA POLI 👇
+  Widget _buildPoliGrid(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -505,18 +616,31 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          height: 160,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
+        Obx(() {
+          if (controller.listPoli.isEmpty) {
+            return Text(
+              'Poli belum tersedia',
+              style: TextStyle(color: isDark ? Colors.white70 : Colors.black),
+            );
+          }
+
+          return GridView.builder(
+            shrinkWrap: true,
+            physics:
+                const NeverScrollableScrollPhysics(), // Biar nggak bentrok sama scroll layar utama
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 1.1, // Ngatur proporsi kotak polinya
+            ),
             itemCount: controller.listPoli.length,
             itemBuilder: (context, index) {
               final poli = controller.listPoli[index];
               return _buildPoliCard(poli, isDark);
             },
-          ),
-        ),
+          );
+        }),
       ],
     );
   }
@@ -527,28 +651,40 @@ class HomeView extends GetView<HomeController> {
 
     IconData iconPoli = Icons.medical_services;
     if (namaPoli.toLowerCase().contains('gigi')) iconPoli = Icons.sick;
-    if (namaPoli.toLowerCase().contains('jantung')) iconPoli = Icons.monitor_heart;
+    if (namaPoli.toLowerCase().contains('jantung'))
+      iconPoli = Icons.monitor_heart;
     if (namaPoli.toLowerCase().contains('anak')) iconPoli = Icons.child_care;
-    if (namaPoli.toLowerCase().contains('mata')) iconPoli = Icons.remove_red_eye;
+    if (namaPoli.toLowerCase().contains('mata'))
+      iconPoli = Icons.remove_red_eye;
 
     return Container(
-      width: 140,
-      margin: const EdgeInsets.only(right: 16),
+      // width dan margin horizontal gua hapus karena sekarang udah otomatis diatur sama GridView
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? Colors.grey[900] : Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.surfaceVariant.withOpacity(isDark ? 0.1 : 0.5)),
-        boxShadow: isDark ? [] : [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10, offset: const Offset(0, 4)),
-        ],
+        border: Border.all(
+          color: AppColors.surfaceVariant.withOpacity(isDark ? 0.1 : 0.5),
+        ),
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.02),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
             child: Icon(iconPoli, color: AppColors.primary, size: 24),
           ),
           const Spacer(),
@@ -578,12 +714,17 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildBottomNav(bool isDark) {
     return ClipRRect(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(40),
+        topRight: Radius.circular(40),
+      ),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           height: 90,
-          color: isDark ? Colors.black.withOpacity(0.8) : const Color(0xFFFAF9F6).withOpacity(0.8),
+          color: isDark
+              ? Colors.black.withOpacity(0.8)
+              : const Color(0xFFFAF9F6).withOpacity(0.8),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -608,7 +749,9 @@ class HomeView extends GetView<HomeController> {
           duration: const Duration(milliseconds: 300),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFFF7F50).withOpacity(0.2) : Colors.transparent,
+            color: isSelected
+                ? const Color(0xFFFF7F50).withOpacity(0.2)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
@@ -616,7 +759,11 @@ class HomeView extends GetView<HomeController> {
             children: [
               Icon(
                 icon,
-                color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
+                color: isSelected
+                    ? AppColors.primary
+                    : (isDark
+                          ? Colors.white38
+                          : AppColors.secondary.withOpacity(0.5)),
                 size: 24,
               ),
               const SizedBox(height: 4),
@@ -625,7 +772,11 @@ class HomeView extends GetView<HomeController> {
                 style: GoogleFonts.beVietnamPro(
                   fontSize: 10,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                  color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
+                  color: isSelected
+                      ? AppColors.primary
+                      : (isDark
+                            ? Colors.white38
+                            : AppColors.secondary.withOpacity(0.5)),
                   letterSpacing: 1,
                 ),
               ),

@@ -88,18 +88,22 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                 ),
               ),
               const SizedBox(height: 32),
+
+              // --- KARTU TIKET UTAMA ---
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: isDark ? Colors.grey[900] : Colors.white,
                   borderRadius: BorderRadius.circular(32),
-                  boxShadow: isDark ? [] : [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 24,
-                      offset: const Offset(0, 12),
-                    ),
-                  ],
+                  boxShadow: isDark
+                      ? []
+                      : [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 24,
+                            offset: const Offset(0, 12),
+                          ),
+                        ],
                 ),
                 child: Column(
                   children: [
@@ -107,8 +111,12 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 24),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF571B05) : AppColors.primary,
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                        color: isDark
+                            ? const Color(0xFF571B05)
+                            : AppColors.primary,
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(32),
+                        ),
                       ),
                       child: Column(
                         children: [
@@ -126,8 +134,8 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                             () => Text(
                               controller.queueNumber.value,
                               style: GoogleFonts.plusJakartaSans(
-                                fontSize: 48,
-                                fontWeight: FontWeight.w800,
+                                fontSize: 64, // Nomor dibikin raksasa
+                                fontWeight: FontWeight.w900,
                                 color: Colors.white,
                                 height: 1,
                               ),
@@ -140,45 +148,62 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                       padding: const EdgeInsets.all(24.0),
                       child: Column(
                         children: [
+                          // QR CODE DIHAPUS, DIGANTI INSTRUKSI JELAS
                           Container(
-                            width: 140,
-                            height: 140,
-                            padding: const EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: isDark
+                                  ? Colors.black26
+                                  : Colors.orange.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(16),
-                              boxShadow: isDark ? [] : [
-                                BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10),
-                              ],
-                            ),
-                            child: Obx(
-                              () => Image.network(
-                                'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${controller.appointmentId.value}',
-                                loadingBuilder: (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-                                },
-                                errorBuilder: (context, error, stackTrace) => const Icon(Icons.qr_code, size: 80),
+                              border: Border.all(
+                                color: Colors.orange.withOpacity(0.3),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Scan at the clinic reception',
-                            style: GoogleFonts.beVietnamPro(
-                              fontSize: 12,
-                              color: isDark ? Colors.white60 : AppColors.onSurfaceVariant,
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.volume_up_rounded,
+                                  color: Colors.orange,
+                                  size: 32,
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Text(
+                                    'Silakan duduk di ruang tunggu. Nomor Anda akan dipanggil oleh perawat.',
+                                    style: GoogleFonts.beVietnamPro(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: isDark
+                                          ? Colors.white70
+                                          : AppColors.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 24),
                           Obx(
                             () => Column(
                               children: [
-                                _buildDetailRow('PATIENT', controller.patientName.value, isDark),
+                                _buildDetailRow(
+                                  'PATIENT',
+                                  controller.patientName.value,
+                                  isDark,
+                                ),
                                 const SizedBox(height: 16),
-                                _buildDetailRow('SERVICE', controller.service.value, isDark),
+                                _buildDetailRow(
+                                  'SERVICE',
+                                  controller.service.value,
+                                  isDark,
+                                ),
                                 const SizedBox(height: 16),
-                                _buildDetailRow('DATE & TIME', controller.dateTime.value, isDark),
+                                _buildDetailRow(
+                                  'DATE & TIME',
+                                  controller.dateTime.value,
+                                  isDark,
+                                ),
                               ],
                             ),
                           ),
@@ -190,7 +215,11 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                         20,
                         (index) => Expanded(
                           child: Container(
-                            color: index % 2 == 0 ? Colors.transparent : (isDark ? Colors.white10 : AppColors.surfaceVariant),
+                            color: index % 2 == 0
+                                ? Colors.transparent
+                                : (isDark
+                                      ? Colors.white10
+                                      : AppColors.surfaceVariant),
                             height: 2,
                           ),
                         ),
@@ -199,15 +228,26 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.black26 : const Color(0xFFF4F3F1),
-                        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
+                        color: isDark
+                            ? Colors.black26
+                            : const Color(0xFFF4F3F1),
+                        borderRadius: const BorderRadius.vertical(
+                          bottom: Radius.circular(32),
+                        ),
                       ),
                       child: Row(
                         children: [
                           Container(
                             padding: const EdgeInsets.all(10),
-                            decoration: const BoxDecoration(color: Color(0xFF90EFEF), shape: BoxShape.circle),
-                            child: const Icon(Icons.location_on, color: AppColors.secondary, size: 20),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF90EFEF),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.location_on,
+                              color: AppColors.secondary,
+                              size: 20,
+                            ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -216,7 +256,9 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
+                                color: isDark
+                                    ? const Color(0xFF93F2F2)
+                                    : AppColors.secondary,
                               ),
                             ),
                           ),
@@ -227,26 +269,38 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                 ),
               ),
               const SizedBox(height: 32),
+
+              // --- TOMBOL-TOMBOL SAKTI TETAP ADA ---
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: controller.addToCalendar,
-                      icon: Icon(Icons.calendar_month, color: isDark ? const Color(0xFF006A6A) : AppColors.secondary, size: 18),
+                      icon: Icon(
+                        Icons.calendar_month,
+                        color: isDark
+                            ? const Color(0xFF006A6A)
+                            : AppColors.secondary,
+                        size: 18,
+                      ),
                       label: Text(
                         'Add to\nCalendar',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? const Color(0xFF006A6A) : AppColors.secondary,
+                          color: isDark
+                              ? const Color(0xFF006A6A)
+                              : AppColors.secondary,
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFE0F7F7),
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
                     ),
                   ),
@@ -254,15 +308,25 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: controller.shareTicket,
-                      icon: const Icon(Icons.share, color: Colors.white, size: 18),
+                      icon: const Icon(
+                        Icons.share,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                       label: Text(
                         'Share Ticket',
-                        style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 22),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
                     ),
                   ),
@@ -274,39 +338,62 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                 child: ElevatedButton(
                   onPressed: () => Get.offNamed('/queue-monitor'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark ? const Color(0xFF380C00) : const Color(0xFF380C00),
+                    backgroundColor: isDark
+                        ? const Color(0xFF380C00)
+                        : const Color(0xFF380C00),
                     padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     elevation: 0,
                   ),
                   child: Text(
                     'Check Queue Status',
-                    style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 12),
+
+              // --- TOMBOL DEV (SIMULASI / BAYAR) ---
               Obx(() {
                 if (controller.status.value == 'completed') {
                   return SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        if (controller.appointmentId.value != '0' && controller.appointmentId.value.isNotEmpty) {
-                          Get.toNamed('/payment-history', arguments: controller.appointmentId.value);
+                        if (controller.appointmentId.value != '0' &&
+                            controller.appointmentId.value.isNotEmpty) {
+                          Get.toNamed(
+                            '/payment-history',
+                            arguments: controller.appointmentId.value,
+                          );
                         } else {
-                          Get.snackbar('Error', 'ID Janji Temu tidak ditemukan');
+                          Get.snackbar(
+                            'Error',
+                            'ID Janji Temu tidak ditemukan',
+                          );
                         }
                       },
                       icon: const Icon(Icons.payment, color: Colors.white),
                       label: Text(
                         'Lanjut ke Pembayaran',
-                        style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF006A6A),
                         padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                         elevation: 0,
                       ),
                     ),
@@ -315,26 +402,43 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                   return SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: controller.isSimulating.value ? null : controller.simulateDoctorExamination,
+                      onPressed: controller.isSimulating.value
+                          ? null
+                          : controller.simulateDoctorExamination,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
-                          side: const BorderSide(color: Colors.redAccent, width: 2),
+                          side: const BorderSide(
+                            color: Colors.redAccent,
+                            width: 2,
+                          ),
                         ),
                         elevation: 0,
                       ),
                       child: controller.isSimulating.value
-                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.redAccent, strokeWidth: 2))
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.redAccent,
+                                strokeWidth: 2,
+                              ),
+                            )
                           : Text(
                               'Simulasi Periksa (Dev Mode)',
-                              style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.redAccent),
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.redAccent,
+                              ),
                             ),
                     ),
                   );
                 }
               }),
+
               const SizedBox(height: 12),
               TextButton(
                 onPressed: controller.backToDashboard,
@@ -343,7 +447,9 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
+                    color: isDark
+                        ? const Color(0xFF93F2F2)
+                        : AppColors.secondary,
                   ),
                 ),
               ),
@@ -383,12 +489,17 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
 
   Widget _buildBottomNav(bool isDark) {
     return ClipRRect(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(40),
+        topRight: Radius.circular(40),
+      ),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           height: 90,
-          color: isDark ? Colors.black.withOpacity(0.8) : const Color(0xFFFAF9F6).withOpacity(0.8),
+          color: isDark
+              ? Colors.black.withOpacity(0.8)
+              : const Color(0xFFFAF9F6).withOpacity(0.8),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Obx(
             () => Row(
@@ -414,7 +525,9 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFF7F50).withOpacity(0.2) : Colors.transparent,
+          color: isSelected
+              ? const Color(0xFFFF7F50).withOpacity(0.2)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
@@ -422,7 +535,11 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
+              color: isSelected
+                  ? AppColors.primary
+                  : (isDark
+                        ? Colors.white38
+                        : AppColors.secondary.withOpacity(0.5)),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -431,7 +548,11 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
               style: GoogleFonts.beVietnamPro(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : AppColors.secondary.withOpacity(0.5)),
+                color: isSelected
+                    ? AppColors.primary
+                    : (isDark
+                          ? Colors.white38
+                          : AppColors.secondary.withOpacity(0.5)),
                 letterSpacing: 1,
               ),
             ),
