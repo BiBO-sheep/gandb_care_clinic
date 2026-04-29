@@ -20,31 +20,37 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
           children: [
             _buildCustomAppBar(isDark),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 16),
-                    _buildHeroSection(isDark),
-                    const SizedBox(height: 24),
-                    _buildMainQueueCard(isDark),
-                    const SizedBox(height: 16),
-                    _buildTimelineCard(isDark),
-                    const SizedBox(height: 16),
-                    _buildBentoDetails(
-                      isDark,
-                    ), // 👈 Ini udah dibenerin buat nampilin data asli
-                    const SizedBox(height: 16),
-                    _buildInfoBanner(isDark),
-                    const SizedBox(height: 16),
-                    _buildImageAnchor(
-                      isDark,
-                    ), // 👈 Ini juga ditambahin anti 404
-                    const SizedBox(height: 120),
-                  ],
-                ),
-              ),
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+                }
+                
+                if (!controller.isHasActiveSession.value) {
+                  return _buildNoSessionState(isDark);
+                }
+
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
+                      _buildHeroSection(isDark),
+                      const SizedBox(height: 24),
+                      _buildMainQueueCard(isDark),
+                      const SizedBox(height: 16),
+                      _buildTimelineCard(isDark),
+                      const SizedBox(height: 16),
+                      _buildBentoDetails(isDark),
+                      const SizedBox(height: 16),
+                      _buildInfoBanner(isDark),
+                      const SizedBox(height: 16),
+                      _buildImageAnchor(isDark),
+                      const SizedBox(height: 120),
+                    ],
+                  ),
+                );
+              }),
             ),
           ],
         ),
@@ -156,10 +162,10 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
           ),
           Obx(
             () => Text(
-              controller.myQueueNumber.value,
+              controller.currentQueue.value,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 72,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w900,
                 color: isDark
                     ? const Color(0xFFFFDBCF)
                     : const Color(0xFF380C00),
@@ -237,7 +243,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                   ),
                   Obx(
                     () => Text(
-                      '~${controller.estimatedWaitTime.value} min',
+                      '~${controller.estimatedWait.value} min',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 32,
                         fontWeight: FontWeight.w800,
@@ -286,10 +292,27 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildTimelineDot(isCompleted: true, isDark: isDark),
-                  _buildTimelineDot(isCompleted: true, isDark: isDark),
-                  _buildTimelineDot(isCurrent: true, isDark: isDark),
-                  _buildTimelineDot(isFuture: true, isDark: isDark),
+                  _buildTimelineDot(
+                    isCompleted: _isStatusReached('check-in', true),
+                    isCurrent: _isStatusReached('check-in', false),
+                    isDark: isDark,
+                  ),
+                  _buildTimelineDot(
+                    isCompleted: _isStatusReached('pre-screen', true),
+                    isCurrent: _isStatusReached('pre-screen', false),
+                    isDark: isDark,
+                  ),
+                  _buildTimelineDot(
+                    isCompleted: _isStatusReached('waiting', true),
+                    isCurrent: _isStatusReached('waiting', false),
+                    isDark: isDark,
+                  ),
+                  _buildTimelineDot(
+                    isCompleted: _isStatusReached('consult', true),
+                    isCurrent: _isStatusReached('consult', false),
+                    isFuture: !_isStatusReached('consult', true) && !_isStatusReached('consult', false),
+                    isDark: isDark,
+                  ),
                 ],
               ),
             ],
@@ -298,41 +321,71 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'CHECK-IN',
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white60 : AppColors.onSurface,
-                ),
-              ),
-              Text(
-                'PRE-SCREEN',
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white60 : AppColors.onSurface,
-                ),
-              ),
-              Text(
-                'WAITING',
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
-              Text(
-                'CONSULT',
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.white24 : Colors.grey,
-                ),
-              ),
+              _buildTimelineText('CHECK-IN', _isStatusReached('check-in', false) || _isStatusReached('check-in', true), isDark),
+              _buildTimelineText('PRE-SCREEN', _isStatusReached('pre-screen', false) || _isStatusReached('pre-screen', true), isDark),
+              _buildTimelineText('WAITING', _isStatusReached('waiting', false) || _isStatusReached('waiting', true), isDark),
+              _buildTimelineText('CONSULT', _isStatusReached('consult', false) || _isStatusReached('consult', true), isDark),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  bool _isStatusReached(String target, bool checkCompleted) {
+    List<String> statuses = ['scheduled', 'check-in', 'pre-screen', 'waiting', 'consult', 'completed'];
+    int currentIdx = statuses.indexOf(controller.currentStatus.value.toLowerCase());
+    int targetIdx = statuses.indexOf(target.toLowerCase());
+    
+    if (checkCompleted) {
+      return currentIdx > targetIdx;
+    } else {
+      return currentIdx == targetIdx;
+    }
+  }
+
+  Widget _buildTimelineText(String label, bool isActive, bool isDark) {
+    return Text(
+      label,
+      style: GoogleFonts.beVietnamPro(
+        fontSize: 9,
+        fontWeight: FontWeight.bold,
+        color: isActive 
+          ? AppColors.primary 
+          : (isDark ? Colors.white24 : Colors.grey),
+      ),
+    );
+  }
+
+  Widget _buildNoSessionState(bool isDark) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.calendar_today_outlined, size: 80, color: isDark ? Colors.white12 : Colors.grey[300]),
+            const SizedBox(height: 24),
+            Text(
+              "Belum ada jadwal pemeriksaan hari ini.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white70 : Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              "Silakan lakukan booking terlebih dahulu melalui menu utama.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.beVietnamPro(
+                fontSize: 14,
+                color: isDark ? Colors.white38 : Colors.grey,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
