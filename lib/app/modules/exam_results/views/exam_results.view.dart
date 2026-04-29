@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controllers/exam_results_controller.dart';
+import '../../invoice/views/tagihan_page.dart';
 
 class ExamResultsView extends GetView<ExamResultsController> {
   const ExamResultsView({Key? key}) : super(key: key);
@@ -219,7 +220,7 @@ class ExamResultsView extends GetView<ExamResultsController> {
                     onPressed: () {
                       final appointmentId = record['appointment_id'] ?? record['appointment']?['id'];
                       if (appointmentId != null) {
-                        Get.toNamed('/payment-history', arguments: appointmentId);
+                        Get.to(() => TagihanPage(appointmentId: appointmentId is String ? int.parse(appointmentId) : appointmentId));
                       } else {
                         Get.snackbar('Gagal', 'ID Appointment tidak ditemukan');
                       }

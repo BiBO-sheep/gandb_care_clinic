@@ -359,9 +359,9 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
               ),
               const SizedBox(height: 12),
 
-              // --- TOMBOL DEV (SIMULASI / BAYAR) ---
+              // --- TOMBOL PEMBAYARAN (Hanya muncul jika status completed/selesai) ---
               Obx(() {
-                if (controller.status.value == 'completed') {
+                if (controller.status.value == 'completed' || controller.status.value == 'selesai') {
                   return SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
@@ -399,43 +399,7 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                     ),
                   );
                 } else {
-                  return SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: controller.isSimulating.value
-                          ? null
-                          : controller.simulateDoctorExamination,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: const BorderSide(
-                            color: Colors.redAccent,
-                            width: 2,
-                          ),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: controller.isSimulating.value
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.redAccent,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : Text(
-                              'Simulasi Periksa (Dev Mode)',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.redAccent,
-                              ),
-                            ),
-                    ),
-                  );
+                  return const SizedBox.shrink();
                 }
               }),
 

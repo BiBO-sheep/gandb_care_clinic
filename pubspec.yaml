@@ -19,6 +19,8 @@ dependencies:
   font_awesome_flutter: ^11.0.0
   shared_preferences: ^2.5.5
   flutter_native_splash: ^2.4.7
+  add_2_calendar: ^3.0.1
+  share_plus: ^10.1.4
 
 dev_dependencies:
   flutter_test:

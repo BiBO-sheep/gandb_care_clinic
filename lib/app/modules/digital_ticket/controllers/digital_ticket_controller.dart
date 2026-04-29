@@ -3,92 +3,43 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../../api_config.dart';
 
 class DigitalTicketController extends GetxController {
   var currentIndex = 1.obs;
   var isSimulating = false.obs;
-  var status = 'confirmed'.obs; // Tambahan state status
+  var status = 'confirmed'.obs;
 
-  // Variabel penampung data asli
   var queueNumber = '...'.obs;
   var patientName = '...'.obs;
   var service = '...'.obs;
   var dateTime = '...'.obs;
-  var appointmentId = '0'.obs; // Untuk isi QR Code
+  var appointmentId = '0'.obs;
+  
+  // Variabel untuk parsing tanggal
+  String _rawDate = "";
+  String _rawTime = "";
+
   final String location =
-      'G&B Care Central\n4th Floor, Suite 400, Medical Plaza';
+      'G&B Care Central, 4th Floor, Suite 400, Medical Plaza';
 
   @override
   void onInit() {
     super.onInit();
-    // TANGKAP DATA DARI HALAMAN KONFIRMASI
     if (Get.arguments != null) {
       var data = Get.arguments;
       queueNumber.value = data['queue_number'] ?? 'A-00';
       patientName.value = data['patient_name'] ?? 'Patient';
       service.value = data['service'] ?? 'Clinic';
-      dateTime.value = "${data['date']}, ${data['time']}";
+      
+      _rawDate = data['date'] ?? '';
+      _rawTime = data['time'] ?? '';
+      dateTime.value = "$_rawDate, $_rawTime";
+      
       appointmentId.value = data['id'].toString();
-      status.value = data['status'] ?? 'confirmed'; // Ambil status asli
-    }
-  }
-
-  Future<void> simulateDoctorExamination() async {
-    isSimulating.value = true;
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
-
-      if (token == null) {
-        Get.snackbar(
-          'Error',
-          'Sesi tidak valid, silakan login ulang',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-        return;
-      }
-
-      final url = Uri.parse('${ApiConfig.baseUrl}/simulate-examination/${appointmentId.value}');
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        Get.snackbar(
-          'Success',
-          'Simulasi Berhasil: Dokter telah memeriksa pasien dan memberikan resep!',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 4),
-        );
-        
-        // Update status agar UI langsung memunculkan tombol "Lanjut ke Pembayaran"
-        status.value = 'completed';
-      } else {
-        final data = json.decode(response.body);
-        Get.snackbar(
-          'Error',
-          data['message'] ?? 'Gagal melakukan simulasi',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
-      }
-    } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal terhubung ke server',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-    } finally {
-      isSimulating.value = false;
+      status.value = data['status'] ?? 'confirmed';
     }
   }
 
@@ -99,12 +50,46 @@ class DigitalTicketController extends GetxController {
     if (index == 0) {
       Get.offAllNamed('/home');
     } else if (index == 1) {
-      // 👇 INI HARUS ADA SUPAYA BISA PINDAH KE HALAMAN HISTORY
       Get.toNamed('/payment-history');
     }
   }
 
-  // Fungsi dummy tambahan
-  void addToCalendar() => Get.snackbar('Success', 'Added to calendar');
-  void shareTicket() => Get.snackbar('Share', 'Opening share menu...');
+  void addToCalendar() {
+    try {
+      // Parsing tanggal: format asumsikan YYYY-MM-DD dan HH:mm
+      // Contoh: 2026-04-28, 14:00
+      DateTime start;
+      try {
+        start = DateTime.parse("${_rawDate} ${_rawTime}");
+      } catch (e) {
+        // Fallback jika format berbeda (misal Apr 28, 2026)
+        start = DateTime.now().add(const Duration(hours: 1));
+      }
+      
+      final DateTime end = start.add(const Duration(hours: 1));
+
+      final Event event = Event(
+        title: "Jadwal Periksa - ${service.value}",
+        description: "Jadwal periksa untuk pasien ${patientName.value} di klinik G&B Care.",
+        location: location,
+        startDate: start,
+        endDate: end,
+      );
+
+      Add2Calendar.addEvent2Cal(event);
+    } catch (e) {
+      Get.snackbar('Error', 'Gagal membuka kalender: $e');
+    }
+  }
+
+  void shareTicket() {
+    final String shareText = "🏥 *Jadwal Konsultasi G&B Care Clinic*\n\n"
+        "Pasien: ${patientName.value}\n"
+        "Layanan: ${service.value}\n"
+        "Jadwal: ${dateTime.value}\n"
+        "Lokasi: $location\n\n"
+        "Mohon datang 15 menit sebelum jadwal pemeriksaan. Terima kasih!";
+    
+    Share.share(shareText);
+  }
 }

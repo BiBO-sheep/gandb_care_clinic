@@ -52,9 +52,6 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
                   if (controller.isLoading.value) {
                     return const Center(child: CircularProgressIndicator(color: AppColors.primary));
                   }
-                  if (controller.invoiceData.value != null) {
-                    return _buildPaymentSummary(controller.invoiceData.value!, isDark);
-                  }
                   if (controller.historyList.isEmpty) {
                     return _buildEmptyState(isDark);
                   }
@@ -105,109 +102,6 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
     );
   }
 
-  Widget _buildPaymentSummary(Map<String, dynamic> data, bool isDark) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.grey[900] : Colors.white,
-              borderRadius: BorderRadius.circular(32),
-              boxShadow: isDark ? [] : [
-                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10)),
-              ],
-            ),
-            child: Column(
-              children: [
-                Icon(Icons.receipt_long, size: 64, color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary),
-                const SizedBox(height: 16),
-                Text(
-                  'Rincian Pembayaran',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : AppColors.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                _buildSummaryRow('Biaya Konsultasi', controller.formatRupiah(data['total_consultation']), isDark: isDark),
-                const SizedBox(height: 16),
-                _buildSummaryRow('Biaya Obat', controller.formatRupiah(data['total_medicines']), isDark: isDark),
-                Divider(height: 32, color: isDark ? Colors.white12 : Colors.grey[300]),
-                _buildSummaryRow('Total Pembayaran', controller.formatRupiah(data['grand_total']), isTotal: true, isDark: isDark),
-              ],
-            ),
-          ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => controller.showPaymentMethods(),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? const Color(0xFF571B05) : AppColors.primary,
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              ),
-              child: Text(
-                'BAYAR SEKARANG',
-                style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: TextButton(
-              onPressed: () {
-                controller.invoiceData.value = null;
-                controller.fetchHistory();
-              },
-              child: Text(
-                'Kembali ke Riwayat',
-                style: GoogleFonts.plusJakartaSans(color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary, fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
-          const SizedBox(height: 80),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSummaryRow(String label, String value, {bool isTotal = false, required bool isDark}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: GoogleFonts.beVietnamPro(
-              fontSize: isTotal ? 16 : 14,
-              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              color: isTotal ? (isDark ? Colors.white : AppColors.onSurface) : (isDark ? Colors.white70 : AppColors.onSurfaceVariant),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Flexible(
-          child: Text(
-            value,
-            textAlign: TextAlign.right,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: isTotal ? 20 : 14,
-              fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
-              color: isTotal ? (isDark ? const Color(0xFFFFDBCF) : AppColors.primary) : (isDark ? Colors.white : AppColors.onSurface),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildEmptyState(bool isDark) {
     return Center(
