@@ -21,9 +21,9 @@ dependencies:
   flutter_native_splash: ^2.4.7
   add_2_calendar: ^3.0.1
   share_plus: ^10.1.4
-  audioplayers: ^6.1.0
-  laravel_echo: ^1.5.0
-  pusher_channels_flutter: ^2.2.1
+  audioplayers: ^6.6.0
+  laravel_echo: ^1.0.0-beta.1
+  pusher_channels_flutter: ^2.6.0
 
 dev_dependencies:
   flutter_test:

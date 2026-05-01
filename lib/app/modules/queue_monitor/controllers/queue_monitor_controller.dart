@@ -58,6 +58,8 @@ class QueueMonitorController extends GetxController {
         },
       );
 
+      print("Response Data: ${response.body}");
+
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         if (responseData['status'] == 'success' && responseData['data'] != null) {
@@ -99,11 +101,11 @@ class QueueMonitorController extends GetxController {
       // Konfigurasi Pusher Client
       PusherChannelsFlutter pusher = PusherChannelsFlutter.getInstance();
       
-      echo = Echo(
+      echo = new Echo(
+        broadcaster: EchoBroadcasterType.Pusher,
         client: pusher,
-        broadcaster: EchoBroadcaster.pusher,
         options: {
-          'key': 'GNB_CARE_KEY', // Ganti dengan key Pusher kamu
+          'key': 'GNB_CARE_KEY', 
           'cluster': 'mt1',
           'authEndpoint': '${ApiConfig.baseUrl}/broadcasting/auth',
           'auth': {
@@ -120,8 +122,8 @@ class QueueMonitorController extends GetxController {
         
         // Cek apakah ini giliran pasien ini (status berubah menjadi check_in)
         if (event['status'] == 'check_in' && event['queue_number'] == currentQueue.value) {
-          // Play Sound
-          await _audioPlayer.play(AssetSource('audio/tingtung.mp3'));
+          // Play Sound - Menggunakan AssetSource dari audioplayers
+          await _audioPlayer.play(new AssetSource('audio/tingtung.mp3'));
           
           // Show Snackbar
           Get.snackbar(
