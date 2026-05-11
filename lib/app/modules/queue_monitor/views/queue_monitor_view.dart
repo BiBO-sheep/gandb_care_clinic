@@ -83,12 +83,23 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
               ),
             ],
           ),
-          IconButton(
-            icon: Icon(
-              Icons.qr_code_scanner,
-              color: isDark ? Colors.white70 : AppColors.secondary,
-            ),
-            onPressed: controller.openQRScanner,
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.volume_up,
+                  color: isDark ? Colors.white70 : AppColors.secondary,
+                ),
+                onPressed: controller.testAudio,
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.qr_code_scanner,
+                  color: isDark ? Colors.white70 : AppColors.secondary,
+                ),
+                onPressed: controller.openQRScanner,
+              ),
+            ],
           ),
         ],
       ),
