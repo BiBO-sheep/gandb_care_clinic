@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "606906822087",
+    "project_id": "gandb-care-clinic",
+    "storage_bucket": "gandb-care-clinic.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606906822087:android:154b34170c0ec76695fde2",
+        "android_client_info": {
+          "package_name": "com.example.gandb_care_clinic"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByoYlYNDQVtZ524iB_M1QJyiZL2Bw7FbQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

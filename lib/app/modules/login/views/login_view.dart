@@ -157,20 +157,24 @@ class LoginView extends GetView<LoginController> {
                 ],
               ),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: OutlinedButton.icon(
-                  onPressed: controller.loginWithGoogle,
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
-                    side: BorderSide(color: isDark ? Colors.white12 : AppColors.onSurfaceVariant.withOpacity(0.1)),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  ),
-                  icon: const Icon(Icons.g_mobiledata, size: 36, color: Colors.blue),
-                  label: Text(
-                    'Continue with Google',
-                    style: GoogleFonts.beVietnamPro(fontSize: 15, fontWeight: FontWeight.w600, color: isDark ? Colors.white : AppColors.onSurface),
+              Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: OutlinedButton.icon(
+                    onPressed: controller.isGoogleLoading.value ? null : controller.signInWithGoogle,
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
+                      side: BorderSide(color: isDark ? Colors.white12 : AppColors.onSurfaceVariant.withOpacity(0.1)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                    ),
+                    icon: controller.isGoogleLoading.value
+                        ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Icon(Icons.g_mobiledata, size: 36, color: Colors.blue),
+                    label: Text(
+                      controller.isGoogleLoading.value ? 'Connecting...' : 'Continue with Google',
+                      style: GoogleFonts.beVietnamPro(fontSize: 15, fontWeight: FontWeight.w600, color: isDark ? Colors.white : AppColors.onSurface),
+                    ),
                   ),
                 ),
               ),
