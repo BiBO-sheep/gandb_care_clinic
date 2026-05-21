@@ -1,4 +1,6 @@
 import 'package:gandb_care_clinic/app/modules/confirm_appointment/bindings/confirm_appointment_binding.dart';
+import 'package:gandb_care_clinic/app/modules/invoice/bindings/invoice_binding.dart';
+import 'package:gandb_care_clinic/app/modules/invoice/views/invoice_view.dart';
 import 'package:gandb_care_clinic/app/modules/confirm_appointment/views/confirm_appointment_view.dart';
 import 'package:gandb_care_clinic/app/modules/digital_prescription/bindings/digital_prescription_binding.dart';
 import 'package:gandb_care_clinic/app/modules/digital_prescription/views/digital_prescription_view.dart';
@@ -135,6 +137,12 @@ class AppPages {
       name: '/splash', // atau Routes.SPLASH
       page: () => const SplashView(),
       binding: SplashBinding(),
+    ),
+    GetPage(
+      name: Routes.INVOICE,
+      page: () => const InvoiceView(),
+      binding: InvoiceBinding(),
+      transition: Transition.rightToLeft,
     ),
   ];
 }

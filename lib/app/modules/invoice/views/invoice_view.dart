@@ -64,18 +64,33 @@ class InvoiceView extends GetView<InvoiceController> {
     final medicalRecord = appointment['medical_record'] ?? {};
     final poli = appointment['poli'] ?? {};
     final user = appointment['user'] ?? {};
+    final dokter = appointment['dokter'] ?? {};
 
-    final String diagnosis = medicalRecord['diagnosis'] ?? 'Tidak ada catatan diagnosis';
+    final String diagnosis = medicalRecord['diagnosis'] ?? 'Belum ada diagnosis';
     final String patientName = user['name'] ?? 'Pasien';
     final String clinicName = poli['name'] ?? 'G&B Care Clinic';
-    final String invoiceNumber = 'INV-${data['id'] ?? '000'}';
+    final String doctorName = dokter['name'] ?? 'Dokter';
+    final String invoiceNumber = data['invoice_number'] ?? 'INV-${data['id'] ?? '000'}';
     final String status = data['status'] ?? 'unpaid';
     final bool isPaid = status.toLowerCase() == 'paid';
+    final bool isPending = status.toLowerCase() == 'pending';
 
     final consultationFee = double.tryParse(data['total_consultation']?.toString() ?? '0') ?? 0;
     final medicineFee = double.tryParse(data['total_medicines']?.toString() ?? '0') ?? 0;
     final grandTotal = double.tryParse(data['grand_total']?.toString() ?? '0') ?? 0;
-    final List medicines = data['medicines'] ?? [];
+    final List<dynamic> medicines = List<dynamic>.from(data['medicines'] ?? []);
+
+    // Cek apakah semua obat sudah diberi harga oleh kasir
+    final bool hasUnpricedMedicine = medicines.isNotEmpty &&
+        medicines.any((obat) {
+          final price = obat['price'];
+          if (price == null) return true;
+          final priceNum = double.tryParse(price.toString()) ?? 0;
+          return priceNum <= 0;
+        });
+
+    // canPay: status unpaid DAN semua harga obat sudah diisi (atau tidak ada resep)
+    final bool canPay = !isPaid && !isPending && !hasUnpricedMedicine;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -113,20 +128,54 @@ class InvoiceView extends GetView<InvoiceController> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: isPaid ? Colors.green.withOpacity(0.1) : (isDark ? Colors.white10 : AppColors.primary.withOpacity(0.1)),
+              color: isPaid
+                  ? Colors.green.withOpacity(0.1)
+                  : isPending
+                      ? Colors.orange.withOpacity(0.1)
+                      : hasUnpricedMedicine
+                          ? Colors.amber.withOpacity(0.1)
+                          : (isDark ? Colors.white10 : AppColors.primary.withOpacity(0.1)),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(isPaid ? Icons.check_circle : Icons.pending, size: 14, color: isPaid ? Colors.green : (isDark ? Colors.white70 : AppColors.primary)),
+                Icon(
+                  isPaid
+                      ? Icons.check_circle
+                      : isPending
+                          ? Icons.hourglass_top
+                          : hasUnpricedMedicine
+                              ? Icons.pending_actions
+                              : Icons.payment,
+                  size: 14,
+                  color: isPaid
+                      ? Colors.green
+                      : isPending
+                          ? Colors.orange
+                          : hasUnpricedMedicine
+                              ? Colors.amber
+                              : (isDark ? Colors.white70 : AppColors.primary),
+                ),
                 const SizedBox(width: 6),
                 Text(
-                  isPaid ? 'LUNAS' : 'BELUM DIBAYAR',
+                  isPaid
+                      ? 'LUNAS'
+                      : isPending
+                          ? 'MENUNGGU KASIR'
+                          : hasUnpricedMedicine
+                              ? 'MENUNGGU HARGA OBAT'
+                              : 'SIAP BAYAR',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: isPaid ? Colors.green : (isDark ? Colors.white70 : AppColors.primary),
+                    color: isPaid
+                        ? Colors.green
+                        : isPending
+                            ? Colors.orange
+                            : hasUnpricedMedicine
+                                ? Colors.amber
+                                : (isDark ? Colors.white70 : AppColors.primary),
                   ),
                 ),
               ],
@@ -148,6 +197,8 @@ class InvoiceView extends GetView<InvoiceController> {
                 _buildInfoRow(Icons.person, 'PASIEN', patientName, isDark),
                 const SizedBox(height: 16),
                 _buildInfoRow(Icons.local_hospital, 'KLINIK / POLI', clinicName, isDark),
+                const SizedBox(height: 16),
+                _buildInfoRow(Icons.medical_services, 'DOKTER', 'Dr. $doctorName', isDark),
                 const SizedBox(height: 16),
                 _buildInfoRow(Icons.tag, 'NO. INVOICE', invoiceNumber, isDark),
               ],
@@ -212,22 +263,11 @@ class InvoiceView extends GetView<InvoiceController> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                _buildFeeRow('Biaya Konsultasi & Tindakan', controller.formatRupiah(consultationFee), isDark),
+                _buildFeeRow('Jasa Dokter', controller.formatRupiah(consultationFee), isDark),
                 const SizedBox(height: 12),
-                _buildFeeRow('Biaya Resep Obat', controller.formatRupiah(medicineFee), isDark),
-                if (medicines.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  ...medicines.map((obat) => Padding(
-                    padding: const EdgeInsets.only(left: 16, top: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(child: Text('• ${obat['nama_obat'] ?? '-'} x${obat['jumlah'] ?? 1}', style: GoogleFonts.beVietnamPro(fontSize: 12, color: isDark ? Colors.white54 : AppColors.onSurfaceVariant))),
-                        Text(controller.formatRupiah(obat['subtotal']), style: GoogleFonts.plusJakartaSans(fontSize: 12, color: isDark ? Colors.white54 : AppColors.onSurfaceVariant)),
-                      ],
-                    ),
-                  )),
-                ],
+                _buildFeeRow('Biaya Obat-obatan', controller.formatRupiah(medicineFee), isDark),
+                const SizedBox(height: 4),
+                _buildMedicineList(medicines, isDark),
                 const SizedBox(height: 16),
                 Container(height: 1, color: isDark ? Colors.white12 : AppColors.surfaceVariant.withOpacity(0.5)),
                 const SizedBox(height: 16),
@@ -242,46 +282,7 @@ class InvoiceView extends GetView<InvoiceController> {
             ),
           ),
           const SizedBox(height: 32),
-          if (!isPaid)
-            SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton(
-                onPressed: controller.showPaymentMethods,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isDark ? const Color(0xFF571B05) : AppColors.primary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  elevation: isDark ? 0 : 8,
-                  shadowColor: AppColors.primary.withOpacity(0.4),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.payment, color: Colors.white, size: 22),
-                    const SizedBox(width: 12),
-                    Text('BAYAR SEKARANG', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 1)),
-                  ],
-                ),
-              ),
-            ),
-          if (isPaid)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.green.withOpacity(0.3)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.verified, color: Colors.green, size: 28),
-                  const SizedBox(width: 12),
-                  Text('Tagihan Lunas', style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.green[700])),
-                ],
-              ),
-            ),
+          _buildPaymentAction(isPaid, isPending, canPay, hasUnpricedMedicine, isDark),
           const SizedBox(height: 16),
           Center(
             child: TextButton(
@@ -291,6 +292,205 @@ class InvoiceView extends GetView<InvoiceController> {
           ),
           const SizedBox(height: 40),
         ],
+      ),
+    );
+  }
+
+  // =========================================
+  // HELPER: Daftar Obat (aman dari spread error)
+  // =========================================
+  Widget _buildMedicineList(List<dynamic> medicines, bool isDark) {
+    if (medicines.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 16, top: 4, bottom: 4),
+        child: Text(
+          'Harga obat sedang dihitung kasir...',
+          style: GoogleFonts.beVietnamPro(
+            fontSize: 12,
+            color: Colors.orange,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      );
+    }
+
+    final List<Widget> rows = [];
+    for (final obat in medicines) {
+      rows.add(
+        Padding(
+          key: ValueKey(obat['id']),
+          padding: const EdgeInsets.only(left: 16, top: 6),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  '\u2022 ${obat['medicine_name'] ?? '-'}  (${obat['dosage'] ?? ''})\n  ${obat['rules'] ?? ''}',
+                  style: GoogleFonts.beVietnamPro(
+                    fontSize: 11,
+                    color: isDark ? Colors.white54 : AppColors.onSurfaceVariant,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                controller.formatRupiah(obat['price']),
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white54 : AppColors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: rows);
+  }
+
+  // =========================================
+  // HELPER: Tombol / Banner Pembayaran
+  // =========================================
+  Widget _buildPaymentAction(bool isPaid, bool isPending, bool canPay, bool hasUnpricedMedicine, bool isDark) {
+    if (isPaid) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.green.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.green.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.verified, color: Colors.green, size: 28),
+            const SizedBox(width: 12),
+            Text(
+              'Tagihan Lunas',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: Colors.green[700],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (isPending) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.orange.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.orange.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.hourglass_top, color: Colors.orange, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Menunggu Kasir',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.orange[700],
+                    ),
+                  ),
+                  Text(
+                    'Harga obat sedang dihitung. Tagihan final akan segera tersedia.',
+                    style: GoogleFonts.beVietnamPro(
+                      fontSize: 12,
+                      color: Colors.orange[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // Status: unpaid TAPI ada obat yang belum diberi harga kasir
+    if (hasUnpricedMedicine) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.amber.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.amber.withOpacity(0.3)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.pending_actions, color: Colors.amber, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Menunggu Harga Obat',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.amber[800],
+                    ),
+                  ),
+                  Text(
+                    'Kasir sedang menginput harga obat resep Anda. Harap tunggu sebentar.',
+                    style: GoogleFonts.beVietnamPro(
+                      fontSize: 12,
+                      color: Colors.amber[700],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // canPay = unpaid + semua harga obat sudah diisi
+    return SizedBox(
+      width: double.infinity,
+      height: 60,
+      child: ElevatedButton(
+        onPressed: controller.showPaymentMethods,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isDark ? const Color(0xFF571B05) : AppColors.primary,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          elevation: isDark ? 0 : 8,
+          shadowColor: AppColors.primary.withOpacity(0.4),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.payment, color: Colors.white, size: 22),
+            const SizedBox(width: 12),
+            Text(
+              'BAYAR SEKARANG',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 1,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

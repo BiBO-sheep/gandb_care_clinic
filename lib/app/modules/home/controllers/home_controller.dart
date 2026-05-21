@@ -19,14 +19,17 @@ class HomeController extends GetxController {
   var healthTips = <HealthTipModel>[].obs;
 
   @override
-  void onInit() {
-    super.onInit();
+  void onReady() {
+    super.onReady();
     refreshData();
   }
 
   Future<void> refreshData() async {
+    if (isClosed) return;
     await fetchUser();
+    if (isClosed) return;
     await fetchDashboardData();
+    if (isClosed) return;
     await fetchPoliAPI();
   }
 

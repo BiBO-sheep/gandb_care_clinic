@@ -29,6 +29,7 @@ class PaymentHistoryController extends GetxController {
   }
 
   Future<void> fetchPaymentSummary(String id) async {
+    if (isClosed) return;
     isLoading.value = true;
     errorMessage.value = '';
 
@@ -37,6 +38,7 @@ class PaymentHistoryController extends GetxController {
 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (isClosed) return;
       String? token = prefs.getString('token');
 
       final response = await http.get(
@@ -47,6 +49,7 @@ class PaymentHistoryController extends GetxController {
         },
       );
 
+      if (isClosed) return;
       print('Status Code: ${response.statusCode}');
       print('Response Body: ${response.body}');
 
@@ -57,23 +60,26 @@ class PaymentHistoryController extends GetxController {
         } else {
           errorMessage.value =
               responseData['message'] ?? 'Gagal memuat rincian pembayaran';
-          Get.snackbar('Error', errorMessage.value);
+          if (Get.overlayContext != null) Get.snackbar('Error', errorMessage.value);
         }
       } else {
         errorMessage.value =
             'Error ${response.statusCode}: ${response.reasonPhrase}';
-        Get.snackbar('Error', 'Gagal memuat rincian pembayaran');
+        if (Get.overlayContext != null) Get.snackbar('Error', 'Gagal memuat rincian pembayaran');
       }
     } catch (e) {
       print('Error Try-Catch: $e');
-      errorMessage.value = 'Exception: $e';
-      Get.snackbar('Error', errorMessage.value);
+      if (!isClosed) {
+        errorMessage.value = 'Exception: $e';
+        if (Get.overlayContext != null) Get.snackbar('Error', errorMessage.value);
+      }
     } finally {
-      isLoading.value = false;
+      if (!isClosed) isLoading.value = false;
     }
   }
 
   Future<void> fetchHistory() async {
+    if (isClosed) return;
     isLoading.value = true;
     errorMessage.value = '';
 
@@ -82,6 +88,7 @@ class PaymentHistoryController extends GetxController {
 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      if (isClosed) return;
       String? token = prefs.getString('token');
 
       final response = await http.get(
@@ -92,35 +99,47 @@ class PaymentHistoryController extends GetxController {
         },
       );
 
+      if (isClosed) return;
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         historyList.value = responseData['data'];
       } else {
         errorMessage.value =
             'Error ${response.statusCode}: ${response.reasonPhrase}';
-        Get.snackbar('Error', 'Gagal memuat riwayat');
+        if (Get.overlayContext != null) Get.snackbar('Error', 'Gagal memuat riwayat');
       }
     } catch (e) {
       print('Error Try-Catch: $e');
-      errorMessage.value = 'Exception: $e';
-      Get.snackbar('Error', errorMessage.value);
+      if (!isClosed) {
+        errorMessage.value = 'Exception: $e';
+        if (Get.overlayContext != null) Get.snackbar('Error', errorMessage.value);
+      }
     } finally {
-      isLoading.value = false;
+      if (!isClosed) isLoading.value = false;
     }
   }
 
   void openTicket(Map<String, dynamic> item) {
-    Get.toNamed(
-      '/digital-ticket',
-      arguments: {
-        'id': item['id'],
-        'queue_number': item['queue_number'],
-        'patient_name': item['user']?['name'] ?? 'Patient',
-        'service': item['poli']?['nama_poli'] ?? 'Klinik',
-        'date': item['tanggal'],
-        'time': item['jam'],
-      },
-    );
+    final String status = item['status']?.toString() ?? '';
+    final bool isCompleted = status == 'completed' || status == 'selesai';
+
+    if (isCompleted && item['id'] != null) {
+      // Kalau sudah selesai -> arahkan ke Invoice
+      Get.toNamed('/invoice', arguments: {'appointment_id': item['id']});
+    } else {
+      // Kalau masih aktif -> buka tiket digital
+      Get.toNamed(
+        '/digital-ticket',
+        arguments: {
+          'id': item['id'],
+          'queue_number': item['queue_number'],
+          'patient_name': item['user']?['name'] ?? 'Patient',
+          'service': item['poli']?['nama_poli'] ?? 'Klinik',
+          'date': item['tanggal'],
+          'time': item['jam'],
+        },
+      );
+    }
   }
 
   void changePage(int index) {
