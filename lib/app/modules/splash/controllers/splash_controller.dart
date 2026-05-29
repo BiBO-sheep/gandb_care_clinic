@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SplashController extends GetxController {
+  final _storage = const FlutterSecureStorage();
+
   @override
   void onReady() {
     super.onReady();
@@ -18,8 +20,7 @@ class SplashController extends GetxController {
 
     try {
       // 2. Cek token login
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('token');
+      String? token = await _storage.read(key: 'token');
 
       if (isClosed) return; // cek lagi setelah await
 

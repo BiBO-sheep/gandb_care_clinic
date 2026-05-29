@@ -1,4 +1,7 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class ApiConfig {
-  // Alamat IP Laptop kamu di jaringan Wi-Fi
-  static const String baseUrl = 'http://172.20.3.101:8000/api';
+  static String get baseUrl {
+    return dotenv.env['API_BASE_URL'] ?? 'http://172.20.2.22:8000/api';
+  }
 }

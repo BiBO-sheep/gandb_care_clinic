@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../controllers/settings_controller.dart';
 
 class SettingsView extends GetView<SettingsController> {
@@ -9,22 +7,22 @@ class SettingsView extends GetView<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Get.isDarkMode;
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : AppColors.primary),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
           onPressed: () => Get.back(),
         ),
         title: Text(
           'Settings',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 18,
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : AppColors.primary,
+            color: theme.colorScheme.primary,
           ),
         ),
         centerTitle: true,
@@ -43,32 +41,30 @@ class SettingsView extends GetView<SettingsController> {
                       height: 96,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.teal,
+                        color: theme.colorScheme.primaryContainer,
                         border: Border.all(
-                          color: AppColors.primary.withOpacity(0.3),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
                           width: 4,
                         ),
                       ),
-                      child: const Icon(Icons.person, size: 50, color: Colors.white),
+                      child: Icon(Icons.person, size: 50, color: theme.colorScheme.onPrimaryContainer),
                     ),
                     const SizedBox(height: 12),
                     Obx(
                       () => Text(
                         controller.profileCtrl.userName.value,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 20,
+                        style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : AppColors.onSurface,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                     ),
                     Obx(
                       () => Text(
                         controller.profileCtrl.userEmail.value,
-                        style: GoogleFonts.beVietnamPro(
-                          fontSize: 12,
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w500,
-                          color: isDark ? Colors.white38 : Colors.grey,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ),
@@ -77,35 +73,29 @@ class SettingsView extends GetView<SettingsController> {
               ),
               const SizedBox(height: 32),
 
-              _buildSectionTitle(Icons.person_outline, 'Edit Profile', isDark),
+              _buildSectionTitle(Icons.person_outline, 'Edit Profile', theme),
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.grey[900] : const Color(0xFFF4F3F1),
+                  color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
                 ),
                 child: Column(
                   children: [
-                    _buildSettingsTextField('Full Name', controller.nameController, isDark),
+                    _buildSettingsTextField('Full Name', controller.nameController, theme),
                     const SizedBox(height: 12),
-                    _buildSettingsTextField('Email', controller.emailController, isDark),
+                    _buildSettingsTextField('Email', controller.emailController, theme),
                     const SizedBox(height: 12),
-                    _buildSettingsTextField('Phone', controller.phoneController, isDark),
+                    _buildSettingsTextField('Phone', controller.phoneController, theme),
                     const SizedBox(height: 12),
-                    _buildSettingsTextField('Address', controller.addressController, isDark, maxLines: 2),
+                    _buildSettingsTextField('Address', controller.addressController, theme, maxLines: 2),
                     const SizedBox(height: 20),
                     Obx(
                       () => SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: controller.isLoading.value ? null : controller.updateProfile,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            elevation: isDark ? 0 : 4,
-                          ),
                           child: controller.isLoading.value
                               ? const SizedBox(
                                   height: 20,
@@ -121,11 +111,12 @@ class SettingsView extends GetView<SettingsController> {
               ),
               const SizedBox(height: 24),
 
-              _buildSectionTitle(Icons.display_settings, 'Display & App Info', isDark),
+              _buildSectionTitle(Icons.display_settings, 'Display & App Info', theme),
               Container(
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.grey[900] : const Color(0xFFF4F3F1),
+                  color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
                 ),
                 child: Column(
                   children: [
@@ -136,13 +127,13 @@ class SettingsView extends GetView<SettingsController> {
                         icon: Icons.dark_mode,
                         value: controller.isDarkMode.value,
                         onChanged: controller.toggleDarkMode,
-                        isDark: isDark,
+                        theme: theme,
                       ),
                     ),
-                    _buildDivider(),
-                    _buildLinkItem('Privacy Policy', controller.openPrivacyPolicy, isDark),
-                    _buildDivider(),
-                    _buildLinkItem('Terms of Service', controller.openTerms, isDark),
+                    _buildDivider(theme),
+                    _buildLinkItem('Privacy Policy', controller.openPrivacyPolicy, theme),
+                    _buildDivider(theme),
+                    _buildLinkItem('Terms of Service', controller.openTerms, theme),
                   ],
                 ),
               ),
@@ -152,17 +143,16 @@ class SettingsView extends GetView<SettingsController> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: controller.signOut,
-                  icon: const Icon(Icons.logout, color: Color(0xFFBA1A1A), size: 20),
+                  icon: Icon(Icons.logout, color: theme.colorScheme.error, size: 20),
                   label: Text(
                     'Sign Out',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 16,
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFFBA1A1A),
+                      color: theme.colorScheme.error,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark ? const Color(0xFF410002) : const Color(0xFFFFDAD6),
+                    backgroundColor: theme.colorScheme.errorContainer,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -177,19 +167,18 @@ class SettingsView extends GetView<SettingsController> {
     );
   }
 
-  Widget _buildSectionTitle(IconData icon, String title, bool isDark) {
+  Widget _buildSectionTitle(IconData icon, String title, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12, left: 8),
       child: Row(
         children: [
-          Icon(icon, color: isDark ? const Color(0xFFFFDBCF) : AppColors.secondary, size: 20),
+          Icon(icon, color: theme.colorScheme.secondary, size: 20),
           const SizedBox(width: 8),
           Text(
             title,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 16,
+            style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white : AppColors.onSurface,
+              color: theme.colorScheme.onSurface,
             ),
           ),
         ],
@@ -202,7 +191,7 @@ class SettingsView extends GetView<SettingsController> {
     required String subtitle,
     required bool value,
     required Function(bool) onChanged,
-    required bool isDark,
+    required ThemeData theme,
     IconData? icon,
   }) {
     return Padding(
@@ -210,7 +199,7 @@ class SettingsView extends GetView<SettingsController> {
       child: Row(
         children: [
           if (icon != null) ...[
-            Icon(icon, color: isDark ? Colors.white70 : const Color(0xFF57423B), size: 24),
+            Icon(icon, color: theme.colorScheme.onSurfaceVariant, size: 24),
             const SizedBox(width: 16),
           ],
           Expanded(
@@ -219,16 +208,17 @@ class SettingsView extends GetView<SettingsController> {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14,
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : AppColors.onSurface,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: GoogleFonts.beVietnamPro(fontSize: 11, color: isDark ? Colors.white38 : Colors.grey),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -236,15 +226,15 @@ class SettingsView extends GetView<SettingsController> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: Colors.white,
-            activeTrackColor: AppColors.primary,
+            activeThumbColor: theme.colorScheme.onPrimary,
+            activeTrackColor: theme.colorScheme.primary,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildLinkItem(String title, VoidCallback onTap, bool isDark) {
+  Widget _buildLinkItem(String title, VoidCallback onTap, ThemeData theme) {
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -254,23 +244,22 @@ class SettingsView extends GetView<SettingsController> {
           children: [
             Text(
               title,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 14,
+              style: theme.textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white : AppColors.onSurface,
+                color: theme.colorScheme.onSurface,
               ),
             ),
-            const Icon(Icons.open_in_new, color: Colors.grey, size: 18),
+            Icon(Icons.open_in_new, color: theme.colorScheme.onSurfaceVariant, size: 18),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildDivider() {
+  Widget _buildDivider(ThemeData theme) {
     return Container(
       height: 1,
-      color: Colors.grey.withOpacity(0.1),
+      color: theme.colorScheme.surfaceContainerHighest,
       margin: const EdgeInsets.symmetric(horizontal: 20),
     );
   }
@@ -278,7 +267,7 @@ class SettingsView extends GetView<SettingsController> {
   Widget _buildSettingsTextField(
     String label,
     TextEditingController textController,
-    bool isDark, {
+    ThemeData theme, {
     int maxLines = 1,
   }) {
     return Column(
@@ -286,26 +275,18 @@ class SettingsView extends GetView<SettingsController> {
       children: [
         Text(
           label,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 12,
+          style: theme.textTheme.labelSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
+            color: theme.colorScheme.secondary,
           ),
         ),
         const SizedBox(height: 6),
         TextField(
           controller: textController,
           maxLines: maxLines,
-          style: GoogleFonts.beVietnamPro(fontSize: 14, color: isDark ? Colors.white : Colors.black),
+          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface),
           decoration: InputDecoration(
-            filled: true,
-            fillColor: isDark ? Colors.grey[800] : Colors.white,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: isDark ? const Color(0xFF93F2F2) : AppColors.primary, width: 1.5),
-            ),
           ),
         ),
       ],

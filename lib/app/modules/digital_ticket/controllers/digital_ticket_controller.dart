@@ -1,11 +1,6 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../../../api_config.dart';
 
 class DigitalTicketController extends GetxController {
   var currentIndex = 1.obs;
@@ -60,7 +55,7 @@ class DigitalTicketController extends GetxController {
       // Contoh: 2026-04-28, 14:00
       DateTime start;
       try {
-        start = DateTime.parse("${_rawDate} ${_rawTime}");
+        start = DateTime.parse("$_rawDate $_rawTime");
       } catch (e) {
         // Fallback jika format berbeda (misal Apr 28, 2026)
         start = DateTime.now().add(const Duration(hours: 1));

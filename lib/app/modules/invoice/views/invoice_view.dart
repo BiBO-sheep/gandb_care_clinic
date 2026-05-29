@@ -1,57 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../controllers/invoice_controller.dart';
 
 class InvoiceView extends GetView<InvoiceController> {
-  const InvoiceView({Key? key}) : super(key: key);
+  const InvoiceView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Get.isDarkMode;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
-      appBar: _buildAppBar(isDark),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: _buildAppBar(theme, isDark),
       body: SafeArea(
         child: Obx(() {
           if (controller.isLoading.value) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+            return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
           }
           if (controller.errorMessage.isNotEmpty) {
-            return _buildErrorState(isDark);
+            return _buildErrorState(theme, isDark);
           }
           if (controller.invoiceData.value == null) {
-            return _buildEmptyState(isDark);
+            return _buildEmptyState(theme, isDark);
           }
-          return _buildInvoiceContent(controller.invoiceData.value!, isDark);
+          return _buildInvoiceContent(controller.invoiceData.value!, theme, isDark);
         }),
       ),
     );
   }
 
-  AppBar _buildAppBar(bool isDark) {
+  AppBar _buildAppBar(ThemeData theme, bool isDark) {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new, color: isDark ? Colors.white : AppColors.secondary, size: 20),
+        icon: Icon(Icons.arrow_back_ios_new, color: theme.colorScheme.primary, size: 20),
         onPressed: () => Get.back(),
       ),
       title: Row(
         children: [
           CircleAvatar(
             radius: 16,
-            backgroundColor: isDark ? const Color(0xFF004D4D) : AppColors.secondary,
-            child: Icon(Icons.receipt_long, size: 18, color: isDark ? const Color(0xFF93F2F2) : Colors.white),
+            backgroundColor: theme.colorScheme.primaryContainer,
+            child: Icon(Icons.receipt_long, size: 18, color: theme.colorScheme.onPrimaryContainer),
           ),
           const SizedBox(width: 10),
           Text(
             'Invoice',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 16,
+            style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w800,
-              color: isDark ? Colors.white : AppColors.secondary,
+              color: theme.colorScheme.primary,
             ),
           ),
         ],
@@ -59,7 +58,7 @@ class InvoiceView extends GetView<InvoiceController> {
     );
   }
 
-  Widget _buildInvoiceContent(Map<String, dynamic> data, bool isDark) {
+  Widget _buildInvoiceContent(Map<String, dynamic> data, ThemeData theme, bool isDark) {
     final appointment = data['appointment'] ?? {};
     final medicalRecord = appointment['medical_record'] ?? {};
     final poli = appointment['poli'] ?? {};
@@ -99,27 +98,25 @@ class InvoiceView extends GetView<InvoiceController> {
         children: [
           Text(
             'INVOICE',
-            style: GoogleFonts.beVietnamPro(
-              fontSize: 10,
+            style: theme.textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary,
+              color: theme.colorScheme.primary,
               letterSpacing: 2,
             ),
           ),
           const SizedBox(height: 8),
           RichText(
             text: TextSpan(
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 28,
+              style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.w800,
-                color: isDark ? Colors.white : AppColors.onSurface,
+                color: theme.colorScheme.onSurface,
                 height: 1.2,
               ),
               children: [
                 const TextSpan(text: 'Tagihan\n'),
                 TextSpan(
                   text: 'Pembayaran',
-                  style: TextStyle(color: isPaid ? Colors.green : (isDark ? const Color(0xFFFFDBCF) : AppColors.primary)),
+                  style: TextStyle(color: isPaid ? Colors.green : theme.colorScheme.primary),
                 ),
               ],
             ),
@@ -129,12 +126,12 @@ class InvoiceView extends GetView<InvoiceController> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: isPaid
-                  ? Colors.green.withOpacity(0.1)
+                  ? Colors.green.withValues(alpha: 0.1)
                   : isPending
-                      ? Colors.orange.withOpacity(0.1)
+                      ? Colors.orange.withValues(alpha: 0.1)
                       : hasUnpricedMedicine
-                          ? Colors.amber.withOpacity(0.1)
-                          : (isDark ? Colors.white10 : AppColors.primary.withOpacity(0.1)),
+                          ? Colors.amber.withValues(alpha: 0.1)
+                          : theme.colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -155,7 +152,7 @@ class InvoiceView extends GetView<InvoiceController> {
                           ? Colors.orange
                           : hasUnpricedMedicine
                               ? Colors.amber
-                              : (isDark ? Colors.white70 : AppColors.primary),
+                              : theme.colorScheme.primary,
                 ),
                 const SizedBox(width: 6),
                 Text(
@@ -166,8 +163,7 @@ class InvoiceView extends GetView<InvoiceController> {
                           : hasUnpricedMedicine
                               ? 'MENUNGGU HARGA OBAT'
                               : 'SIAP BAYAR',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11,
+                  style: theme.textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isPaid
                         ? Colors.green
@@ -175,7 +171,7 @@ class InvoiceView extends GetView<InvoiceController> {
                             ? Colors.orange
                             : hasUnpricedMedicine
                                 ? Colors.amber
-                                : (isDark ? Colors.white70 : AppColors.primary),
+                                : theme.colorScheme.primary,
                   ),
                 ),
               ],
@@ -186,21 +182,21 @@ class InvoiceView extends GetView<InvoiceController> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF003333) : AppColors.secondary,
+              color: theme.colorScheme.secondaryContainer,
               borderRadius: BorderRadius.circular(20),
               boxShadow: isDark ? [] : [
-                BoxShadow(color: AppColors.secondary.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 8)),
+                BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, 8)),
               ],
             ),
             child: Column(
               children: [
-                _buildInfoRow(Icons.person, 'PASIEN', patientName, isDark),
+                _buildInfoRow(Icons.person, 'PASIEN', patientName, theme, isDark),
                 const SizedBox(height: 16),
-                _buildInfoRow(Icons.local_hospital, 'KLINIK / POLI', clinicName, isDark),
+                _buildInfoRow(Icons.local_hospital, 'KLINIK / POLI', clinicName, theme, isDark),
                 const SizedBox(height: 16),
-                _buildInfoRow(Icons.medical_services, 'DOKTER', 'Dr. $doctorName', isDark),
+                _buildInfoRow(Icons.medical_services, 'DOKTER', 'Dr. $doctorName', theme, isDark),
                 const SizedBox(height: 16),
-                _buildInfoRow(Icons.tag, 'NO. INVOICE', invoiceNumber, isDark),
+                _buildInfoRow(Icons.tag, 'NO. INVOICE', invoiceNumber, theme, isDark),
               ],
             ),
           ),
@@ -209,9 +205,9 @@ class InvoiceView extends GetView<InvoiceController> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: isDark ? Colors.grey[900] : Colors.white,
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: isDark ? Colors.white10 : AppColors.surfaceVariant.withOpacity(0.5)),
+              border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -220,20 +216,20 @@ class InvoiceView extends GetView<InvoiceController> {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: isDark ? Colors.teal.withOpacity(0.1) : AppColors.secondary.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                      child: Icon(Icons.medical_information, color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary, size: 20),
+                      decoration: BoxDecoration(color: theme.colorScheme.primaryContainer, borderRadius: BorderRadius.circular(10)),
+                      child: Icon(Icons.medical_information, color: theme.colorScheme.primary, size: 20),
                     ),
                     const SizedBox(width: 12),
                     Text(
                       'Diagnosis Dokter',
-                      style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? Colors.white : AppColors.onSurface),
+                      style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
                 Text(
                   diagnosis,
-                  style: GoogleFonts.beVietnamPro(fontSize: 14, color: isDark ? Colors.white70 : AppColors.onSurfaceVariant, height: 1.6),
+                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant, height: 1.6),
                 ),
               ],
             ),
@@ -243,51 +239,52 @@ class InvoiceView extends GetView<InvoiceController> {
             width: double.infinity,
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: isDark ? Colors.grey[900] : Colors.white,
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(20),
               boxShadow: isDark ? [] : [
-                BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 20, offset: const Offset(0, 8)),
+                BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.04), blurRadius: 20, offset: const Offset(0, 8)),
               ],
+              border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.receipt_long, color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary, size: 20),
+                    Icon(Icons.receipt_long, color: theme.colorScheme.primary, size: 20),
                     const SizedBox(width: 8),
                     Text(
                       'Rincian Biaya',
-                      style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: isDark ? Colors.white : AppColors.onSurface),
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: theme.colorScheme.onSurface),
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
-                _buildFeeRow('Jasa Dokter', controller.formatRupiah(consultationFee), isDark),
+                _buildFeeRow('Jasa Dokter', controller.formatRupiah(consultationFee), theme, isDark),
                 const SizedBox(height: 12),
-                _buildFeeRow('Biaya Obat-obatan', controller.formatRupiah(medicineFee), isDark),
+                _buildFeeRow('Biaya Obat-obatan', controller.formatRupiah(medicineFee), theme, isDark),
                 const SizedBox(height: 4),
-                _buildMedicineList(medicines, isDark),
+                _buildMedicineList(medicines, theme, isDark),
                 const SizedBox(height: 16),
-                Container(height: 1, color: isDark ? Colors.white12 : AppColors.surfaceVariant.withOpacity(0.5)),
+                Container(height: 1, color: theme.colorScheme.surfaceContainerHighest),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Total Tagihan', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? Colors.white : AppColors.onSurface)),
-                    Text(controller.formatRupiah(grandTotal), style: GoogleFonts.plusJakartaSans(fontSize: 24, fontWeight: FontWeight.w800, color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary)),
+                    Text('Total Tagihan', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
+                    Text(controller.formatRupiah(grandTotal), style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, color: theme.colorScheme.primary)),
                   ],
                 ),
               ],
             ),
           ),
           const SizedBox(height: 32),
-          _buildPaymentAction(isPaid, isPending, canPay, hasUnpricedMedicine, isDark),
+          _buildPaymentAction(isPaid, isPending, canPay, hasUnpricedMedicine, theme, isDark),
           const SizedBox(height: 16),
           Center(
             child: TextButton(
               onPressed: () => Get.offAllNamed('/home'),
-              child: Text('Kembali ke Beranda', style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w600, color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary)),
+              child: Text('Kembali ke Beranda', style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600, color: theme.colorScheme.secondary)),
             ),
           ),
           const SizedBox(height: 40),
@@ -299,14 +296,13 @@ class InvoiceView extends GetView<InvoiceController> {
   // =========================================
   // HELPER: Daftar Obat (aman dari spread error)
   // =========================================
-  Widget _buildMedicineList(List<dynamic> medicines, bool isDark) {
+  Widget _buildMedicineList(List<dynamic> medicines, ThemeData theme, bool isDark) {
     if (medicines.isEmpty) {
       return Padding(
         padding: const EdgeInsets.only(left: 16, top: 4, bottom: 4),
         child: Text(
           'Harga obat sedang dihitung kasir...',
-          style: GoogleFonts.beVietnamPro(
-            fontSize: 12,
+          style: theme.textTheme.bodySmall?.copyWith(
             color: Colors.orange,
             fontStyle: FontStyle.italic,
           ),
@@ -327,9 +323,8 @@ class InvoiceView extends GetView<InvoiceController> {
               Expanded(
                 child: Text(
                   '\u2022 ${obat['medicine_name'] ?? '-'}  (${obat['dosage'] ?? ''})\n  ${obat['rules'] ?? ''}',
-                  style: GoogleFonts.beVietnamPro(
-                    fontSize: 11,
-                    color: isDark ? Colors.white54 : AppColors.onSurfaceVariant,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                     height: 1.5,
                   ),
                 ),
@@ -337,10 +332,9 @@ class InvoiceView extends GetView<InvoiceController> {
               const SizedBox(width: 8),
               Text(
                 controller.formatRupiah(obat['price']),
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 12,
+                style: theme.textTheme.labelMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.white54 : AppColors.onSurfaceVariant,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -354,15 +348,15 @@ class InvoiceView extends GetView<InvoiceController> {
   // =========================================
   // HELPER: Tombol / Banner Pembayaran
   // =========================================
-  Widget _buildPaymentAction(bool isPaid, bool isPending, bool canPay, bool hasUnpricedMedicine, bool isDark) {
+  Widget _buildPaymentAction(bool isPaid, bool isPending, bool canPay, bool hasUnpricedMedicine, ThemeData theme, bool isDark) {
     if (isPaid) {
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.green.withOpacity(0.08),
+          color: Colors.green.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.green.withOpacity(0.3)),
+          border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -371,8 +365,7 @@ class InvoiceView extends GetView<InvoiceController> {
             const SizedBox(width: 12),
             Text(
               'Tagihan Lunas',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 18,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w800,
                 color: Colors.green[700],
               ),
@@ -387,9 +380,9 @@ class InvoiceView extends GetView<InvoiceController> {
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.orange.withOpacity(0.08),
+          color: Colors.orange.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.orange.withOpacity(0.3)),
+          border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -401,16 +394,14 @@ class InvoiceView extends GetView<InvoiceController> {
                 children: [
                   Text(
                     'Menunggu Kasir',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 16,
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: Colors.orange[700],
                     ),
                   ),
                   Text(
                     'Harga obat sedang dihitung. Tagihan final akan segera tersedia.',
-                    style: GoogleFonts.beVietnamPro(
-                      fontSize: 12,
+                    style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.orange[600],
                     ),
                   ),
@@ -428,9 +419,9 @@ class InvoiceView extends GetView<InvoiceController> {
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.amber.withOpacity(0.08),
+          color: Colors.amber.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.amber.withOpacity(0.3)),
+          border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
         ),
         child: Row(
           children: [
@@ -442,16 +433,14 @@ class InvoiceView extends GetView<InvoiceController> {
                 children: [
                   Text(
                     'Menunggu Harga Obat',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 16,
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: Colors.amber[800],
                     ),
                   ),
                   Text(
                     'Kasir sedang menginput harga obat resep Anda. Harap tunggu sebentar.',
-                    style: GoogleFonts.beVietnamPro(
-                      fontSize: 12,
+                    style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.amber[700],
                     ),
                   ),
@@ -470,22 +459,21 @@ class InvoiceView extends GetView<InvoiceController> {
       child: ElevatedButton(
         onPressed: controller.showPaymentMethods,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isDark ? const Color(0xFF571B05) : AppColors.primary,
+          backgroundColor: theme.colorScheme.primary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           elevation: isDark ? 0 : 8,
-          shadowColor: AppColors.primary.withOpacity(0.4),
+          shadowColor: theme.colorScheme.primary.withValues(alpha: 0.4),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.payment, color: Colors.white, size: 22),
+            Icon(Icons.payment, color: theme.colorScheme.onPrimary, size: 22),
             const SizedBox(width: 12),
             Text(
               'BAYAR SEKARANG',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 16,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: theme.colorScheme.onPrimary,
                 letterSpacing: 1,
               ),
             ),
@@ -495,23 +483,23 @@ class InvoiceView extends GetView<InvoiceController> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value, bool isDark) {
+  Widget _buildInfoRow(IconData icon, String label, String value, ThemeData theme, bool isDark) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: const Color(0xFF93F2F2).withOpacity(0.2), borderRadius: BorderRadius.circular(10)),
-          child: Icon(icon, color: const Color(0xFF93F2F2), size: 20),
+          decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(10)),
+          child: Icon(icon, color: theme.colorScheme.primary, size: 20),
         ),
         const SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.bold, color: const Color(0xFF93F2F2).withOpacity(0.7), letterSpacing: 1.5)),
+              Text(label, style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.7), letterSpacing: 1.5)),
               const SizedBox(height: 4),
-              Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white, height: 1.4)),
+              Text(value, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSecondaryContainer, height: 1.4)),
             ],
           ),
         ),
@@ -519,36 +507,35 @@ class InvoiceView extends GetView<InvoiceController> {
     );
   }
 
-  Widget _buildFeeRow(String label, String value, bool isDark) {
+  Widget _buildFeeRow(String label, String value, ThemeData theme, bool isDark) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: GoogleFonts.beVietnamPro(fontSize: 14, color: isDark ? Colors.white70 : AppColors.onSurfaceVariant)),
-        Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w600, color: isDark ? Colors.white : AppColors.onSurface)),
+        Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        Text(value, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: theme.colorScheme.onSurface)),
       ],
     );
   }
 
-  Widget _buildErrorState(bool isDark) {
+  Widget _buildErrorState(ThemeData theme, bool isDark) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 80, color: Colors.red[300]),
+            Icon(Icons.error_outline, size: 80, color: theme.colorScheme.error),
             const SizedBox(height: 16),
-            Text('Gagal Memuat Invoice', style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : AppColors.onSurface)),
+            Text('Gagal Memuat Invoice', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
             const SizedBox(height: 8),
-            Text(controller.errorMessage.value, textAlign: TextAlign.center, style: GoogleFonts.beVietnamPro(fontSize: 13, color: isDark ? Colors.white60 : AppColors.onSurfaceVariant)),
+            Text(controller.errorMessage.value, textAlign: TextAlign.center, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: controller.fetchInvoice,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Coba Lagi'),
+              icon: Icon(Icons.refresh, color: theme.colorScheme.onError),
+              label: Text('Coba Lagi', style: TextStyle(color: theme.colorScheme.onError)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                backgroundColor: theme.colorScheme.error,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
             ),
@@ -558,14 +545,14 @@ class InvoiceView extends GetView<InvoiceController> {
     );
   }
 
-  Widget _buildEmptyState(bool isDark) {
+  Widget _buildEmptyState(ThemeData theme, bool isDark) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.receipt_long, size: 80, color: isDark ? Colors.white12 : AppColors.surfaceVariant),
+          Icon(Icons.receipt_long, size: 80, color: theme.colorScheme.surfaceContainerHighest),
           const SizedBox(height: 16),
-          Text('Invoice tidak ditemukan', style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white38 : AppColors.onSurfaceVariant)),
+          Text('Invoice tidak ditemukan', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurfaceVariant)),
         ],
       ),
     );

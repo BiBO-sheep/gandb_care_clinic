@@ -1,8 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../controllers/queue_monitor_controller.dart';
 
 class QueueMonitorView extends GetView<QueueMonitorController> {
@@ -10,23 +8,25 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Get.isDarkMode;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       extendBody: true,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
-            _buildCustomAppBar(isDark),
+            _buildCustomAppBar(theme, isDark),
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+                  return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
                 }
                 
                 if (!controller.isHasActiveSession.value) {
-                  return _buildNoSessionState(isDark);
+                  return _buildNoSessionState(theme, isDark);
                 }
 
                 return SingleChildScrollView(
@@ -35,17 +35,17 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 16),
-                      _buildHeroSection(isDark),
+                      _buildHeroSection(theme, isDark),
                       const SizedBox(height: 24),
-                      _buildMainQueueCard(isDark),
+                      _buildMainQueueCard(theme, isDark),
                       const SizedBox(height: 16),
-                      _buildTimelineCard(isDark),
+                      _buildTimelineCard(theme, isDark),
                       const SizedBox(height: 16),
-                      _buildBentoDetails(isDark),
+                      _buildBentoDetails(theme, isDark),
                       const SizedBox(height: 16),
-                      _buildInfoBanner(isDark),
+                      _buildInfoBanner(theme, isDark),
                       const SizedBox(height: 16),
-                      _buildImageAnchor(isDark),
+                      _buildImageAnchor(theme, isDark),
                       const SizedBox(height: 120),
                     ],
                   ),
@@ -55,11 +55,11 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(isDark),
+      bottomNavigationBar: _buildBottomNav(theme, isDark),
     );
   }
 
-  Widget _buildCustomAppBar(bool isDark) {
+  Widget _buildCustomAppBar(ThemeData theme, bool isDark) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
       child: Row(
@@ -67,18 +67,17 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         children: [
           Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 22,
-                backgroundColor: Colors.teal,
-                child: Icon(Icons.person, size: 28, color: Colors.white),
+                backgroundColor: theme.colorScheme.primaryContainer,
+                child: Icon(Icons.person, size: 28, color: theme.colorScheme.onPrimaryContainer),
               ),
               const SizedBox(width: 12),
               Text(
                 'G&B Care Clinic',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 18,
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: isDark ? Colors.white : AppColors.secondary,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
             ],
@@ -88,14 +87,14 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
               IconButton(
                 icon: Icon(
                   Icons.volume_up,
-                  color: isDark ? Colors.white70 : AppColors.secondary,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
                 onPressed: controller.testAudio,
               ),
               IconButton(
                 icon: Icon(
                   Icons.qr_code_scanner,
-                  color: isDark ? Colors.white70 : AppColors.secondary,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
                 onPressed: controller.openQRScanner,
               ),
@@ -106,26 +105,24 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildHeroSection(bool isDark) {
+  Widget _buildHeroSection(ThemeData theme, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'CURRENT SESSION',
-          style: GoogleFonts.beVietnamPro(
-            fontSize: 10,
+          style: theme.textTheme.labelSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary,
+            color: theme.colorScheme.primary,
             letterSpacing: 1.5,
           ),
         ),
         const SizedBox(height: 8),
         Text(
           'Your health journey is in\nprogress.',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 28,
+          style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w800,
-            color: isDark ? Colors.white : AppColors.onSurface,
+            color: theme.colorScheme.onSurface,
             height: 1.1,
           ),
         ),
@@ -133,18 +130,18 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildMainQueueCard(bool isDark) {
+  Widget _buildMainQueueCard(ThemeData theme, bool isDark) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF571B05) : const Color(0xFFFF7F50),
+        color: theme.colorScheme.tertiary,
         borderRadius: BorderRadius.circular(24),
         boxShadow: isDark
             ? []
             : [
                 BoxShadow(
-                  color: const Color(0xFFFF7F50).withOpacity(0.3),
+                  color: theme.colorScheme.shadow.withValues(alpha: 0.1),
                   blurRadius: 24,
                   offset: const Offset(0, 12),
                 ),
@@ -154,32 +151,27 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         children: [
           Text(
             'QUEUE POSITION',
-            style: GoogleFonts.beVietnamPro(
-              fontSize: 12,
+            style: theme.textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: Colors.white.withOpacity(0.8),
+              color: theme.colorScheme.onTertiary.withValues(alpha: 0.8),
               letterSpacing: 2,
             ),
           ),
           const SizedBox(height: 16),
           Text(
             'Number',
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 32,
+            style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w800,
-              color: isDark ? Colors.white : const Color(0xFF380C00),
+              color: theme.colorScheme.onTertiary,
               height: 1,
             ),
           ),
           Obx(
             () => Text(
               controller.currentQueue.value,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 72,
+              style: theme.textTheme.displayLarge?.copyWith(
                 fontWeight: FontWeight.w900,
-                color: isDark
-                    ? const Color(0xFFFFDBCF)
-                    : const Color(0xFF380C00),
+                color: theme.colorScheme.onTertiary,
                 height: 1,
               ),
             ),
@@ -187,17 +179,13 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
           Container(
             height: 3,
             width: 40,
-            color: isDark
-                ? Colors.white24
-                : const Color(0xFF380C00).withOpacity(0.2),
+            color: theme.colorScheme.onTertiary.withValues(alpha: 0.2),
             margin: const EdgeInsets.symmetric(vertical: 24),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white10
-                  : const Color(0xFF380C00).withOpacity(0.1),
+              color: theme.colorScheme.onTertiary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -205,17 +193,16 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
               children: [
                 Icon(
                   Icons.list_alt,
-                  color: isDark ? Colors.white70 : const Color(0xFF380C00),
+                  color: theme.colorScheme.onTertiary,
                   size: 18,
                 ),
                 const SizedBox(width: 8),
                 Obx(
                   () => Text(
                     'Now Serving: ${controller.nowServing.value}',
-                    style: GoogleFonts.beVietnamPro(
-                      fontSize: 14,
+                    style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : const Color(0xFF380C00),
+                      color: theme.colorScheme.onTertiary,
                     ),
                   ),
                 ),
@@ -227,12 +214,13 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildTimelineCard(bool isDark) {
+  Widget _buildTimelineCard(ThemeData theme, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey[900] : const Color(0xFFF4F3F1),
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
       ),
       child: Column(
         children: [
@@ -244,23 +232,17 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                 children: [
                   Text(
                     'Estimated wait',
-                    style: GoogleFonts.beVietnamPro(
-                      fontSize: 12,
+                    style: theme.textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: isDark
-                          ? Colors.white38
-                          : AppColors.onSurfaceVariant,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                   Obx(
                     () => Text(
                       '~${controller.estimatedWait.value} min',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 32,
+                      style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w800,
-                        color: isDark
-                            ? const Color(0xFFFFDBCF)
-                            : const Color(0xFF380C00),
+                        color: theme.colorScheme.primary,
                         height: 1.2,
                       ),
                     ),
@@ -270,14 +252,12 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFF571B05)
-                      : const Color(0xFFFFDBCF),
+                  color: theme.colorScheme.primaryContainer,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.hourglass_top,
-                  color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary,
+                  color: theme.colorScheme.onPrimaryContainer,
                   size: 24,
                 ),
               ),
@@ -290,14 +270,14 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
               Container(
                 height: 2,
                 width: double.infinity,
-                color: isDark ? Colors.white10 : AppColors.surfaceVariant,
+                color: theme.colorScheme.surfaceContainerHighest,
               ),
               Positioned(
                 left: 0,
                 child: Container(
                   height: 2,
                   width: 200,
-                  color: AppColors.primary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
               Row(
@@ -306,22 +286,26 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                   _buildTimelineDot(
                     isCompleted: _isStatusReached('check-in', true),
                     isCurrent: _isStatusReached('check-in', false),
+                    theme: theme,
                     isDark: isDark,
                   ),
                   _buildTimelineDot(
                     isCompleted: _isStatusReached('pre-screen', true),
                     isCurrent: _isStatusReached('pre-screen', false),
+                    theme: theme,
                     isDark: isDark,
                   ),
                   _buildTimelineDot(
                     isCompleted: _isStatusReached('waiting', true),
                     isCurrent: _isStatusReached('waiting', false),
+                    theme: theme,
                     isDark: isDark,
                   ),
                   _buildTimelineDot(
                     isCompleted: _isStatusReached('consult', true),
                     isCurrent: _isStatusReached('consult', false),
                     isFuture: !_isStatusReached('consult', true) && !_isStatusReached('consult', false),
+                    theme: theme,
                     isDark: isDark,
                   ),
                 ],
@@ -332,10 +316,10 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildTimelineText('CHECK-IN', _isStatusReached('check-in', false) || _isStatusReached('check-in', true), isDark),
-              _buildTimelineText('PRE-SCREEN', _isStatusReached('pre-screen', false) || _isStatusReached('pre-screen', true), isDark),
-              _buildTimelineText('WAITING', _isStatusReached('waiting', false) || _isStatusReached('waiting', true), isDark),
-              _buildTimelineText('CONSULT', _isStatusReached('consult', false) || _isStatusReached('consult', true), isDark),
+              _buildTimelineText('CHECK-IN', _isStatusReached('check-in', false) || _isStatusReached('check-in', true), theme, isDark),
+              _buildTimelineText('PRE-SCREEN', _isStatusReached('pre-screen', false) || _isStatusReached('pre-screen', true), theme, isDark),
+              _buildTimelineText('WAITING', _isStatusReached('waiting', false) || _isStatusReached('waiting', true), theme, isDark),
+              _buildTimelineText('CONSULT', _isStatusReached('consult', false) || _isStatusReached('consult', true), theme, isDark),
             ],
           ),
         ],
@@ -355,44 +339,42 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     }
   }
 
-  Widget _buildTimelineText(String label, bool isActive, bool isDark) {
+  Widget _buildTimelineText(String label, bool isActive, ThemeData theme, bool isDark) {
     return Text(
       label,
-      style: GoogleFonts.beVietnamPro(
+      style: theme.textTheme.labelSmall?.copyWith(
         fontSize: 9,
         fontWeight: FontWeight.bold,
         color: isActive 
-          ? AppColors.primary 
-          : (isDark ? Colors.white24 : Colors.grey),
+          ? theme.colorScheme.primary 
+          : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
       ),
     );
   }
 
-  Widget _buildNoSessionState(bool isDark) {
+  Widget _buildNoSessionState(ThemeData theme, bool isDark) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.calendar_today_outlined, size: 80, color: isDark ? Colors.white12 : Colors.grey[300]),
+            Icon(Icons.calendar_today_outlined, size: 80, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3)),
             const SizedBox(height: 24),
             Text(
               "Belum ada jadwal pemeriksaan hari ini.",
               textAlign: TextAlign.center,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 18,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white70 : Colors.black54,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               "Silakan lakukan booking terlebih dahulu melalui menu utama.",
               textAlign: TextAlign.center,
-              style: GoogleFonts.beVietnamPro(
-                fontSize: 14,
-                color: isDark ? Colors.white38 : Colors.grey,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -405,6 +387,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     bool isCompleted = false,
     bool isCurrent = false,
     bool isFuture = false,
+    required ThemeData theme,
     required bool isDark,
   }) {
     if (isCompleted) {
@@ -412,30 +395,30 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         width: 16,
         height: 16,
         decoration: BoxDecoration(
-          color: AppColors.primary,
+          color: theme.colorScheme.primary,
           shape: BoxShape.circle,
           border: Border.all(
-            color: isDark ? Colors.grey[900]! : Colors.white,
+            color: theme.colorScheme.surface,
             width: 2,
           ),
         ),
-        child: const Icon(Icons.check, color: Colors.white, size: 10),
+        child: Icon(Icons.check, color: theme.colorScheme.onPrimary, size: 10),
       );
     } else if (isCurrent) {
       return Container(
         width: 20,
         height: 20,
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey[900] : Colors.white,
+          color: theme.colorScheme.surface,
           shape: BoxShape.circle,
-          border: Border.all(color: AppColors.primary, width: 3),
+          border: Border.all(color: theme.colorScheme.primary, width: 3),
         ),
         child: Center(
           child: Container(
             width: 8,
             height: 8,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary,
               shape: BoxShape.circle,
             ),
           ),
@@ -446,7 +429,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         width: 12,
         height: 12,
         decoration: BoxDecoration(
-          color: isDark ? Colors.white12 : AppColors.surfaceVariant,
+          color: theme.colorScheme.surfaceContainerHighest,
           shape: BoxShape.circle,
         ),
       );
@@ -454,7 +437,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
   }
 
   // 👇 INI YANG DIBENERIN BIAR NAMPILIN DATA DARI LARAVEL 👇
-  Widget _buildBentoDetails(bool isDark) {
+  Widget _buildBentoDetails(ThemeData theme, bool isDark) {
     return Row(
       children: [
         Expanded(
@@ -462,7 +445,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
             padding: const EdgeInsets.all(20),
             height: 140,
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF003333) : const Color(0xFFE0F7F7),
+              color: theme.colorScheme.secondaryContainer,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
@@ -471,7 +454,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
               children: [
                 Icon(
                   Icons.medical_services,
-                  color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
+                  color: theme.colorScheme.secondary,
                   size: 28,
                 ),
                 Column(
@@ -479,23 +462,17 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                   children: [
                     Text(
                       'ASSIGNED DOCTOR',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10,
+                      style: theme.textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: isDark
-                            ? const Color(0xFF93F2F2)
-                            : AppColors.secondary,
+                        color: theme.colorScheme.secondary,
                       ),
                     ),
                     Obx(
                       () => Text(
                         controller.doctorName.value,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 14,
+                        style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? Colors.white
-                              : const Color(0xFF004F54),
+                          color: theme.colorScheme.onSecondaryContainer,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -513,7 +490,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
             padding: const EdgeInsets.all(20),
             height: 140,
             decoration: BoxDecoration(
-              color: isDark ? Colors.grey[900] : const Color(0xFFE9E8E5),
+              color: theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Column(
@@ -525,9 +502,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                   children: [
                     Icon(
                       Icons.meeting_room,
-                      color: isDark
-                          ? Colors.white38
-                          : AppColors.onSurfaceVariant,
+                      color: theme.colorScheme.onSurfaceVariant,
                       size: 24,
                     ),
                     Expanded(
@@ -538,18 +513,16 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.white10
-                              : Colors.black.withOpacity(0.05),
+                          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Obx(
                           () => Text(
                             controller.clinicName.value.toUpperCase(),
-                            style: GoogleFonts.plusJakartaSans(
+                            style: theme.textTheme.labelSmall?.copyWith(
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white70 : Colors.black,
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -565,21 +538,17 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                   children: [
                     Text(
                       'LOCATION',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10,
+                      style: theme.textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: isDark
-                            ? Colors.white38
-                            : AppColors.onSurfaceVariant,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     Obx(
                       () => Text(
                         controller.roomName.value,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 18,
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : AppColors.onSurface,
+                          color: theme.colorScheme.onSurface,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -595,16 +564,14 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildInfoBanner(bool isDark) {
+  Widget _buildInfoBanner(ThemeData theme, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey[900] : Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isDark
-              ? Colors.white10
-              : AppColors.surfaceVariant.withOpacity(0.5),
+          color: theme.colorScheme.surfaceContainerHighest,
         ),
       ),
       child: Row(
@@ -612,13 +579,13 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(
-              color: Color(0xFF7AF4FF),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.tertiaryContainer,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.lightbulb,
-              color: Color(0xFF006970),
+              color: theme.colorScheme.onTertiaryContainer,
               size: 20,
             ),
           ),
@@ -629,18 +596,16 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
               children: [
                 Text(
                   'While you wait',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14,
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : AppColors.onSurface,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Enjoy complimentary herbal tea at our lounge or browse the wellness library in the digital app.',
-                  style: GoogleFonts.beVietnamPro(
-                    fontSize: 12,
-                    color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                     height: 1.5,
                   ),
                 ),
@@ -653,13 +618,13 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
   }
 
   // 👇 INI JUGA DITAMBAHIN ANTI ERROR 404 👇
-  Widget _buildImageAnchor(bool isDark) {
+  Widget _buildImageAnchor(ThemeData theme, bool isDark) {
     return Container(
       height: 160,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: isDark ? Colors.grey[800] : Colors.grey[300], // Warna fallback
+        color: theme.colorScheme.surfaceContainerHighest, // Warna fallback
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
@@ -673,7 +638,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                 return Center(
                   child: Icon(
                     Icons.image_not_supported,
-                    color: isDark ? Colors.white24 : Colors.grey[500],
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                     size: 40,
                   ),
                 );
@@ -684,15 +649,14 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  colors: [Colors.black.withOpacity(0.8), Colors.transparent],
+                  colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent],
                 ),
               ),
               padding: const EdgeInsets.all(20),
               alignment: Alignment.bottomLeft,
               child: Text(
                 'Clinic Sanctuary Space',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 14,
+                style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -704,7 +668,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildBottomNav(bool isDark) {
+  Widget _buildBottomNav(ThemeData theme, bool isDark) {
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(40),
@@ -714,18 +678,16 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           height: 90,
-          color: isDark
-              ? Colors.black.withOpacity(0.8)
-              : const Color(0xFFFAF9F6).withOpacity(0.8),
+          color: theme.colorScheme.surface.withValues(alpha: 0.8),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Obx(
             () => Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildNavItem(0, 'Home', Icons.home, isDark),
-                _buildNavItem(1, 'History', Icons.history, isDark),
-                _buildNavItem(2, 'Notifs', Icons.notifications, isDark),
-                _buildNavItem(3, 'Profile', Icons.person, isDark),
+                _buildNavItem(0, 'Home', Icons.home, theme, isDark),
+                _buildNavItem(1, 'History', Icons.history, theme, isDark),
+                _buildNavItem(2, 'Notifs', Icons.notifications, theme, isDark),
+                _buildNavItem(3, 'Profile', Icons.person, theme, isDark),
               ],
             ),
           ),
@@ -734,7 +696,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon, bool isDark) {
+  Widget _buildNavItem(int index, String label, IconData icon, ThemeData theme, bool isDark) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
@@ -743,7 +705,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFFFF7F50).withOpacity(0.2)
+              ? theme.colorScheme.primaryContainer
               : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
@@ -753,23 +715,19 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
             Icon(
               icon,
               color: isSelected
-                  ? AppColors.primary
-                  : (isDark
-                        ? Colors.white38
-                        : AppColors.secondary.withOpacity(0.5)),
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               size: 24,
             ),
             const SizedBox(height: 4),
             Text(
               label.toUpperCase(),
-              style: GoogleFonts.beVietnamPro(
+              style: theme.textTheme.labelSmall?.copyWith(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                 color: isSelected
-                    ? AppColors.primary
-                    : (isDark
-                          ? Colors.white38
-                          : AppColors.secondary.withOpacity(0.5)),
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                 letterSpacing: 1,
               ),
             ),

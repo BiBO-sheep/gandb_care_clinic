@@ -1,49 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../controllers/select_clinic_controller.dart';
 
 class SelectClinicView extends GetView<SelectClinicController> {
-  const SelectClinicView({Key? key}) : super(key: key);
+  const SelectClinicView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Get.isDarkMode;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new,
-            color: isDark ? Colors.white : AppColors.secondary,
+            color: theme.colorScheme.onSurface,
             size: 20,
           ),
           onPressed: () => Get.back(),
         ),
         title: Row(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 16,
-              backgroundColor: Colors.teal,
-              child: Icon(Icons.person, size: 20, color: Colors.white),
+              backgroundColor: theme.colorScheme.primaryContainer,
+              child: Icon(Icons.person, size: 20, color: theme.colorScheme.onPrimaryContainer),
             ),
             const SizedBox(width: 8),
             Text(
               'G&B Care Clinic',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 16,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w800,
-                color: isDark ? Colors.white : AppColors.secondary,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.qr_code_scanner, color: isDark ? Colors.white70 : AppColors.secondary),
+            icon: Icon(Icons.qr_code_scanner, color: theme.colorScheme.onSurfaceVariant),
             onPressed: () {},
           ),
         ],
@@ -56,27 +55,25 @@ class SelectClinicView extends GetView<SelectClinicController> {
             children: [
               Text(
                 'NEW APPOINTMENT',
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 10,
+                style: theme.textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary,
+                  color: theme.colorScheme.primary,
                   letterSpacing: 2,
                 ),
               ),
               const SizedBox(height: 8),
               RichText(
                 text: TextSpan(
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 32,
+                  style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : AppColors.onSurface,
+                    color: theme.colorScheme.onSurface,
                     height: 1.2,
                   ),
                   children: [
                     const TextSpan(text: 'Select Your\nSpecialist '),
                     TextSpan(
                       text: 'Clinic',
-                      style: TextStyle(color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary),
+                      style: TextStyle(color: theme.colorScheme.secondary),
                     ),
                   ],
                 ),
@@ -84,9 +81,8 @@ class SelectClinicView extends GetView<SelectClinicController> {
               const SizedBox(height: 12),
               Text(
                 'Choose the department that best suits your current health needs.',
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 14,
-                  color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                   height: 1.5,
                 ),
               ),
@@ -99,8 +95,9 @@ class SelectClinicView extends GetView<SelectClinicController> {
                       'Gigi',
                       'Dental care & surgery',
                       Icons.child_care,
-                      isDark ? Colors.teal.withOpacity(0.1) : const Color(0xFF90EFEF).withOpacity(0.4),
-                      isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
+                      theme.colorScheme.secondaryContainer,
+                      theme.colorScheme.secondary,
+                      theme,
                       isDark,
                     ),
                   ),
@@ -110,8 +107,9 @@ class SelectClinicView extends GetView<SelectClinicController> {
                       'Umum',
                       'General checkups',
                       Icons.medical_services,
-                      isDark ? Colors.deepOrange.withOpacity(0.1) : const Color(0xFFFFDBCF).withOpacity(0.5),
-                      isDark ? const Color(0xFFFFDBCF) : AppColors.primary,
+                      theme.colorScheme.primaryContainer,
+                      theme.colorScheme.primary,
+                      theme,
                       isDark,
                     ),
                   ),
@@ -123,8 +121,9 @@ class SelectClinicView extends GetView<SelectClinicController> {
                 'Anak',
                 'Pediatric specialist for infants and children.',
                 Icons.child_friendly,
-                isDark ? Colors.teal.withOpacity(0.1) : const Color(0xFF00B5C0).withOpacity(0.2),
-                isDark ? const Color(0xFF93F2F2) : const Color(0xFF006970),
+                theme.colorScheme.tertiaryContainer,
+                theme.colorScheme.tertiary,
+                theme,
                 isDark,
                 hasImage: true,
               ),
@@ -137,8 +136,9 @@ class SelectClinicView extends GetView<SelectClinicController> {
                       'Mata',
                       'Eye health & vision',
                       Icons.visibility,
-                      isDark ? Colors.teal.withOpacity(0.1) : const Color(0xFF90EFEF).withOpacity(0.4),
-                      isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
+                      theme.colorScheme.secondaryContainer,
+                      theme.colorScheme.secondary,
+                      theme,
                       isDark,
                     ),
                   ),
@@ -148,8 +148,9 @@ class SelectClinicView extends GetView<SelectClinicController> {
                       'Jantung',
                       'Cardiac screening',
                       Icons.favorite,
-                      isDark ? Colors.deepOrange.withOpacity(0.1) : const Color(0xFFFFDBCF).withOpacity(0.5),
-                      isDark ? const Color(0xFFFFDBCF) : AppColors.primary,
+                      theme.colorScheme.primaryContainer,
+                      theme.colorScheme.primary,
+                      theme,
                       isDark,
                     ),
                   ),
@@ -161,13 +162,14 @@ class SelectClinicView extends GetView<SelectClinicController> {
                 'Kandungan',
                 'Obstetrics & Gynecology care',
                 Icons.pregnant_woman,
-                isDark ? Colors.teal.withOpacity(0.1) : const Color(0xFF00B5C0).withOpacity(0.2),
-                isDark ? const Color(0xFF93F2F2) : const Color(0xFF006970),
+                theme.colorScheme.tertiaryContainer,
+                theme.colorScheme.tertiary,
+                theme,
                 isDark,
               ),
               const SizedBox(height: 40),
 
-              _buildCallCenterCard(isDark),
+              _buildCallCenterCard(theme, isDark),
             ],
           ),
         ),
@@ -181,6 +183,7 @@ class SelectClinicView extends GetView<SelectClinicController> {
     IconData icon,
     Color iconBgColor,
     Color iconColor,
+    ThemeData theme,
     bool isDark,
   ) {
     return GestureDetector(
@@ -188,10 +191,11 @@ class SelectClinicView extends GetView<SelectClinicController> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey[900] : Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
           boxShadow: isDark ? [] : [
-            BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10),
+            BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
           ],
         ),
         child: Column(
@@ -209,18 +213,16 @@ class SelectClinicView extends GetView<SelectClinicController> {
             const SizedBox(height: 16),
             Text(
               title,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 16,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : AppColors.onSurface,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: GoogleFonts.beVietnamPro(
-                fontSize: 11,
-                color: isDark ? Colors.white54 : AppColors.onSurfaceVariant,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -235,6 +237,7 @@ class SelectClinicView extends GetView<SelectClinicController> {
     IconData icon,
     Color iconBgColor,
     Color iconColor,
+    ThemeData theme,
     bool isDark, {
     bool hasImage = false,
   }) {
@@ -243,10 +246,11 @@ class SelectClinicView extends GetView<SelectClinicController> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey[900] : Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
           boxShadow: isDark ? [] : [
-            BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10),
+            BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
           ],
         ),
         child: Row(
@@ -268,18 +272,16 @@ class SelectClinicView extends GetView<SelectClinicController> {
                   const SizedBox(height: 16),
                   Text(
                     title,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 18,
+                    style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : AppColors.onSurface,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: GoogleFonts.beVietnamPro(
-                      fontSize: 12,
-                      color: isDark ? Colors.white54 : AppColors.onSurfaceVariant,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -309,6 +311,7 @@ class SelectClinicView extends GetView<SelectClinicController> {
     IconData icon,
     Color iconBgColor,
     Color iconColor,
+    ThemeData theme,
     bool isDark,
   ) {
     return GestureDetector(
@@ -316,10 +319,11 @@ class SelectClinicView extends GetView<SelectClinicController> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey[900] : Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
           boxShadow: isDark ? [] : [
-            BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10),
+            BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
           ],
         ),
         child: Row(
@@ -340,36 +344,34 @@ class SelectClinicView extends GetView<SelectClinicController> {
                 children: [
                   Text(
                     title,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 16,
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : AppColors.onSurface,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: GoogleFonts.beVietnamPro(
-                      fontSize: 12,
-                      color: isDark ? Colors.white54 : AppColors.onSurfaceVariant,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: isDark ? Colors.white38 : Colors.grey),
+            Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCallCenterCard(bool isDark) {
+  Widget _buildCallCenterCard(ThemeData theme, bool isDark) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF003333) : AppColors.secondary,
+        color: theme.colorScheme.primary,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Stack(
@@ -380,19 +382,17 @@ class SelectClinicView extends GetView<SelectClinicController> {
             children: [
               Text(
                 "Can't find\nyour clinic?",
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 24,
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: theme.colorScheme.onPrimary,
                   height: 1.2,
                 ),
               ),
               const SizedBox(height: 12),
               Text(
                 "Contact our patient service for further assistance or special referrals.",
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 12,
-                  color: Colors.white.withOpacity(0.9),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onPrimary.withValues(alpha: 0.9),
                   height: 1.5,
                 ),
               ),
@@ -400,8 +400,8 @@ class SelectClinicView extends GetView<SelectClinicController> {
               ElevatedButton(
                 onPressed: controller.callCenter,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: isDark ? const Color(0xFF004F54) : AppColors.secondary,
+                  backgroundColor: theme.colorScheme.onPrimary,
+                  foregroundColor: theme.colorScheme.primary,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
@@ -413,8 +413,7 @@ class SelectClinicView extends GetView<SelectClinicController> {
                 ),
                 child: Text(
                   'Call Center',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14,
+                  style: theme.textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -427,7 +426,7 @@ class SelectClinicView extends GetView<SelectClinicController> {
             child: Icon(
               Icons.support_agent,
               size: 120,
-              color: Colors.white.withOpacity(0.1),
+              color: theme.colorScheme.onPrimary.withValues(alpha: 0.1),
             ),
           ),
         ],

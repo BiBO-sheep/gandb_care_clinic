@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../controllers/confirm_appointment_controller.dart';
 
 class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
-  const ConfirmAppointmentView({Key? key}) : super(key: key);
+  const ConfirmAppointmentView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Get.isDarkMode;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -38,16 +38,15 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                 const SizedBox(width: 12),
                 Text(
                   'G&B Care Clinic',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 16,
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : AppColors.secondary,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ],
             ),
             IconButton(
-              icon: Icon(Icons.qr_code_scanner, color: isDark ? Colors.white70 : AppColors.primary),
+              icon: Icon(Icons.qr_code_scanner, color: theme.colorScheme.primary),
               onPressed: () {},
             ),
           ],
@@ -63,10 +62,9 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                 children: [
                   Text(
                     'STEP 3 OF 3',
-                    style: GoogleFonts.beVietnamPro(
-                      fontSize: 10,
+                    style: theme.textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
+                      color: theme.colorScheme.secondary,
                       letterSpacing: 2,
                     ),
                   ),
@@ -75,7 +73,7 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                     child: Container(
                       height: 4,
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.grey[800] : AppColors.surfaceVariant,
+                        color: theme.colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(2),
                       ),
                       child: FractionallySizedBox(
@@ -83,7 +81,7 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                         widthFactor: 1.0,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
+                            color: theme.colorScheme.secondary,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -95,17 +93,16 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
               const SizedBox(height: 16),
               RichText(
                 text: TextSpan(
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 32,
+                  style: theme.textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : AppColors.onSurface,
+                    color: theme.colorScheme.onSurface,
                     height: 1.2,
                   ),
                   children: [
                     const TextSpan(text: 'Review your\n'),
                     TextSpan(
                       text: 'Appointment',
-                      style: TextStyle(color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary),
+                      style: TextStyle(color: theme.colorScheme.primary),
                     ),
                   ],
                 ),
@@ -113,9 +110,8 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
               const SizedBox(height: 12),
               Text(
                 'Please check the details below to ensure everything is correct before confirming.',
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 14,
-                  color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                   height: 1.5,
                 ),
               ),
@@ -124,11 +120,11 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF004D4D) : AppColors.secondary,
+                  color: theme.colorScheme.primary,
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: isDark ? [] : [
                     BoxShadow(
-                      color: AppColors.secondary.withOpacity(0.3),
+                      color: theme.colorScheme.shadow.withValues(alpha: 0.1),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -140,6 +136,7 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                       Icons.medical_services,
                       'CLINIC LOCATION',
                       controller.location,
+                      theme,
                       isLarge: true,
                     ),
                     const SizedBox(height: 24),
@@ -150,6 +147,7 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                             Icons.calendar_today,
                             'DATE',
                             controller.date,
+                            theme,
                           ),
                         ),
                         Expanded(
@@ -157,6 +155,7 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                             Icons.schedule,
                             'TIME',
                             controller.time,
+                            theme,
                           ),
                         ),
                       ],
@@ -168,20 +167,21 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.grey[900] : const Color(0xFFF4F3F1),
+                  color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
                 ),
                 child: Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.grey[800] : const Color(0xFFFFDBCF),
+                        color: theme.colorScheme.primaryContainer,
                         shape: BoxShape.circle,
                       ),
                       child: FaIcon(
                         FontAwesomeIcons.stethoscope,
-                        color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary,
+                        color: theme.colorScheme.onPrimaryContainer,
                         size: 24,
                       ),
                     ),
@@ -192,17 +192,15 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                         children: [
                           Text(
                             controller.clinicName,
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 14,
+                            style: theme.textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: isDark ? Colors.white : AppColors.onSurface,
+                              color: theme.colorScheme.onSurface,
                             ),
                           ),
                           Text(
                             'With ${controller.doctorName}',
-                            style: GoogleFonts.beVietnamPro(
-                              fontSize: 12,
-                              color: isDark ? Colors.white60 : AppColors.onSurfaceVariant,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -213,19 +211,17 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                       children: [
                         Text(
                           'EST. FEE',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 10,
+                          style: theme.textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white60 : AppColors.onSurfaceVariant,
+                            color: theme.colorScheme.onSurfaceVariant,
                             letterSpacing: 1,
                           ),
                         ),
                         Text(
                           controller.estFee,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 20,
+                          style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w800,
-                            color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary,
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                       ],
@@ -237,10 +233,10 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.grey[900] : Colors.white,
+                  color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: AppColors.surfaceVariant.withOpacity(isDark ? 0.1 : 0.5),
+                    color: theme.colorScheme.surfaceContainerHighest,
                   ),
                 ),
                 child: Column(
@@ -248,18 +244,17 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                   children: [
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.info,
-                          color: AppColors.secondary,
+                          color: theme.colorScheme.secondary,
                           size: 20,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'Arrival Instructions',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 14,
+                          style: theme.textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : AppColors.onSurface,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -267,9 +262,8 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                     const SizedBox(height: 12),
                     Text(
                       'Please arrive 15 minutes before your scheduled appointment time to complete any necessary paperwork. Remember to bring your valid ID and insurance card.',
-                      style: GoogleFonts.beVietnamPro(
-                        fontSize: 12,
-                        color: isDark ? Colors.white60 : AppColors.onSurfaceVariant,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                         height: 1.6,
                       ),
                     ),
@@ -286,19 +280,18 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                         ? null
                         : controller.confirmAppointment,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: theme.colorScheme.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                       elevation: isDark ? 0 : 5,
-                      shadowColor: AppColors.primary.withOpacity(0.3),
                     ),
                     child: controller.isConfirming.value
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 24,
                             height: 24,
                             child: CircularProgressIndicator(
-                              color: Colors.white,
+                              color: theme.colorScheme.onPrimary,
                               strokeWidth: 3,
                             ),
                           )
@@ -307,16 +300,15 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                             children: [
                               Text(
                                 'Confirm Appointment',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 16,
+                                style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onPrimary,
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const Icon(
+                              Icon(
                                 Icons.arrow_forward,
-                                color: Colors.white,
+                                color: theme.colorScheme.onPrimary,
                                 size: 20,
                               ),
                             ],
@@ -337,10 +329,9 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                   ),
                   child: Text(
                     'Edit Selection',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 14,
+                    style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
+                      color: theme.colorScheme.secondary,
                     ),
                   ),
                 ),
@@ -356,7 +347,8 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
   Widget _buildGreenCardItem(
     IconData icon,
     String label,
-    String value, {
+    String value,
+    ThemeData theme, {
     bool isLarge = false,
   }) {
     return Row(
@@ -365,10 +357,10 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFF93F2F2).withOpacity(0.2),
+            color: theme.colorScheme.onPrimary.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: const Color(0xFF93F2F2), size: 24),
+          child: Icon(icon, color: theme.colorScheme.onPrimary, size: 24),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -377,20 +369,19 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
             children: [
               Text(
                 label,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 10,
+                style: theme.textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF93F2F2).withOpacity(0.7),
+                  color: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
                   letterSpacing: 1.5,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 value,
-                style: GoogleFonts.plusJakartaSans(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   fontSize: isLarge ? 16 : 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: theme.colorScheme.onPrimary,
                   height: 1.4,
                 ),
               ),

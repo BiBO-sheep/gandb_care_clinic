@@ -1,18 +1,18 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../controllers/digital_ticket_controller.dart';
 
 class DigitalTicketView extends GetView<DigitalTicketController> {
-  const DigitalTicketView({Key? key}) : super(key: key);
+  const DigitalTicketView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Get.isDarkMode;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       extendBody: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -23,18 +23,17 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
           children: [
             Row(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 18,
-                  backgroundColor: Colors.teal,
-                  child: Icon(Icons.person, size: 24, color: Colors.white),
+                  backgroundColor: theme.colorScheme.primaryContainer,
+                  child: Icon(Icons.person, size: 24, color: theme.colorScheme.onPrimaryContainer),
                 ),
                 const SizedBox(width: 12),
                 Text(
                   'G&B Care Clinic',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 16,
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: isDark ? Colors.white : AppColors.secondary,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -42,7 +41,7 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
             IconButton(
               icon: Icon(
                 Icons.close_fullscreen,
-                color: isDark ? Colors.white70 : AppColors.primary,
+                color: theme.colorScheme.primary,
               ),
               onPressed: controller.backToDashboard,
             ),
@@ -58,32 +57,30 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
               Container(
                 width: 64,
                 height: 64,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF90EFEF),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.secondaryContainer,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.check,
-                  color: AppColors.secondary,
+                  color: theme.colorScheme.secondary,
                   size: 32,
                 ),
               ),
               const SizedBox(height: 16),
               Text(
                 'Booking Confirmed!',
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 24,
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary,
+                  color: theme.colorScheme.primary,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 "Your health journey continues. We're excited to see you.",
                 textAlign: TextAlign.center,
-                style: GoogleFonts.beVietnamPro(
-                  fontSize: 14,
-                  color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                   height: 1.5,
                 ),
               ),
@@ -93,13 +90,13 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.grey[900] : Colors.white,
+                  color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(32),
                   boxShadow: isDark
                       ? []
                       : [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: theme.colorScheme.shadow.withValues(alpha: 0.05),
                             blurRadius: 24,
                             offset: const Offset(0, 12),
                           ),
@@ -111,9 +108,7 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 24),
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF571B05)
-                            : AppColors.primary,
+                        color: theme.colorScheme.primary,
                         borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(32),
                         ),
@@ -122,10 +117,9 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                         children: [
                           Text(
                             'NOMOR ANTREAN',
-                            style: GoogleFonts.beVietnamPro(
-                              fontSize: 10,
+                            style: theme.textTheme.labelSmall?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: Colors.white.withOpacity(0.8),
+                              color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
                               letterSpacing: 2,
                             ),
                           ),
@@ -133,10 +127,10 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                           Obx(
                             () => Text(
                               controller.queueNumber.value,
-                              style: GoogleFonts.plusJakartaSans(
+                              style: theme.textTheme.displayLarge?.copyWith(
                                 fontSize: 64, // Nomor dibikin raksasa
                                 fontWeight: FontWeight.w900,
-                                color: Colors.white,
+                                color: theme.colorScheme.onPrimary,
                                 height: 1,
                               ),
                             ),
@@ -152,31 +146,26 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: isDark
-                                  ? Colors.black26
-                                  : Colors.orange.withOpacity(0.1),
+                              color: theme.colorScheme.tertiaryContainer,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: Colors.orange.withOpacity(0.3),
+                                color: theme.colorScheme.tertiary.withValues(alpha: 0.3),
                               ),
                             ),
                             child: Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.volume_up_rounded,
-                                  color: Colors.orange,
+                                  color: theme.colorScheme.tertiary,
                                   size: 32,
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Text(
                                     'Silakan duduk di ruang tunggu. Nomor Anda akan dipanggil oleh perawat.',
-                                    style: GoogleFonts.beVietnamPro(
-                                      fontSize: 12,
+                                    style: theme.textTheme.labelMedium?.copyWith(
                                       fontWeight: FontWeight.w600,
-                                      color: isDark
-                                          ? Colors.white70
-                                          : AppColors.onSurfaceVariant,
+                                      color: theme.colorScheme.onTertiaryContainer,
                                     ),
                                   ),
                                 ),
@@ -190,19 +179,19 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                                 _buildDetailRow(
                                   'PATIENT',
                                   controller.patientName.value,
-                                  isDark,
+                                  theme,
                                 ),
                                 const SizedBox(height: 16),
                                 _buildDetailRow(
                                   'SERVICE',
                                   controller.service.value,
-                                  isDark,
+                                  theme,
                                 ),
                                 const SizedBox(height: 16),
                                 _buildDetailRow(
                                   'DATE & TIME',
                                   controller.dateTime.value,
-                                  isDark,
+                                  theme,
                                 ),
                               ],
                             ),
@@ -217,9 +206,7 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                           child: Container(
                             color: index % 2 == 0
                                 ? Colors.transparent
-                                : (isDark
-                                      ? Colors.white10
-                                      : AppColors.surfaceVariant),
+                                : theme.colorScheme.surfaceContainerHighest,
                             height: 2,
                           ),
                         ),
@@ -228,9 +215,7 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.black26
-                            : const Color(0xFFF4F3F1),
+                        color: theme.colorScheme.surfaceContainerHighest,
                         borderRadius: const BorderRadius.vertical(
                           bottom: Radius.circular(32),
                         ),
@@ -239,13 +224,13 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                         children: [
                           Container(
                             padding: const EdgeInsets.all(10),
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF90EFEF),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.secondaryContainer,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.location_on,
-                              color: AppColors.secondary,
+                              color: theme.colorScheme.secondary,
                               size: 20,
                             ),
                           ),
@@ -253,12 +238,9 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                           Expanded(
                             child: Text(
                               controller.location,
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 12,
+                              style: theme.textTheme.labelMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: isDark
-                                    ? const Color(0xFF93F2F2)
-                                    : AppColors.secondary,
+                                color: theme.colorScheme.secondary,
                               ),
                             ),
                           ),
@@ -278,24 +260,19 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                       onPressed: controller.addToCalendar,
                       icon: Icon(
                         Icons.calendar_month,
-                        color: isDark
-                            ? const Color(0xFF006A6A)
-                            : AppColors.secondary,
+                        color: theme.colorScheme.secondary,
                         size: 18,
                       ),
                       label: Text(
                         'Add to\nCalendar',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 12,
+                        style: theme.textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? const Color(0xFF006A6A)
-                              : AppColors.secondary,
+                          color: theme.colorScheme.secondary,
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE0F7F7),
+                        backgroundColor: theme.colorScheme.secondaryContainer,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -308,21 +285,20 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: controller.shareTicket,
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.share,
-                        color: Colors.white,
+                        color: theme.colorScheme.onPrimary,
                         size: 18,
                       ),
                       label: Text(
                         'Share Ticket',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 14,
+                        style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: theme.colorScheme.onPrimary,
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
+                        backgroundColor: theme.colorScheme.primary,
                         padding: const EdgeInsets.symmetric(vertical: 22),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -338,9 +314,7 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                 child: ElevatedButton(
                   onPressed: () => Get.offNamed('/queue-monitor'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark
-                        ? const Color(0xFF380C00)
-                        : const Color(0xFF380C00),
+                    backgroundColor: theme.colorScheme.tertiary,
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -349,10 +323,9 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                   ),
                   child: Text(
                     'Check Queue Status',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 16,
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: theme.colorScheme.onTertiary,
                     ),
                   ),
                 ),
@@ -379,17 +352,16 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                           );
                         }
                       },
-                      icon: const Icon(Icons.payment, color: Colors.white),
+                      icon: Icon(Icons.payment, color: theme.colorScheme.onPrimaryContainer),
                       label: Text(
                         'Lanjut ke Pembayaran',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 16,
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: theme.colorScheme.onPrimaryContainer,
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF006A6A),
+                        backgroundColor: theme.colorScheme.primaryContainer,
                         padding: const EdgeInsets.symmetric(vertical: 18),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -408,12 +380,9 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                 onPressed: controller.backToDashboard,
                 child: Text(
                   'Back to Dashboard',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 14,
+                  style: theme.textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: isDark
-                        ? const Color(0xFF93F2F2)
-                        : AppColors.secondary,
+                    color: theme.colorScheme.secondary,
                   ),
                 ),
               ),
@@ -422,36 +391,34 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(isDark),
+      bottomNavigationBar: _buildBottomNav(theme, isDark),
     );
   }
 
-  Widget _buildDetailRow(String label, String value, bool isDark) {
+  Widget _buildDetailRow(String label, String value, ThemeData theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 10,
+          style: theme.textTheme.labelSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
+            color: theme.colorScheme.secondary,
             letterSpacing: 1.5,
           ),
         ),
         Text(
           value,
-          style: GoogleFonts.beVietnamPro(
-            fontSize: 12,
+          style: theme.textTheme.labelMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            color: isDark ? Colors.white : AppColors.onSurface,
+            color: theme.colorScheme.onSurface,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildBottomNav(bool isDark) {
+  Widget _buildBottomNav(ThemeData theme, bool isDark) {
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(40),
@@ -461,18 +428,16 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           height: 90,
-          color: isDark
-              ? Colors.black.withOpacity(0.8)
-              : const Color(0xFFFAF9F6).withOpacity(0.8),
+          color: theme.colorScheme.surface.withValues(alpha: 0.8),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Obx(
             () => Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildNavItem(0, 'Home', Icons.home, isDark),
-                _buildNavItem(1, 'History', Icons.history, isDark),
-                _buildNavItem(2, 'Notifs', Icons.notifications, isDark),
-                _buildNavItem(3, 'Profile', Icons.person, isDark),
+                _buildNavItem(0, 'Home', Icons.home, theme, isDark),
+                _buildNavItem(1, 'History', Icons.history, theme, isDark),
+                _buildNavItem(2, 'Notifs', Icons.notifications, theme, isDark),
+                _buildNavItem(3, 'Profile', Icons.person, theme, isDark),
               ],
             ),
           ),
@@ -481,7 +446,7 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon, bool isDark) {
+  Widget _buildNavItem(int index, String label, IconData icon, ThemeData theme, bool isDark) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
@@ -490,7 +455,7 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFFFF7F50).withOpacity(0.2)
+              ? theme.colorScheme.primaryContainer
               : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
@@ -500,23 +465,19 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
             Icon(
               icon,
               color: isSelected
-                  ? AppColors.primary
-                  : (isDark
-                        ? Colors.white38
-                        : AppColors.secondary.withOpacity(0.5)),
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               size: 24,
             ),
             const SizedBox(height: 4),
             Text(
               label.toUpperCase(),
-              style: GoogleFonts.beVietnamPro(
+              style: theme.textTheme.labelSmall?.copyWith(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                 color: isSelected
-                    ? AppColors.primary
-                    : (isDark
-                          ? Colors.white38
-                          : AppColors.secondary.withOpacity(0.5)),
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                 letterSpacing: 1,
               ),
             ),
@@ -526,3 +487,4 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
     );
   }
 }
+

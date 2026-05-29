@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../controllers/onboarding_controller.dart';
 
 class OnboardingView extends GetView<OnboardingController> {
-  const OnboardingView({Key? key}) : super(key: key);
+  const OnboardingView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Get.isDarkMode;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -25,18 +25,16 @@ class OnboardingView extends GetView<OnboardingController> {
                       width: 64,
                       height: 64,
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF004F54) : AppColors.secondary,
+                        color: theme.colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Icon(Icons.medical_services, color: Colors.white, size: 36),
+                      child: Icon(Icons.medical_services, color: theme.colorScheme.onPrimaryContainer, size: 36),
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'G&B Care Clinic',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w800,
-                        color: isDark ? Colors.white : AppColors.secondary,
+                      style: theme.textTheme.displaySmall?.copyWith(
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                     const SizedBox(height: 40),
@@ -51,11 +49,11 @@ class OnboardingView extends GetView<OnboardingController> {
                             width: 280,
                             height: 280,
                             decoration: BoxDecoration(
-                              color: isDark ? Colors.grey[900] : Colors.white,
+                              color: theme.colorScheme.surface,
                               borderRadius: BorderRadius.circular(32),
                               boxShadow: isDark ? [] : [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.06),
+                                  color: theme.colorScheme.primary.withValues(alpha: 0.06),
                                   blurRadius: 32,
                                   offset: const Offset(0, 12),
                                 ),
@@ -75,9 +73,10 @@ class OnboardingView extends GetView<OnboardingController> {
                             child: _buildFloatingChip(
                               icon: Icons.favorite,
                               text: 'HOLISTIC CARE',
-                              color: isDark ? const Color(0xFF571B05) : const Color(0xFFFFDBCF),
-                              textColor: isDark ? const Color(0xFFFFDBCF) : const Color(0xFF380C00),
+                              color: theme.colorScheme.secondaryContainer,
+                              textColor: theme.colorScheme.onSurface,
                               isDark: isDark,
+                              theme: theme,
                             ),
                           ),
                           Positioned(
@@ -86,9 +85,10 @@ class OnboardingView extends GetView<OnboardingController> {
                             child: _buildFloatingChip(
                               icon: Icons.verified_user,
                               text: 'EXPERT DOCTORS',
-                              color: isDark ? const Color(0xFF003333) : AppColors.secondaryContainer,
-                              textColor: isDark ? const Color(0xFF93F2F2) : const Color(0xFF006E6E),
+                              color: theme.colorScheme.primaryContainer,
+                              textColor: theme.colorScheme.onPrimaryContainer,
                               isDark: isDark,
+                              theme: theme,
                             ),
                           ),
                         ],
@@ -98,17 +98,15 @@ class OnboardingView extends GetView<OnboardingController> {
                     RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 36,
-                          fontWeight: FontWeight.w800,
-                          color: isDark ? Colors.white : AppColors.onSurface,
+                        style: theme.textTheme.displayLarge?.copyWith(
+                          color: theme.colorScheme.onSurface,
                           height: 1.2,
                         ),
                         children: [
                           const TextSpan(text: 'Your Health,\n'),
                           TextSpan(
                             text: 'Curated.',
-                            style: TextStyle(color: isDark ? const Color(0xFFFFDBCF) : AppColors.primary),
+                            style: TextStyle(color: theme.colorScheme.primary),
                           ),
                         ],
                       ),
@@ -117,9 +115,8 @@ class OnboardingView extends GetView<OnboardingController> {
                     Text(
                       'Experience a sanctuary for wellness\nwhere modern medicine meets\ncompassionate, personalized care.',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.beVietnamPro(
-                        fontSize: 14,
-                        color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                         height: 1.5,
                       ),
                     ),
@@ -138,10 +135,7 @@ class OnboardingView extends GetView<OnboardingController> {
                       child: ElevatedButton(
                         onPressed: controller.isLoading.value ? null : controller.onGetStartedPressed,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                          elevation: isDark ? 0 : 5,
                         ),
                         child: controller.isLoading.value
                             ? const CircularProgressIndicator(color: Colors.white)
@@ -150,7 +144,10 @@ class OnboardingView extends GetView<OnboardingController> {
                                 children: [
                                   Text(
                                     'Get Started',
-                                    style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.bold),
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   const Icon(Icons.arrow_forward),
@@ -161,28 +158,24 @@ class OnboardingView extends GetView<OnboardingController> {
                   ),
                   const SizedBox(height: 16),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Already have an account? ',
-                        style: GoogleFonts.beVietnamPro(
-                          fontSize: 14,
-                          color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: controller.goToLogin,
-                        child: Text(
-                          'Log In',
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? const Color(0xFF93F2F2) : AppColors.secondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                     mainAxisAlignment: MainAxisAlignment.center,
+                     children: [
+                       Text(
+                         'Already have an account? ',
+                         style: theme.textTheme.bodyMedium,
+                       ),
+                       GestureDetector(
+                         onTap: controller.goToLogin,
+                         child: Text(
+                           'Log In',
+                           style: theme.textTheme.bodyMedium?.copyWith(
+                             fontWeight: FontWeight.bold,
+                             color: theme.colorScheme.primary,
+                           ),
+                         ),
+                       ),
+                     ],
+                   ),
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -190,14 +183,14 @@ class OnboardingView extends GetView<OnboardingController> {
                       Container(
                         width: 32,
                         height: 6,
-                        decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(3)),
+                        decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: BorderRadius.circular(3)),
                       ),
                       const SizedBox(width: 8),
                       Container(
                         width: 6,
                         height: 6,
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white12 : AppColors.surfaceVariant,
+                          color: isDark ? Colors.white12 : theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(3),
                         ),
                       ),
@@ -206,7 +199,7 @@ class OnboardingView extends GetView<OnboardingController> {
                         width: 6,
                         height: 6,
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white12 : AppColors.surfaceVariant,
+                          color: isDark ? Colors.white12 : theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(3),
                         ),
                       ),
@@ -227,15 +220,16 @@ class OnboardingView extends GetView<OnboardingController> {
     required Color color,
     required Color textColor,
     required bool isDark,
+    required ThemeData theme,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.95),
+        color: color.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.white.withOpacity(0.5)),
+        border: Border.all(color: isDark ? Colors.white10 : Colors.white.withValues(alpha: 0.5)),
         boxShadow: isDark ? [] : [
-          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(color: theme.colorScheme.primary.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
       child: Row(
@@ -245,7 +239,7 @@ class OnboardingView extends GetView<OnboardingController> {
           const SizedBox(width: 6),
           Text(
             text,
-            style: GoogleFonts.beVietnamPro(fontSize: 10, fontWeight: FontWeight.bold, color: textColor),
+            style: theme.textTheme.labelSmall?.copyWith(color: textColor),
           ),
         ],
       ),

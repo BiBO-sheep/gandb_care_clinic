@@ -1,0 +1,10 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "gandb_care_clinic",
+            "request": "launch",
+            "type": "dart"
+        }
+    ]
+}

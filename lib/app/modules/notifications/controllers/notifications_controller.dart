@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../api_config.dart';
+import '../../../data/providers/api_service.dart';
 
 class NotificationsController extends GetxController {
   var currentIndex = 2.obs;
 
-  // State API
   var isLoading = true.obs;
   var allNotifs = [].obs;
 
-  // State yang dikelompokkan
   var todayNotifs = [].obs;
   var earlierNotifs = [].obs;
+
+  final ApiService _apiService = ApiService();
 
   @override
   void onInit() {
@@ -22,39 +20,23 @@ class NotificationsController extends GetxController {
     fetchNotifications();
   }
 
-  // --- FUNGSI TARIK DATA NOTIF DARI API ---
   Future<void> fetchNotifications() async {
     try {
       isLoading.value = true;
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('token');
+      
+      final response = await _apiService.get('notifications');
+      final data = jsonDecode(response.body);
+      final List fetchedData = data['data'] ?? data;
 
-      if (token == null) return;
-
-      final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}/notifications'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        // Asumsi data array ada di data['data'] atau langsung di root
-        final List fetchedData = data['data'] ?? data;
-
-        allNotifs.value = fetchedData;
-        _groupNotifications(fetchedData);
-      }
+      allNotifs.value = fetchedData;
+      _groupNotifications(fetchedData);
     } catch (e) {
-      print("🚨 ERROR AMBIL NOTIF: $e");
+      debugPrint("🚨 ERROR AMBIL NOTIF: $e");
     } finally {
       isLoading.value = false;
     }
   }
 
-  // --- LOGIKA PENGELOMPOKAN TANGGAL ---
   void _groupNotifications(List data) {
     todayNotifs.clear();
     earlierNotifs.clear();
@@ -62,13 +44,9 @@ class NotificationsController extends GetxController {
     DateTime now = DateTime.now();
 
     for (var notif in data) {
-      // Ambil tanggal dari Laravel (created_at)
       DateTime notifDate = DateTime.parse(notif['created_at']).toLocal();
-
-      // Data yang disimpen di kolom 'data' JSON Laravel
       var notifData = notif['data'];
 
-      // Cek apakah notif ini dibuat hari ini
       bool isToday =
           notifDate.year == now.year &&
           notifDate.month == now.month &&
@@ -80,7 +58,7 @@ class NotificationsController extends GetxController {
         'desc': notifData['message'] ?? 'Anda memiliki pesan baru.',
         'time':
             '${notifDate.hour.toString().padLeft(2, '0')}:${notifDate.minute.toString().padLeft(2, '0')}',
-        'type': notifData['type'] ?? 'info', // 'appointment', 'invoice', dll
+        'type': notifData['type'] ?? 'info',
         'isRead': notif['read_at'] != null,
       };
 
@@ -92,13 +70,8 @@ class NotificationsController extends GetxController {
     }
   }
 
-  // --- FUNGSI MARK ALL AS READ (TEMBAK API) ---
   Future<void> markAllAsRead() async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('token');
-
-      // Update UI langsung biar keliatan cepet (Optimistic UI)
       for (var i = 0; i < todayNotifs.length; i++) {
         todayNotifs[i]['isRead'] = true;
       }
@@ -108,14 +81,7 @@ class NotificationsController extends GetxController {
       todayNotifs.refresh();
       earlierNotifs.refresh();
 
-      // Tembak server buat update database
-      await http.post(
-        Uri.parse('${ApiConfig.baseUrl}/notifications/mark-read'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
-      );
+      await _apiService.post('notifications/mark-read');
 
       Get.snackbar(
         'Success',
@@ -125,7 +91,7 @@ class NotificationsController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
-      print("🚨 ERROR MARK AS READ: $e");
+      debugPrint("🚨 ERROR MARK AS READ: $e");
     }
   }
 
@@ -133,6 +99,7 @@ class NotificationsController extends GetxController {
     currentIndex.value = index;
     if (index == 0) Get.offAllNamed('/home');
     if (index == 1) Get.offAllNamed('/payment-history');
-    if (index == 3) Get.offAllNamed('/profile'); // Pastikan profile lu nyambung
+    if (index == 3) Get.offAllNamed('/profile');
   }
 }
+

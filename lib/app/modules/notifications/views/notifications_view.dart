@@ -1,8 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../controllers/notifications_controller.dart';
 
 class NotificationsView extends GetView<NotificationsController> {
@@ -10,24 +8,24 @@ class NotificationsView extends GetView<NotificationsController> {
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Get.isDarkMode;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: context.theme.scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       extendBody: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : AppColors.primary),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.primary),
           onPressed: () => Get.back(),
         ),
         title: Text(
           'Notifications',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 18,
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : AppColors.onSurface,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         centerTitle: true,
@@ -35,14 +33,16 @@ class NotificationsView extends GetView<NotificationsController> {
       body: SafeArea(
         child: Obx(() {
           if (controller.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
           }
 
           if (controller.todayNotifs.isEmpty && controller.earlierNotifs.isEmpty) {
             return Center(
               child: Text(
                 'Belum ada notifikasi.',
-                style: GoogleFonts.plusJakartaSans(color: isDark ? Colors.grey[600] : Colors.grey),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             );
           }
@@ -58,10 +58,9 @@ class NotificationsView extends GetView<NotificationsController> {
                   children: [
                     Text(
                       'Inbox',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 24,
+                      style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : AppColors.onSurface,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     GestureDetector(
@@ -69,15 +68,14 @@ class NotificationsView extends GetView<NotificationsController> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF90EFEF).withOpacity(0.2),
+                          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           'Mark all as read',
-                          style: GoogleFonts.beVietnamPro(
-                            fontSize: 12,
+                          style: theme.textTheme.labelMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: isDark ? const Color(0xFF93F2F2) : AppColors.primary,
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                       ),
@@ -86,16 +84,16 @@ class NotificationsView extends GetView<NotificationsController> {
                 ),
                 const SizedBox(height: 24),
                 if (controller.todayNotifs.isNotEmpty) ...[
-                  _buildSectionHeader('TODAY', isDark),
+                  _buildSectionHeader('TODAY', theme),
                   Column(
-                    children: controller.todayNotifs.map((notif) => _buildDynamicNotifCard(notif, isDark)).toList(),
+                    children: controller.todayNotifs.map((notif) => _buildDynamicNotifCard(notif, theme, isDark)).toList(),
                   ),
                 ],
                 if (controller.earlierNotifs.isNotEmpty) ...[
                   const SizedBox(height: 16),
-                  _buildSectionHeader('EARLIER', isDark),
+                  _buildSectionHeader('EARLIER', theme),
                   Column(
-                    children: controller.earlierNotifs.map((notif) => _buildDynamicNotifCard(notif, isDark)).toList(),
+                    children: controller.earlierNotifs.map((notif) => _buildDynamicNotifCard(notif, theme, isDark)).toList(),
                   ),
                 ],
                 const SizedBox(height: 120),
@@ -104,32 +102,31 @@ class NotificationsView extends GetView<NotificationsController> {
           );
         }),
       ),
-      bottomNavigationBar: _buildBottomNav(isDark),
+      bottomNavigationBar: _buildBottomNav(theme, isDark),
     );
   }
 
-  Widget _buildSectionHeader(String title, bool isDark) {
+  Widget _buildSectionHeader(String title, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         children: [
           Text(
             title,
-            style: GoogleFonts.beVietnamPro(
-              fontSize: 10,
+            style: theme.textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white38 : Colors.grey,
+              color: theme.colorScheme.onSurfaceVariant,
               letterSpacing: 1.5,
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(child: Container(height: 1, color: isDark ? Colors.white12 : Colors.grey.withOpacity(0.3))),
+          Expanded(child: Container(height: 1, color: theme.colorScheme.surfaceContainerHighest)),
         ],
       ),
     );
   }
 
-  Widget _buildDynamicNotifCard(Map<String, dynamic> notif, bool isDark) {
+  Widget _buildDynamicNotifCard(Map<String, dynamic> notif, ThemeData theme, bool isDark) {
     String type = notif['type'] ?? 'info';
     bool isRead = notif['isRead'] ?? false;
     IconData icon;
@@ -138,16 +135,16 @@ class NotificationsView extends GetView<NotificationsController> {
 
     if (type == 'appointment') {
       icon = Icons.calendar_month;
-      iconColor = const Color(0xFFA43C12);
-      bgColor = const Color(0xFFFFDBCF);
+      iconColor = theme.colorScheme.primary;
+      bgColor = theme.colorScheme.primaryContainer;
     } else if (type == 'invoice') {
       icon = Icons.receipt_long;
-      iconColor = const Color(0xFF006A6A);
-      bgColor = const Color(0xFF90EFEF).withOpacity(0.5);
+      iconColor = theme.colorScheme.secondary;
+      bgColor = theme.colorScheme.secondaryContainer;
     } else {
       icon = Icons.notifications;
-      iconColor = const Color(0xFF8B7169);
-      bgColor = isDark ? Colors.grey[800]! : const Color(0xFFE9E8E5);
+      iconColor = theme.colorScheme.tertiary;
+      bgColor = theme.colorScheme.tertiaryContainer;
     }
 
     return Container(
@@ -155,12 +152,12 @@ class NotificationsView extends GetView<NotificationsController> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isDark 
-          ? (isRead ? Colors.transparent : Colors.grey[900])
-          : (isRead ? Colors.grey[50] : Colors.white),
+          ? (isRead ? Colors.transparent : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5))
+          : (isRead ? theme.colorScheme.surface.withValues(alpha: 0.5) : theme.colorScheme.surface),
         borderRadius: BorderRadius.circular(12),
-        border: isRead ? Border.all(color: isDark ? Colors.white10 : Colors.grey.withOpacity(0.2)) : null,
+        border: isRead ? Border.all(color: theme.colorScheme.surfaceContainerHighest) : Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.1)),
         boxShadow: isRead || isDark ? [] : [
-          BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 10),
+          BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
         ],
       ),
       child: Row(
@@ -171,7 +168,7 @@ class NotificationsView extends GetView<NotificationsController> {
               margin: const EdgeInsets.only(top: 20, right: 8),
               width: 6,
               height: 6,
-              decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+              decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle),
             )
           else
             const SizedBox(width: 14),
@@ -192,25 +189,25 @@ class NotificationsView extends GetView<NotificationsController> {
                     Expanded(
                       child: Text(
                         notif['title'],
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 14,
+                        style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: isRead ? FontWeight.w600 : FontWeight.bold,
-                          color: isDark ? Colors.white : AppColors.onSurface,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
                     ),
                     Text(
                       notif['time'],
-                      style: GoogleFonts.beVietnamPro(fontSize: 10, color: isDark ? Colors.white38 : Colors.grey),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 6),
                 Text(
                   notif['desc'],
-                  style: GoogleFonts.beVietnamPro(
-                    fontSize: 12,
-                    color: isDark ? Colors.white70 : AppColors.onSurfaceVariant,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                     height: 1.5,
                   ),
                 ),
@@ -222,22 +219,22 @@ class NotificationsView extends GetView<NotificationsController> {
     );
   }
 
-  Widget _buildBottomNav(bool isDark) {
+  Widget _buildBottomNav(ThemeData theme, bool isDark) {
     return ClipRRect(
       borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           height: 90,
-          color: isDark ? Colors.black.withOpacity(0.8) : const Color(0xFFFAF9F6).withOpacity(0.8),
+          color: theme.scaffoldBackgroundColor.withValues(alpha: 0.85),
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Obx(() => Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildNavItem(0, 'Home', Icons.home, isDark),
-              _buildNavItem(1, 'History', Icons.history, isDark),
-              _buildNavItem(2, 'Notifs', Icons.notifications, isDark),
-              _buildNavItem(3, 'Profile', Icons.person, isDark),
+              _buildNavItem(0, 'Home', Icons.home, theme, isDark),
+              _buildNavItem(1, 'History', Icons.history, theme, isDark),
+              _buildNavItem(2, 'Notifs', Icons.notifications, theme, isDark),
+              _buildNavItem(3, 'Profile', Icons.person, theme, isDark),
             ],
           )),
         ),
@@ -245,7 +242,7 @@ class NotificationsView extends GetView<NotificationsController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon, bool isDark) {
+  Widget _buildNavItem(int index, String label, IconData icon, ThemeData theme, bool isDark) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
@@ -253,7 +250,7 @@ class NotificationsView extends GetView<NotificationsController> {
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFFF7F50).withOpacity(0.2) : Colors.transparent,
+          color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3) : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
@@ -261,16 +258,15 @@ class NotificationsView extends GetView<NotificationsController> {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : Colors.grey),
+              color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               size: 24,
             ),
             const SizedBox(height: 4),
             Text(
               label.toUpperCase(),
-              style: GoogleFonts.beVietnamPro(
-                fontSize: 10,
+              style: theme.textTheme.labelSmall?.copyWith(
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? AppColors.primary : (isDark ? Colors.white38 : Colors.grey),
+                color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                 letterSpacing: 1,
               ),
             ),

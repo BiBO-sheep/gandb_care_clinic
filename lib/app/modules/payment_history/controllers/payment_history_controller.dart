@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../api_config.dart';
+import '../../../data/providers/api_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PaymentHistoryController extends GetxController {
@@ -15,6 +13,8 @@ class PaymentHistoryController extends GetxController {
   var errorMessage = ''.obs;
 
   var invoiceData = Rxn<Map<String, dynamic>>();
+
+  final ApiService _apiService = ApiService();
 
   @override
   void onInit() {
@@ -33,45 +33,29 @@ class PaymentHistoryController extends GetxController {
     isLoading.value = true;
     errorMessage.value = '';
 
-    final url = '${ApiConfig.baseUrl}/payment-summary/$id';
-    print('Memanggil API: $url');
-
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       if (isClosed) return;
-      String? token = prefs.getString('token');
 
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
-      );
+      final response = await _apiService.get('payment-summary/$id');
 
       if (isClosed) return;
-      print('Status Code: ${response.statusCode}');
-      print('Response Body: ${response.body}');
 
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        if (responseData['success'] == true) {
-          invoiceData.value = responseData['data'];
-        } else {
-          errorMessage.value =
-              responseData['message'] ?? 'Gagal memuat rincian pembayaran';
-          if (Get.overlayContext != null) Get.snackbar('Error', errorMessage.value);
-        }
+      final responseData = jsonDecode(response.body);
+      if (responseData['success'] == true) {
+        invoiceData.value = responseData['data'];
       } else {
         errorMessage.value =
-            'Error ${response.statusCode}: ${response.reasonPhrase}';
-        if (Get.overlayContext != null) Get.snackbar('Error', 'Gagal memuat rincian pembayaran');
+            responseData['message'] ?? 'Gagal memuat rincian pembayaran';
+        if (Get.overlayContext != null) Get.snackbar('Error', errorMessage.value);
       }
     } catch (e) {
-      print('Error Try-Catch: $e');
       if (!isClosed) {
-        errorMessage.value = 'Exception: $e';
-        if (Get.overlayContext != null) Get.snackbar('Error', errorMessage.value);
+        if (e.toString().contains('Sesi telah berakhir')) {
+          Get.offAllNamed('/login');
+        } else {
+          errorMessage.value = e.toString().replaceAll('Exception: ', '');
+          if (Get.overlayContext != null) Get.snackbar('Error', errorMessage.value);
+        }
       }
     } finally {
       if (!isClosed) isLoading.value = false;
@@ -83,36 +67,22 @@ class PaymentHistoryController extends GetxController {
     isLoading.value = true;
     errorMessage.value = '';
 
-    final url = '${ApiConfig.baseUrl}/history';
-    print('Memanggil API: $url');
-
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
       if (isClosed) return;
-      String? token = prefs.getString('token');
 
-      final response = await http.get(
-        Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-        },
-      );
+      final response = await _apiService.get('history');
 
       if (isClosed) return;
-      if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
-        historyList.value = responseData['data'];
-      } else {
-        errorMessage.value =
-            'Error ${response.statusCode}: ${response.reasonPhrase}';
-        if (Get.overlayContext != null) Get.snackbar('Error', 'Gagal memuat riwayat');
-      }
+      final responseData = jsonDecode(response.body);
+      historyList.value = responseData['data'];
     } catch (e) {
-      print('Error Try-Catch: $e');
       if (!isClosed) {
-        errorMessage.value = 'Exception: $e';
-        if (Get.overlayContext != null) Get.snackbar('Error', errorMessage.value);
+        if (e.toString().contains('Sesi telah berakhir')) {
+          Get.offAllNamed('/login');
+        } else {
+          errorMessage.value = e.toString().replaceAll('Exception: ', '');
+          if (Get.overlayContext != null) Get.snackbar('Error', errorMessage.value);
+        }
       }
     } finally {
       if (!isClosed) isLoading.value = false;
@@ -124,10 +94,8 @@ class PaymentHistoryController extends GetxController {
     final bool isCompleted = status == 'completed' || status == 'selesai';
 
     if (isCompleted && item['id'] != null) {
-      // Kalau sudah selesai -> arahkan ke Invoice
       Get.toNamed('/invoice', arguments: {'appointment_id': item['id']});
     } else {
-      // Kalau masih aktif -> buka tiket digital
       Get.toNamed(
         '/digital-ticket',
         arguments: {
@@ -215,7 +183,7 @@ class PaymentHistoryController extends GetxController {
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(0.1),
+          color: AppColors.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(icon, color: AppColors.primary),
@@ -233,14 +201,13 @@ class PaymentHistoryController extends GetxController {
   }
 
   Future<void> processPayment(String method) async {
-    print('Memproses pembayaran dengan: $method');
     Get.back();
 
     if (method == 'cashier') {
       Get.snackbar(
         'Instruksi Pembayaran',
         'Silakan tunjukkan Invoice ini ke meja kasir untuk menyelesaikan pembayaran.',
-        backgroundColor: Colors.blue.withOpacity(0.1),
+        backgroundColor: Colors.blue.withValues(alpha: 0.1),
         colorText: Colors.blue,
         icon: const Icon(Icons.info_outline, color: Colors.blue),
         duration: const Duration(seconds: 5),
@@ -264,48 +231,36 @@ class PaymentHistoryController extends GetxController {
       );
 
       try {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        String? token = prefs.getString('token');
-
-        final response = await http.post(
-          Uri.parse('${ApiConfig.baseUrl}/payment/process'),
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode({'invoice_id': invoiceId, 'method': method}),
-        );
+        final response = await _apiService.post('payment/process', body: {'invoice_id': invoiceId, 'method': method});
 
         if (Get.isDialogOpen ?? false) Get.back();
 
-        if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
+        final data = jsonDecode(response.body);
 
-          if (data['success'] == true && data['snap_url'] != null) {
-            final Uri url = Uri.parse(data['snap_url']);
-            if (await canLaunchUrl(url)) {
-              await launchUrl(url, mode: LaunchMode.externalApplication);
-            } else {
-              Get.snackbar('Error', 'Tidak dapat membuka halaman pembayaran.');
-            }
+        if (data['success'] == true && data['snap_url'] != null) {
+          final Uri url = Uri.parse(data['snap_url']);
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url, mode: LaunchMode.externalApplication);
           } else {
-            Get.snackbar(
-              'Gagal',
-              data['message'] ?? 'Terjadi kesalahan saat memproses pembayaran.',
-            );
+            Get.snackbar('Error', 'Tidak dapat membuka halaman pembayaran.');
           }
         } else {
-          Get.snackbar('Error', 'Server Error: ${response.statusCode}');
+          Get.snackbar(
+            'Gagal',
+            data['message'] ?? 'Terjadi kesalahan saat memproses pembayaran.',
+          );
         }
       } catch (e) {
         if (Get.isDialogOpen ?? false) Get.back();
-        Get.snackbar('Error', 'Koneksi bermasalah: $e');
+        if (e.toString().contains('Sesi telah berakhir')) {
+          Get.offAllNamed('/login');
+        } else {
+          Get.snackbar('Error', e.toString().replaceAll('Exception: ', ''));
+        }
       }
     }
   }
 
-  // 👇 INI OBATNYA BOS: FORMAT RUPIAH ANTI KESELEK 👇
   String formatRupiah(dynamic amount) {
     if (amount == null) return 'Rp 0';
     int value = 0;
@@ -331,3 +286,4 @@ class PaymentHistoryController extends GetxController {
     return 'Rp $formatted';
   }
 }
+

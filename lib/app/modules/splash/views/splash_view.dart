@@ -3,14 +3,16 @@ import 'package:get/get.dart';
 import '../controllers/splash_controller.dart';
 
 class SplashView extends GetView<SplashController> {
-  const SplashView({Key? key}) : super(key: key);
+  const SplashView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    bool isDark = Get.isDarkMode;
-    final Color backgroundColor = isDark ? Colors.black : Colors.white;
-    final Color tealColor = isDark ? const Color(0xFF93F2F2) : const Color(0xFF00796B);
-    final Color goldColor = const Color(0xFFFFC107);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
+    final Color backgroundColor = theme.colorScheme.surface;
+    final Color primaryColor = theme.colorScheme.primary;
+    final Color secondaryColor = theme.colorScheme.secondary;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -24,7 +26,7 @@ class SplashView extends GetView<SplashController> {
                 colors: [
                   backgroundColor,
                   backgroundColor,
-                  tealColor.withOpacity(isDark ? 0.05 : 0.1),
+                  primaryColor.withValues(alpha: isDark ? 0.1 : 0.05),
                 ],
               ),
             ),
@@ -38,12 +40,12 @@ class SplashView extends GetView<SplashController> {
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: tealColor.withOpacity(0.1),
+                    color: primaryColor.withValues(alpha: 0.1),
                   ),
                   child: Center(
                     child: Icon(
                       Icons.favorite_rounded,
-                      color: tealColor,
+                      color: primaryColor,
                       size: 60,
                     ),
                   ),
@@ -51,18 +53,15 @@ class SplashView extends GetView<SplashController> {
                 const SizedBox(height: 32),
                 Text(
                   'G&B Care Clinic',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: tealColor,
-                    letterSpacing: -0.5,
+                  style: theme.textTheme.displaySmall?.copyWith(
+                    color: primaryColor,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: goldColor.withOpacity(0.1),
+                    color: secondaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -70,16 +69,15 @@ class SplashView extends GetView<SplashController> {
                     children: [
                       Icon(
                         Icons.monitor_heart_rounded,
-                        color: goldColor,
+                        color: secondaryColor,
                         size: 16,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Empowering Health, Embracing Care',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDark ? Colors.white70 : Colors.grey[700],
-                          fontWeight: FontWeight.w600,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: isDark ? Colors.white70 : theme.colorScheme.onSurfaceVariant,
+                          letterSpacing: 0,
                         ),
                       ),
                     ],

@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 import 'package:gandb_care_clinic/app/modules/confirm_appointment/bindings/confirm_appointment_binding.dart';
 import 'package:gandb_care_clinic/app/modules/invoice/bindings/invoice_binding.dart';
 import 'package:gandb_care_clinic/app/modules/invoice/views/invoice_view.dart';
@@ -33,6 +34,8 @@ import 'package:gandb_care_clinic/app/modules/splash/views/splash_view.dart';
 import 'package:get/get.dart';
 import '../modules/onboarding/bindings/onboarding_binding.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
+import '../modules/mock_payment/bindings/mock_payment_binding.dart';
+import '../modules/mock_payment/views/mock_payment_view.dart';
 
 part 'app_routes.dart';
 
@@ -143,6 +146,12 @@ class AppPages {
       page: () => const InvoiceView(),
       binding: InvoiceBinding(),
       transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: Routes.MOCK_PAYMENT,
+      page: () => const MockPaymentView(),
+      binding: MockPaymentBinding(),
+      transition: Transition.downToUp,
     ),
   ];
 }

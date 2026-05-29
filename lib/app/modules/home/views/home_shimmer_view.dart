@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HomeShimmerView extends StatelessWidget {
-  const HomeShimmerView({Key? key}) : super(key: key);
+  const HomeShimmerView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +102,7 @@ class HomeShimmerView extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 200,
-      decoration: BoxDecoration(color: Colors.white.withOpacity(0.5), borderRadius: BorderRadius.circular(24)),
+      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(24)),
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,7 +116,7 @@ class HomeShimmerView extends StatelessWidget {
           Container(
             width: double.infinity,
             height: 60,
-            decoration: BoxDecoration(color: Colors.black.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(16)),
           ),
         ],
       ),

@@ -50,7 +50,7 @@ class QueueMonitorController extends GetxController {
         if (!isClosed) currentStatus.value = val.toString();
       }),
       ever(polling.isHasActiveSession, (val) {
-        if (!isClosed) isHasActiveSession.value = val as bool;
+        if (!isClosed) isHasActiveSession.value = val;
       }),
       ever(polling.doctorName, (val) {
         if (!isClosed) doctorName.value = val.toString();
@@ -79,10 +79,15 @@ class QueueMonitorController extends GetxController {
   // =====================================================
   void changePage(int index) {
     currentIndex.value = index;
-    if (index == 0) Get.offAllNamed('/home');
-    else if (index == 1) Get.toNamed('/payment-history');
-    else if (index == 2) Get.toNamed('/notifications');
-    else if (index == 3) Get.toNamed('/profile');
+    if (index == 0) {
+      Get.offAllNamed('/home');
+    } else if (index == 1) {
+      Get.toNamed('/payment-history');
+    } else if (index == 2) {
+      Get.toNamed('/notifications');
+    } else if (index == 3) {
+      Get.toNamed('/profile');
+    }
   }
 
   void openQRScanner() {

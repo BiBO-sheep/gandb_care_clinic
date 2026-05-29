@@ -1,41 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../api_config.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../../data/providers/api_service.dart';
 import '../../profile/controllers/profile_controller.dart';
 import '../../../services/theme_service.dart';
 
 class SettingsController extends GetxController {
-  // --- EXPOSE PROFILE CONTROLLER BIAR BISA DIBACA DI VIEW ---
   final profileCtrl = Get.find<ProfileController>();
 
-  // --- FORM CONTROLLERS ---
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
 
-  // --- STATE ---
+  final ApiService _apiService = ApiService();
+  final _storage = const FlutterSecureStorage();
+
   var appointmentReminders = true.obs;
   var labResultAlerts = true.obs;
   var wellnessTips = false.obs;
   var biometricLogin = true.obs;
   var isLoading = false.obs;
 
-  // 👇 STATE BARU BUAT DARK MODE 👇
   var isDarkMode = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    // Load data awal dari ProfileController
     nameController.text = profileCtrl.userName.value;
     emailController.text = profileCtrl.userEmail.value;
     phoneController.text = profileCtrl.userPhone.value;
-
-    // Load status dark mode dari ThemeService
     isDarkMode.value = ThemeService.to.theme == ThemeMode.dark;
   }
 
@@ -48,7 +43,6 @@ class SettingsController extends GetxController {
     super.onClose();
   }
 
-  // --- FUNGSI DARK MODE SAKTI GETX ---
   void toggleDarkMode(bool value) {
     isDarkMode.value = value;
     Get.find<ThemeService>().switchTheme();
@@ -57,28 +51,15 @@ class SettingsController extends GetxController {
   Future<void> updateProfile() async {
     isLoading.value = true;
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('token');
-
-      final response = await http.put(
-        Uri.parse('${ApiConfig.baseUrl}/profile/update'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'name': nameController.text,
-          'email': emailController.text,
-          'phone': phoneController.text,
-          'address': addressController.text,
-        }),
-      );
+      final response = await _apiService.put('profile/update', body: {
+        'name': nameController.text,
+        'email': emailController.text,
+        'phone': phoneController.text,
+        'address': addressController.text,
+      });
 
       if (response.statusCode == 200) {
-        // Refresh data di ProfileController biar langsung berubah di semua halaman
         await profileCtrl.fetchUserProfile();
-
         Get.snackbar(
           'Sukses',
           'Profil berhasil diperbarui!',
@@ -91,29 +72,20 @@ class SettingsController extends GetxController {
         Get.snackbar('Gagal', data['message'] ?? 'Terjadi kesalahan');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Kesalahan koneksi: $e');
+      Get.snackbar('Error', e.toString().replaceAll('Exception: ', ''));
     } finally {
       isLoading.value = false;
     }
   }
 
-  // --- FUNGSI KLIK ---
   void toggleAppointment(bool value) => appointmentReminders.value = value;
   void toggleLabResults(bool value) => labResultAlerts.value = value;
   void toggleWellnessTips(bool value) => wellnessTips.value = value;
   void toggleBiometric(bool value) => biometricLogin.value = value;
 
-  void changePassword() {
-    Get.snackbar('Security', 'Membuka halaman ubah password...');
-  }
-
-  void openPrivacyPolicy() {
-    Get.snackbar('Legal', 'Membuka Kebijakan Privasi...');
-  }
-
-  void openTerms() {
-    Get.snackbar('Legal', 'Membuka Syarat & Ketentuan...');
-  }
+  void changePassword() => Get.snackbar('Security', 'Membuka halaman ubah password...');
+  void openPrivacyPolicy() => Get.snackbar('Legal', 'Membuka Kebijakan Privasi...');
+  void openTerms() => Get.snackbar('Legal', 'Membuka Syarat & Ketentuan...');
 
   void signOut() {
     Get.defaultDialog(
@@ -124,10 +96,10 @@ class SettingsController extends GetxController {
       confirmTextColor: Colors.white,
       buttonColor: const Color(0xFFBA1A1A),
       onConfirm: () async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.remove('token');
+        await _storage.delete(key: 'token');
         Get.offAllNamed('/login');
       },
     );
   }
 }
+

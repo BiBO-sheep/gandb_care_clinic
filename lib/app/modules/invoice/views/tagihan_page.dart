@@ -5,7 +5,7 @@ import '../controllers/tagihan_controller.dart';
 class TagihanPage extends StatelessWidget {
   final int appointmentId;
 
-  TagihanPage({required this.appointmentId});
+  const TagihanPage({super.key, required this.appointmentId});
 
   @override
   Widget build(BuildContext context) {
@@ -14,18 +14,21 @@ class TagihanPage extends StatelessWidget {
 
     // Panggil fungsi buat narik data pas halaman kebuka
     tagihanC.fetchDetailTagihan(appointmentId);
+    
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text("Rincian Pembayaran", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        backgroundColor: Color(0xFF006A6A), // Teal tetap menonjol sebagai identitas brand
+        title: Text("Rincian Pembayaran", style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onPrimary, fontWeight: FontWeight.bold)),
+        backgroundColor: theme.colorScheme.primary, // Teal tetap menonjol sebagai identitas brand
         elevation: 0,
-        leading: BackButton(color: Colors.white),
+        leading: BackButton(color: theme.colorScheme.onPrimary),
       ),
       body: Obx(() {
         if (tagihanC.isLoading.value) {
-          return Center(child: CircularProgressIndicator(color: Color(0xFF006A6A)));
+          return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
         }
 
         return SingleChildScrollView(
@@ -40,19 +43,19 @@ class TagihanPage extends StatelessWidget {
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: Color(0xFF006A6A).withOpacity(0.1), // Teal Muda Adaptive
+                      color: theme.colorScheme.primaryContainer, // Teal Muda Adaptive
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: Center(
-                      child: Text(tagihanC.getInitials(), style: TextStyle(color: Color(0xFF006A6A), fontSize: 24, fontWeight: FontWeight.bold)),
+                      child: Text(tagihanC.getInitials(), style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
                     ),
                   ),
                   SizedBox(width: 15),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(tagihanC.namaPasien.value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Theme.of(context).textTheme.bodyLarge?.color)),
-                      Text("Nomor Antrean: ${tagihanC.nomorAntrean.value}", style: TextStyle(color: Colors.grey, fontSize: 14)),
+                      Text(tagihanC.namaPasien.value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: theme.colorScheme.onSurface)),
+                      Text("Nomor Antrean: ${tagihanC.nomorAntrean.value}", style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                     ],
                   )
                 ],
@@ -60,26 +63,26 @@ class TagihanPage extends StatelessWidget {
               SizedBox(height: 30),
 
               // Rincian Tagihan
-              Text("Rincian Biaya", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color)),
+              Text("Rincian Biaya", style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
               SizedBox(height: 15),
               Container(
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Get.isDarkMode ? Colors.grey[900] : Color(0xFFFFF9F5), // Coral Muda Adaptive
+                  color: theme.colorScheme.secondaryContainer, // Coral Muda Adaptive
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Get.isDarkMode ? Colors.grey[800]! : Color(0xFFFFD1BC), width: 1), // Coral Border
+                  border: Border.all(color: theme.colorScheme.secondary.withValues(alpha: 0.3), width: 1), // Coral Border
                 ),
                 child: Column(
                   children: [
-                    _buildTagihanRow("Jasa Dokter", "Rp ${tagihanC.formatRupiah(tagihanC.totalKonsultasi.value)}"),
+                    _buildTagihanRow("Jasa Dokter", "Rp ${tagihanC.formatRupiah(tagihanC.totalKonsultasi.value)}", theme, isDark),
                     SizedBox(height: 10),
-                    _buildTagihanRow("Biaya Obat", "Rp ${tagihanC.formatRupiah(tagihanC.totalObat.value)}"),
-                    Divider(color: Color(0xFFFFD1BC), height: 30),
+                    _buildTagihanRow("Biaya Obat", "Rp ${tagihanC.formatRupiah(tagihanC.totalObat.value)}", theme, isDark),
+                    Divider(color: theme.colorScheme.secondary.withValues(alpha: 0.3), height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("Total Tagihan", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color)),
-                        Text("Rp ${tagihanC.formatRupiah(tagihanC.grandTotal.value)}", style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Color(0xFFE65A15))), // Coral
+                        Text("Total Tagihan", style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSecondaryContainer)),
+                        Text("Rp ${tagihanC.formatRupiah(tagihanC.grandTotal.value)}", style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, color: theme.colorScheme.secondary)), // Coral
                       ],
                     )
                   ],
@@ -88,15 +91,15 @@ class TagihanPage extends StatelessWidget {
               SizedBox(height: 30),
 
               // Daftar Obat
-              Text("Resep Obat Digital", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color)),
+              Text("Resep Obat Digital", style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
               SizedBox(height: 15),
               ...tagihanC.medicines.map((obat) => Container(
                 margin: EdgeInsets.only(bottom: 15),
                 padding: EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
+                  color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Get.isDarkMode ? Colors.white12 : Colors.grey.shade200, width: 1),
+                  border: Border.all(color: theme.colorScheme.surfaceContainerHighest, width: 1),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,30 +107,30 @@ class TagihanPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(obat['medicine_name'] ?? '-', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color)),
-                        Text("${obat['dosage'] ?? ''}", style: TextStyle(fontSize: 14, color: Colors.grey)),
+                        Text(obat['medicine_name'] ?? '-', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
+                        Text("${obat['dosage'] ?? ''}", style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                       ],
                     ),
                     SizedBox(height: 5),
-                    Text("${obat['rules'] ?? ''}", style: TextStyle(fontSize: 14, color: Color(0xFF006A6A), fontStyle: FontStyle.italic)),
+                    Text("${obat['rules'] ?? ''}", style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary, fontStyle: FontStyle.italic)),
                   ],
                 ),
-              )).toList(),
+              )),
 
               // Tombol Bayar
               SizedBox(height: 40),
-              Container(
+              SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () => _showPaymentBottomSheet(context),
+                  onPressed: () => _showPaymentBottomSheet(context, theme, isDark),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF006A6A), // Teal
+                    backgroundColor: theme.colorScheme.primary, // Teal
                     padding: EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     elevation: 5,
-                    shadowColor: Color(0xFF006A6A).withOpacity(0.3),
+                    shadowColor: theme.colorScheme.primary.withValues(alpha: 0.3),
                   ),
-                  child: Text("Bayar Sekarang", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  child: Text("Bayar Sekarang", style: theme.textTheme.titleMedium?.copyWith(color: theme.colorScheme.onPrimary, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -137,22 +140,22 @@ class TagihanPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTagihanRow(String label, String value) {
+  Widget _buildTagihanRow(String label, String value, ThemeData theme, bool isDark) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
-        Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Get.isDarkMode ? Colors.white : Colors.black)),
+        Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.7))),
+        Text(value, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSecondaryContainer)),
       ],
     );
   }
 
-  void _showPaymentBottomSheet(BuildContext context) {
+  void _showPaymentBottomSheet(BuildContext context, ThemeData theme, bool isDark) {
     Get.bottomSheet(
       Container(
         padding: EdgeInsets.all(25),
         decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
         ),
         child: Column(
@@ -164,7 +167,7 @@ class TagihanPage extends StatelessWidget {
                 width: 50,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.3),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -172,22 +175,23 @@ class TagihanPage extends StatelessWidget {
             SizedBox(height: 25),
             Text(
               "Pilih Metode Pembayaran",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).textTheme.bodyLarge?.color),
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
             ),
             SizedBox(height: 20),
             _buildPaymentOption(
               icon: Icons.point_of_sale,
-              iconColor: Color(0xFF006A6A), // Teal
+              iconColor: theme.colorScheme.primary, // Teal
               title: "Bayar di Kasir",
               subtitle: "Tunjukkan rincian ini kepada staf kasir.",
+              theme: theme,
               onTap: () {
                 Get.back();
                 Get.snackbar(
                   'Berhasil', 
                   'Silakan menuju meja kasir.',
                   snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Color(0xFF006A6A),
-                  colorText: Colors.white,
+                  backgroundColor: theme.colorScheme.primary,
+                  colorText: theme.colorScheme.onPrimary,
                   margin: EdgeInsets.all(15),
                 );
               },
@@ -195,17 +199,18 @@ class TagihanPage extends StatelessWidget {
             SizedBox(height: 15),
             _buildPaymentOption(
               icon: Icons.account_balance_wallet,
-              iconColor: Color(0xFFE65A15), // Coral
+              iconColor: theme.colorScheme.secondary, // Coral
               title: "Bayar Online",
               subtitle: "E-Wallet, Virtual Account, atau Midtrans.",
+              theme: theme,
               onTap: () {
                 Get.back();
                 Get.snackbar(
                   'Info', 
                   'Mengarahkan ke Payment Gateway...',
                   snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Color(0xFFE65A15),
-                  colorText: Colors.white,
+                  backgroundColor: theme.colorScheme.secondary,
+                  colorText: theme.colorScheme.onSecondary,
                   margin: EdgeInsets.all(15),
                 );
               },
@@ -223,28 +228,30 @@ class TagihanPage extends StatelessWidget {
     required Color iconColor,
     required String title,
     required String subtitle,
+    required ThemeData theme,
     required VoidCallback onTap,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Get.isDarkMode ? Colors.white.withOpacity(0.05) : Colors.grey.withOpacity(0.05),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Get.isDarkMode ? Colors.white10 : Colors.grey.withOpacity(0.1)),
+        border: Border.all(color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)),
       ),
       child: ListTile(
         onTap: onTap,
         leading: Container(
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.1),
+            color: iconColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(icon, color: iconColor),
         ),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        subtitle: Text(subtitle, style: TextStyle(fontSize: 12, color: Colors.grey)),
-        trailing: Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+        title: Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
+        subtitle: Text(subtitle, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        trailing: Icon(Icons.arrow_forward_ios, size: 14, color: theme.colorScheme.onSurfaceVariant),
       ),
     );
   }
 }
+

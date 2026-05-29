@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color primary = Color(0xFFA43C12);
-  static const Color secondary = Color(0xFF006A6A);
-  static const Color background = Color(0xFFFAF9F6);
-  static const Color surfaceVariant = Color(0xFFE3E2E0);
-  static const Color onSurface = Color(0xFF1A1C1A);
-  static const Color onSurfaceVariant = Color(0xFF57423B);
+  // Primary - Trust, Professionalism, Healthcare
+  static const Color primary = Color(0xFF0F4C75);
+  static const Color primaryContainer = Color(0xFF3282B8);
+  static const Color onPrimaryContainer = Color(0xFFEBF8FF);
 
-  static const Color primaryContainer = Color(0xFFFF7F50);
-  static const Color secondaryContainer = Color(0xFF90EFEF);
+  // Secondary - Calm, Accents
+  static const Color secondary = Color(0xFF06B6D4);
+  static const Color secondaryContainer = Color(0xFFBBE1FA);
 
-  static Color? get surfaceContainerLow => null;
+  // Backgrounds & Surfaces
+  static const Color background = Color(0xFFF8FAFC); // Very light greyish blue
+  static const Color surface = Colors.white;
+  static const Color surfaceVariant = Color(0xFFF1F5F9);
+  
+  // Text Colors
+  static const Color onSurface = Color(0xFF1E293B); // Slate 800
+  static const Color onSurfaceVariant = Color(0xFF64748B); // Slate 500
+  
+  // States
+  static const Color error = Color(0xFFEF4444);
+  static const Color success = Color(0xFF10B981);
+
+  // Dark Mode specific additions if needed later (usually handled by ColorScheme in theme)
+  static Color? get surfaceContainerLow => const Color(0xFFF1F5F9);
 }

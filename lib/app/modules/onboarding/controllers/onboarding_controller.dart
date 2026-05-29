@@ -1,8 +1,6 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../data/providers/api_service.dart';
 
 class OnboardingController extends GetxController {
   // Observables untuk state loading
