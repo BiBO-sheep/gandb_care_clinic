@@ -11,6 +11,8 @@ import 'package:gandb_care_clinic/app/modules/exam_results/bindings/exam_results
 import 'package:gandb_care_clinic/app/modules/exam_results/views/exam_results.view.dart';
 import 'package:gandb_care_clinic/app/modules/home/bindings/home_bindings.dart';
 import 'package:gandb_care_clinic/app/modules/home/views/home_view.dart';
+import 'package:gandb_care_clinic/app/modules/main_layout/bindings/main_layout_binding.dart';
+import 'package:gandb_care_clinic/app/modules/main_layout/views/main_layout_view.dart';
 import 'package:gandb_care_clinic/app/modules/login/bindings/login_binding.dart';
 import 'package:gandb_care_clinic/app/modules/login/views/login_view.dart';
 import 'package:gandb_care_clinic/app/modules/notifications/bindings/notifications_binding.dart';
@@ -63,8 +65,8 @@ class AppPages {
     ),
     GetPage(
       name: Routes.HOME,
-      page: () => const HomeView(),
-      binding: HomeBinding(),
+      page: () => const MainLayoutView(),
+      binding: MainLayoutBinding(),
       transition: Transition.fadeIn, // Animasi halus saat masuk ke dashboard
     ),
     GetPage(

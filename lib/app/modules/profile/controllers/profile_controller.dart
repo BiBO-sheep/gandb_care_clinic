@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../data/providers/api_service.dart';
+import '../../../data/providers/unauthorized_exception.dart';
+import 'package:gandb_care_clinic/app/modules/main_layout/controllers/main_layout_controller.dart';
 
 class ProfileController extends GetxController {
   var currentIndex = 3.obs;
@@ -34,17 +36,14 @@ class ProfileController extends GetxController {
       userEmail.value = userData['email']?.toString() ?? '-';
       userPhone.value = userData['phone']?.toString() ?? '-';
       userBloodType.value = userData['blood_type']?.toString() ?? '-';
+    } on UnauthorizedException {
+      logout(confirm: false);
     } catch (e) {
-      if (e.toString().contains('Sesi telah berakhir')) {
-        Get.snackbar('Error Autentikasi', e.toString().replaceAll('Exception: ', ''));
-        logout(confirm: false);
-      } else {
-        debugPrint("ERROR PAS AMBIL DATA PROFILE: $e");
-        Get.snackbar(
-          'Error Koneksi',
-          e.toString().replaceAll('Exception: ', ''),
-        );
-      }
+      debugPrint("ERROR PAS AMBIL DATA PROFILE: $e");
+      Get.snackbar(
+        'Error Koneksi',
+        e.toString().replaceAll('Exception: ', ''),
+      );
     } finally {
       isLoading.value = false;
     }
@@ -77,12 +76,11 @@ class ProfileController extends GetxController {
 
   void changePage(int index) {
     currentIndex.value = index;
-    if (index == 0) {
+    if (Get.isRegistered<MainLayoutController>()) {
+      Get.find<MainLayoutController>().changePage(index);
+      Get.until((route) => route.settings.name == '/home' || route.isFirst);
+    } else {
       Get.offAllNamed('/home');
-    } else if (index == 1) {
-      Get.offAllNamed('/payment-history');
-    } else if (index == 2) {
-      Get.offAllNamed('/notifications');
     }
   }
 }

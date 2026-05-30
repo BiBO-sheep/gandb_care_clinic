@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:gandb_care_clinic/app/modules/main_layout/controllers/main_layout_controller.dart';
 
 class DigitalTicketController extends GetxController {
   var currentIndex = 1.obs;
@@ -42,10 +43,11 @@ class DigitalTicketController extends GetxController {
 
   void changePage(int index) {
     currentIndex.value = index;
-    if (index == 0) {
+    if (Get.isRegistered<MainLayoutController>()) {
+      Get.find<MainLayoutController>().changePage(index);
+      Get.until((route) => route.settings.name == '/home' || route.isFirst);
+    } else {
       Get.offAllNamed('/home');
-    } else if (index == 1) {
-      Get.toNamed('/payment-history');
     }
   }
 

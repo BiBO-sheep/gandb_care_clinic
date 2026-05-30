@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../../api_config.dart';
+import 'unauthorized_exception.dart';
 
 class ApiService {
   final String _baseUrl = ApiConfig.baseUrl;
@@ -83,7 +84,7 @@ class ApiService {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return response;
     } else if (response.statusCode == 401) {
-      throw Exception('Sesi telah berakhir, silakan login kembali.');
+      throw UnauthorizedException();
     } else if (response.statusCode == 422) {
       // Validation error
       return response; // Let the controller handle validation parsing

@@ -22,18 +22,10 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
           children: [
             Row(
               children: [
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150&auto=format&fit=crop',
-                      ),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: theme.colorScheme.primaryContainer,
+                  child: Icon(Icons.person, size: 24, color: theme.colorScheme.onPrimaryContainer),
                 ),
                 const SizedBox(width: 12),
                 Text(

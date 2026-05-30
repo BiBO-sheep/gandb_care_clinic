@@ -4,7 +4,8 @@ import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
-  const ProfileView({super.key});
+  final bool isFromMainLayout;
+  const ProfileView({super.key, this.isFromMainLayout = false});
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +121,7 @@ class ProfileView extends GetView<ProfileController> {
           );
         }),
       ),
-      bottomNavigationBar: _buildBottomNav(theme, isDark),
+      bottomNavigationBar: isFromMainLayout ? null : _buildBottomNav(theme, isDark),
     );
   }
 
@@ -199,7 +200,7 @@ class ProfileView extends GetView<ProfileController> {
       onTap: () => controller.changePage(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3) : Colors.transparent,
           borderRadius: BorderRadius.circular(24),

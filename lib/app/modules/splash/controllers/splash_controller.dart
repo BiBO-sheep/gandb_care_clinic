@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -19,8 +20,14 @@ class SplashController extends GetxController {
     if (isClosed) return;
 
     try {
-      // 2. Cek token login
-      String? token = await _storage.read(key: 'token');
+      // 2. Cek token login dengan timeout agar tidak hang
+      String? token;
+      try {
+        token = await _storage.read(key: 'token').timeout(const Duration(seconds: 3));
+      } catch (e) {
+        debugPrint("Storage read error/timeout: $e");
+        token = null;
+      }
 
       if (isClosed) return; // cek lagi setelah await
 

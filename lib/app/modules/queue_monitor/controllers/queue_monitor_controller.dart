@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../services/polling_service.dart';
+import 'package:gandb_care_clinic/app/modules/main_layout/controllers/main_layout_controller.dart';
 
 class QueueMonitorController extends GetxController {
   // --- Reactive Variables (Proxy to Service) ---
@@ -79,14 +80,11 @@ class QueueMonitorController extends GetxController {
   // =====================================================
   void changePage(int index) {
     currentIndex.value = index;
-    if (index == 0) {
+    if (Get.isRegistered<MainLayoutController>()) {
+      Get.find<MainLayoutController>().changePage(index);
+      Get.until((route) => route.settings.name == '/home' || route.isFirst);
+    } else {
       Get.offAllNamed('/home');
-    } else if (index == 1) {
-      Get.toNamed('/payment-history');
-    } else if (index == 2) {
-      Get.toNamed('/notifications');
-    } else if (index == 3) {
-      Get.toNamed('/profile');
     }
   }
 

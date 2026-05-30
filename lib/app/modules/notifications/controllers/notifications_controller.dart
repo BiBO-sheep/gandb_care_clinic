@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 import '../../../data/providers/api_service.dart';
+import '../../../data/providers/unauthorized_exception.dart';
+import 'package:gandb_care_clinic/app/modules/main_layout/controllers/main_layout_controller.dart';
 
 class NotificationsController extends GetxController {
   var currentIndex = 2.obs;
@@ -30,6 +32,8 @@ class NotificationsController extends GetxController {
 
       allNotifs.value = fetchedData;
       _groupNotifications(fetchedData);
+    } on UnauthorizedException {
+      Get.offAllNamed('/login');
     } catch (e) {
       debugPrint("🚨 ERROR AMBIL NOTIF: $e");
     } finally {
@@ -84,12 +88,16 @@ class NotificationsController extends GetxController {
       await _apiService.post('notifications/mark-read');
 
       Get.snackbar(
-        'Success',
+        'Berhasil',
         'Semua notifikasi telah ditandai sudah dibaca.',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+        backgroundColor: Get.theme.colorScheme.primaryContainer,
+        colorText: Get.theme.colorScheme.onPrimaryContainer,
         snackPosition: SnackPosition.BOTTOM,
+        icon: Icon(Icons.check_circle, color: Get.theme.colorScheme.primary),
+        borderRadius: 16,
       );
+    } on UnauthorizedException {
+      Get.offAllNamed('/login');
     } catch (e) {
       debugPrint("🚨 ERROR MARK AS READ: $e");
     }
@@ -97,9 +105,12 @@ class NotificationsController extends GetxController {
 
   void changePage(int index) {
     currentIndex.value = index;
-    if (index == 0) Get.offAllNamed('/home');
-    if (index == 1) Get.offAllNamed('/payment-history');
-    if (index == 3) Get.offAllNamed('/profile');
+    if (Get.isRegistered<MainLayoutController>()) {
+      Get.find<MainLayoutController>().changePage(index);
+      Get.until((route) => route.settings.name == '/home' || route.isFirst);
+    } else {
+      Get.offAllNamed('/home');
+    }
   }
 }
 

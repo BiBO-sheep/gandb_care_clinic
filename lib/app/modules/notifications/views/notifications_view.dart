@@ -4,7 +4,8 @@ import 'package:get/get.dart';
 import '../controllers/notifications_controller.dart';
 
 class NotificationsView extends GetView<NotificationsController> {
-  const NotificationsView({super.key});
+  final bool isFromMainLayout;
+  const NotificationsView({super.key, this.isFromMainLayout = false});
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +103,7 @@ class NotificationsView extends GetView<NotificationsController> {
           );
         }),
       ),
-      bottomNavigationBar: _buildBottomNav(theme, isDark),
+      bottomNavigationBar: isFromMainLayout ? null : _buildBottomNav(theme, isDark),
     );
   }
 
@@ -248,7 +249,7 @@ class NotificationsView extends GetView<NotificationsController> {
       onTap: () => controller.changePage(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3) : Colors.transparent,
           borderRadius: BorderRadius.circular(24),

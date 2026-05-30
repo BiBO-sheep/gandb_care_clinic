@@ -4,8 +4,9 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../data/providers/api_service.dart';
+import '../data/providers/unauthorized_exception.dart';
 
-class PollingService extends GetxService {
+class PollingService extends GetxService with WidgetsBindingObserver {
   static PollingService get to => Get.find<PollingService>();
 
   Timer? _timer;
@@ -26,8 +27,21 @@ class PollingService extends GetxService {
 
   Future<PollingService> init() async {
     debugPrint('[PollingService] Initializing...');
+    WidgetsBinding.instance.addObserver(this);
     startPolling();
     return this;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      debugPrint('[PollingService] App Resumed. Restarting polling...');
+      startPolling();
+    } else if (state == AppLifecycleState.paused) {
+      debugPrint('[PollingService] App Paused. Stopping polling...');
+      stopPolling();
+    }
   }
 
   void startPolling() {
@@ -47,6 +61,8 @@ class PollingService extends GetxService {
     _timer = null;
     debugPrint('[PollingService] Global polling stopped.');
   }
+
+
 
   Future<void> fetchActiveQueue() async {
     if (isClosed) return;
@@ -80,14 +96,15 @@ class PollingService extends GetxService {
             try {
               if (!isClosed && Get.overlayContext != null) {
                 Get.snackbar(
-                  '🔔 PANGGILAN ANTREAN',
-                  'Nomor ${data['queue_number']} silakan menuju ke ${data['poli']?['ruangan'] ?? 'ruangan'}.',
-                  backgroundColor: Colors.teal,
-                  colorText: Colors.white,
+                  'Panggilan Antrean',
+                  'Antrean nomor ${data['queue_number']}, silakan masuk ke ${data['poli']?['ruangan'] ?? 'ruangan'}.',
+                  backgroundColor: Get.theme.colorScheme.primaryContainer,
+                  colorText: Get.theme.colorScheme.onPrimaryContainer,
                   duration: const Duration(seconds: 6),
                   snackPosition: SnackPosition.TOP,
-                  icon: const Icon(Icons.campaign, color: Colors.white),
+                  icon: Icon(Icons.notifications_active, color: Get.theme.colorScheme.primary),
                   margin: const EdgeInsets.all(12),
+                  borderRadius: 16,
                 );
               }
             } catch (e) {
@@ -111,6 +128,9 @@ class PollingService extends GetxService {
       } else {
         if (!isClosed) isHasActiveSession.value = false;
       }
+    } on UnauthorizedException {
+      stopPolling();
+      Get.offAllNamed('/login');
     } catch (e) {
       debugPrint('[PollingService] Error: $e');
     }
@@ -121,7 +141,6 @@ class PollingService extends GetxService {
       await _audioPlayer.stop();
       await _audioPlayer.play(
         AssetSource('audio/tingtung.mp3'),
-        mode: PlayerMode.lowLatency,
       );
     } catch (e) {
       debugPrint("[PollingService] Error Audio: $e");
@@ -130,6 +149,7 @@ class PollingService extends GetxService {
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     stopPolling();
     _audioPlayer.dispose();
     super.onClose();

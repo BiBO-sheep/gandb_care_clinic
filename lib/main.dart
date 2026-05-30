@@ -8,8 +8,11 @@ import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
-
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint("DotEnv load error: $e");
+  }
   // LANGKAH 1: Hentikan timer polling lebih dulu sebelum apapun.
   // Ini mencegah timer callback memicu update .obs ke widget tree lama.
   if (Get.isRegistered<PollingService>()) {

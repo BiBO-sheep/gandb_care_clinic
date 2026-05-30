@@ -4,7 +4,8 @@ import 'package:get/get.dart';
 import '../controllers/payment_history_controller.dart';
 
 class PaymentHistoryView extends GetView<PaymentHistoryController> {
-  const PaymentHistoryView({super.key});
+  final bool isFromMainLayout;
+  const PaymentHistoryView({super.key, this.isFromMainLayout = false});
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +68,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(theme, isDark),
+      bottomNavigationBar: isFromMainLayout ? null : _buildBottomNav(theme, isDark),
     );
   }
 
@@ -230,7 +231,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
       onTap: () => controller.changePage(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? theme.colorScheme.primaryContainer : Colors.transparent,
           borderRadius: BorderRadius.circular(24),

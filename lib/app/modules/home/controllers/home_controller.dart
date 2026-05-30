@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gandb_care_clinic/app/data/models/appointment_model.dart';
 import 'package:gandb_care_clinic/app/data/models/health_tip_model.dart';
+import 'package:gandb_care_clinic/app/modules/main_layout/controllers/main_layout_controller.dart';
 import 'package:gandb_care_clinic/core/theme/app_colors.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../data/providers/api_service.dart';
+import '../../../data/providers/unauthorized_exception.dart';
+import 'package:intl/intl.dart';
 
 class HomeController extends GetxController {
   var patientName = 'Pasien'.obs;
@@ -39,6 +42,8 @@ class HomeController extends GetxController {
       final response = await _apiService.get('user');
       final data = jsonDecode(response.body);
       patientName.value = data['data']['name'] ?? 'Pasien';
+    } on UnauthorizedException {
+      logout();
     } catch (e) {
       debugPrint("Error fetching user: $e");
     }
@@ -51,7 +56,32 @@ class HomeController extends GetxController {
       final data = jsonDecode(response.body);
       
       if (data['upcoming_appointment'] != null) {
-        upcomingAppointment.value = AppointmentModel.fromJson(data['upcoming_appointment']);
+        final apt = AppointmentModel.fromJson(data['upcoming_appointment']);
+        bool isValid = true;
+        
+        final status = apt.status.toLowerCase();
+        if (['completed', 'selesai', 'cancelled', 'batal'].contains(status)) {
+          isValid = false;
+        }
+
+        try {
+          // Format expected: "May 30, 2026" (M d, Y from Laravel)
+          final aptDate = DateFormat('MMM d, yyyy', 'en_US').parse(apt.tanggal);
+          final now = DateTime.now();
+          final today = DateTime(now.year, now.month, now.day);
+          
+          if (aptDate.isBefore(today)) {
+            isValid = false;
+          }
+        } catch (e) {
+          debugPrint("Failed to parse date: ${apt.tanggal}");
+        }
+
+        if (isValid) {
+          upcomingAppointment.value = apt;
+        } else {
+          upcomingAppointment.value = null;
+        }
       } else {
         upcomingAppointment.value = null;
       }
@@ -80,12 +110,11 @@ class HomeController extends GetxController {
 
   void changePage(int index) {
     currentIndex.value = index;
-    if (index == 1) {
-      Get.offAllNamed('/payment-history');
-    } else if (index == 2) {
-      Get.offAllNamed('/notifications');
-    } else if (index == 3) {
-      Get.offAllNamed('/profile');
+    if (Get.isRegistered<MainLayoutController>()) {
+      Get.find<MainLayoutController>().changePage(index);
+      Get.until((route) => route.settings.name == '/home' || route.isFirst);
+    } else {
+      Get.offAllNamed('/home');
     }
   }
 
@@ -97,9 +126,22 @@ class HomeController extends GetxController {
     } else if (action == 'Book Appointment') {
       Get.toNamed('/select-clinic');
     } else if (action == 'Poli Info') {
-      Get.snackbar('Informasi', 'Geser ke bawah untuk melihat ${listPoli.length} Poli!', backgroundColor: Colors.white, colorText: AppColors.primary);
+      Get.snackbar(
+        'Informasi',
+        'Geser ke bawah untuk melihat daftar ${listPoli.length} poli kami.',
+        backgroundColor: Get.theme.colorScheme.primaryContainer,
+        colorText: Get.theme.colorScheme.onPrimaryContainer,
+        icon: Icon(Icons.info_outline, color: Get.theme.colorScheme.primary),
+        borderRadius: 16,
+      );
     } else {
-      Get.snackbar('Aksi', 'Membuka menu $action...');
+      Get.snackbar(
+        'Info',
+        'Membuka $action...',
+        backgroundColor: Get.theme.colorScheme.primaryContainer,
+        colorText: Get.theme.colorScheme.onPrimaryContainer,
+        borderRadius: 16,
+      );
     }
   }
 
