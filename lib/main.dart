@@ -9,26 +9,25 @@ import 'app/services/theme_service.dart';
 import 'app/services/polling_service.dart';
 import 'core/theme/app_theme.dart';
 
-void main() async {
-  // Ensure initialized before runZonedGuarded if initializing Firebase inside or outside
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  try {
-    await Firebase.initializeApp();
-    FlutterError.onError = (errorDetails) {
-      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-    };
-  } catch (e) {
-    debugPrint("Firebase init failed: $e");
-  }
-
+void main() {
   runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    try {
+      await Firebase.initializeApp();
+      FlutterError.onError = (errorDetails) {
+        FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+      };
+    } catch (e) {
+      debugPrint("Firebase init failed: $e");
+    }
+
     try {
       await dotenv.load(fileName: ".env");
     } catch (e) {
       debugPrint("DotEnv load error: $e");
     }
-    
+
     if (Get.isRegistered<PollingService>()) {
       try {
         Get.find<PollingService>().stopPolling();
