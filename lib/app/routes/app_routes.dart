@@ -2,8 +2,9 @@
 part of 'app_pages.dart';
 
 abstract class Routes {
+  static const SPLASH = '/splash';
   static const ONBOARDING = '/onboarding';
-  static const LOGIN = '/login'; // Persiapan untuk halaman selanjutnya
+  static const LOGIN = '/login';
   static const REGISTER = '/register';
   static const HOME = '/home';
   static const SELECT_CLINIC = '/select-clinic';

@@ -1,26 +1,70 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../../routes/app_pages.dart';
 
-class SplashController extends GetxController {
+class SplashController extends GetxController with GetSingleTickerProviderStateMixin {
   final _storage = const FlutterSecureStorage();
+
+  late AnimationController animationController;
+  late Animation<double> scaleAnimation;
+  late Animation<double> rotateAnimation;
+  late Animation<double> opacityAnimation;
+
+  @override
+  void onInit() {
+    super.onInit();
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    );
+
+    // Bouncing scale effect
+    scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOutBack),
+      ),
+    );
+
+    // 3D Flip effect (from half rotation to 0)
+    rotateAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: const Interval(0.0, 0.8, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    // Fade in effect
+    opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: const Interval(0.1, 0.7, curve: Curves.easeIn),
+      ),
+    );
+
+    animationController.forward();
+  }
+
+  @override
+  void onClose() {
+    animationController.dispose();
+    super.onClose();
+  }
 
   @override
   void onReady() {
     super.onReady();
-    // Panggil setelah frame pertama selesai dirender - lebih aman dari onInit
     _startSplash();
   }
 
   void _startSplash() async {
-    // 1. Tahan di layar Splash selama 3 detik
-    await Future.delayed(const Duration(seconds: 3));
+    // Tunggu animasi selesai + sedikit jeda
+    await Future.delayed(const Duration(milliseconds: 3000));
 
-    // Jangan lanjutkan kalau controller sudah di-dispose (hot restart safety)
     if (isClosed) return;
 
     try {
-      // 2. Cek token login dengan timeout agar tidak hang
       String? token;
       try {
         token = await _storage.read(key: 'token').timeout(const Duration(seconds: 3));
@@ -29,16 +73,15 @@ class SplashController extends GetxController {
         token = null;
       }
 
-      if (isClosed) return; // cek lagi setelah await
+      if (isClosed) return;
 
-      // 3. Pindah halaman dengan aman
       if (token != null && token.isNotEmpty) {
-        Get.offAllNamed('/home');
+        Get.offAllNamed(Routes.HOME);
       } else {
-        Get.offAllNamed('/login');
+        Get.offAllNamed(Routes.LOGIN);
       }
     } catch (e) {
-      if (!isClosed) Get.offAllNamed('/login');
+      if (!isClosed) Get.offAllNamed(Routes.LOGIN);
     }
   }
 }

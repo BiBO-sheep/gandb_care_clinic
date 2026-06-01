@@ -9,8 +9,6 @@ import 'package:gandb_care_clinic/app/modules/digital_ticket/bindings/digital_bi
 import 'package:gandb_care_clinic/app/modules/digital_ticket/views/digital_ticket_view.dart';
 import 'package:gandb_care_clinic/app/modules/exam_results/bindings/exam_results_binding.dart';
 import 'package:gandb_care_clinic/app/modules/exam_results/views/exam_results.view.dart';
-import 'package:gandb_care_clinic/app/modules/home/bindings/home_bindings.dart';
-import 'package:gandb_care_clinic/app/modules/home/views/home_view.dart';
 import 'package:gandb_care_clinic/app/modules/main_layout/bindings/main_layout_binding.dart';
 import 'package:gandb_care_clinic/app/modules/main_layout/views/main_layout_view.dart';
 import 'package:gandb_care_clinic/app/modules/login/bindings/login_binding.dart';
@@ -50,31 +48,28 @@ class AppPages {
       page: () => const OnboardingView(),
       binding: OnboardingBinding(),
     ),
-    // Tambahkan GetPage ini
     GetPage(
       name: Routes.LOGIN,
       page: () => const LoginView(),
       binding: LoginBinding(),
-      
     ),
     GetPage(
       name: Routes.REGISTER,
       page: () => const RegisterView(),
       binding: RegisterBinding(),
-      transition: Transition.downToUp, // Animasi slide dari bawah ke atas agar mirip seperti modal pop-up (opsional)
+      transition: Transition.downToUp,
     ),
     GetPage(
       name: Routes.HOME,
       page: () => const MainLayoutView(),
       binding: MainLayoutBinding(),
-      transition: Transition.fadeIn, // Animasi halus saat masuk ke dashboard
+      transition: Transition.fadeIn,
     ),
     GetPage(
       name: Routes.SELECT_CLINIC,
       page: () => const SelectClinicView(),
       binding: SelectClinicBinding(),
-      transition: Transition
-          .rightToLeft, // Animasi slide dari kanan khas pindah halaman
+      transition: Transition.rightToLeft,
     ),
     GetPage(
       name: Routes.SELECT_TIME,
@@ -98,8 +93,7 @@ class AppPages {
       name: Routes.DIGITAL_TICKET,
       page: () => const DigitalTicketView(),
       binding: DigitalTicketBinding(),
-      transition: Transition
-          .downToUp, // Animasi muncul dari bawah ke atas agar berasa "Sukses"
+      transition: Transition.downToUp,
     ),
     GetPage(
       name: Routes.EXAM_RESULTS,
@@ -135,11 +129,10 @@ class AppPages {
       name: Routes.SETTINGS,
       page: () => const SettingsView(),
       binding: SettingsBinding(),
-      transition:
-          Transition.rightToLeft, // Animasi masuk dari samping khas submenu
+      transition: Transition.rightToLeft,
     ),
     GetPage(
-      name: '/splash', // atau Routes.SPLASH
+      name: Routes.SPLASH,
       page: () => const SplashView(),
       binding: SplashBinding(),
     ),

@@ -109,14 +109,36 @@ class SelectTimeController extends GetxController {
     return '${monthNames[selectedDate.value.month - 1]} ${selectedDate.value.day}, ${selectedDate.value.year}';
   }
 
-  final List<Map<String, dynamic>> timeSlots = [
+  final List<Map<String, dynamic>> _baseTimeSlots = [
     {'time': '09:00', 'period': 'Morning', 'status': 'available'},
     {'time': '10:30', 'period': 'Morning', 'status': 'available'},
     {'time': '11:15', 'period': 'Morning', 'status': 'available'},
     {'time': '14:00', 'period': 'Afternoon', 'status': 'available'},
     {'time': '15:45', 'period': 'Afternoon', 'status': 'available'},
-    {'time': '17:00', 'period': 'Afternoon', 'status': 'booked'},
+    {'time': '17:45', 'period': 'Afternoon', 'status': 'available'},
   ];
+
+  List<Map<String, dynamic>> get timeSlots {
+    DateTime now = DateTime.now();
+    bool isToday = selectedDate.value.year == now.year &&
+                   selectedDate.value.month == now.month &&
+                   selectedDate.value.day == now.day;
+
+    return _baseTimeSlots.map((slot) {
+      if (isToday) {
+        List<String> parts = slot['time'].split(':');
+        int hour = int.parse(parts[0]);
+        int minute = int.parse(parts[1]);
+        
+        DateTime slotTime = DateTime(now.year, now.month, now.day, hour, minute);
+        
+        if (slotTime.isBefore(now)) {
+          return {...slot, 'status': 'booked'};
+        }
+      }
+      return {...slot, 'status': 'available'};
+    }).toList();
+  }
 
   void continueToPayment() {
     if (selectedTime.value.isEmpty) {

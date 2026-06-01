@@ -39,10 +39,11 @@ class DigitalTicketController extends GetxController {
     }
   }
 
-  void backToDashboard() => Get.offAllNamed('/home');
+  void backToDashboard() {
+    changePage(0);
+  }
 
   void changePage(int index) {
-    currentIndex.value = index;
     if (Get.isRegistered<MainLayoutController>()) {
       Get.find<MainLayoutController>().changePage(index);
       Get.until((route) => route.settings.name == '/home' || route.isFirst);

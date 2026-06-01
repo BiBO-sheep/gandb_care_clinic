@@ -32,7 +32,10 @@ class SelectTimeView extends GetView<SelectTimeController> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.qr_code_scanner, color: theme.colorScheme.onSurfaceVariant),
+            icon: Icon(
+              Icons.qr_code_scanner,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
             onPressed: () {},
           ),
           Container(
@@ -43,7 +46,11 @@ class SelectTimeView extends GetView<SelectTimeController> {
               shape: BoxShape.circle,
               color: theme.colorScheme.primaryContainer,
             ),
-            child: Icon(Icons.person, size: 20, color: theme.colorScheme.onPrimaryContainer),
+            child: Icon(
+              Icons.person,
+              size: 20,
+              color: theme.colorScheme.onPrimaryContainer,
+            ),
           ),
         ],
       ),
@@ -115,7 +122,8 @@ class SelectTimeView extends GetView<SelectTimeController> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.5),
+                          color: theme.colorScheme.secondaryContainer
+                              .withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Obx(
@@ -139,7 +147,9 @@ class SelectTimeView extends GetView<SelectTimeController> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                      color: theme.colorScheme.secondaryContainer.withValues(
+                        alpha: 0.3,
+                      ),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
@@ -245,13 +255,15 @@ class SelectTimeView extends GetView<SelectTimeController> {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
-        boxShadow: isDark ? [] : [
-          BoxShadow(
-            color: theme.colorScheme.shadow.withValues(alpha: 0.04),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: theme.colorScheme.shadow.withValues(alpha: 0.04),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
       ),
       child: Column(
         children: [
@@ -318,7 +330,9 @@ class SelectTimeView extends GetView<SelectTimeController> {
                         day,
                         style: theme.textTheme.labelSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.7,
+                          ),
                         ),
                       ),
                     ),
@@ -393,7 +407,8 @@ class SelectTimeView extends GetView<SelectTimeController> {
                         color: isSelected
                             ? theme.colorScheme.onPrimary
                             : (isPast
-                                  ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)
+                                  ? theme.colorScheme.onSurfaceVariant
+                                        .withValues(alpha: 0.5)
                                   : theme.colorScheme.onSurface),
                       ),
                     ),
@@ -415,37 +430,47 @@ class SelectTimeView extends GetView<SelectTimeController> {
   }
 
   Widget _buildTimeSlotsGrid(ThemeData theme, bool isDark) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: controller.timeSlots.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 2.2,
-      ),
-      itemBuilder: (context, index) {
-        final slot = controller.timeSlots[index];
-        final time = slot['time'];
-        final period = slot['period'];
-        final isBooked = slot['status'] == 'booked';
+    return Obx(() {
+      final currentSlots = controller.timeSlots;
+      return GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: currentSlots.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 2.2,
+        ),
+        itemBuilder: (context, index) {
+          final slot = currentSlots[index];
+          final time = slot['time'];
+          final period = slot['period'];
+          final isBooked = slot['status'] == 'booked';
 
-        return Obx(() {
-          final isSelected = controller.selectedTime.value == time;
-          return GestureDetector(
-            onTap: () => controller.selectTime(time, slot['status']),
-            child: AnimatedContainer(
+          return Obx(() {
+            final isSelected = controller.selectedTime.value == time;
+            return GestureDetector(
+              onTap: () => controller.selectTime(time, slot['status']),
+              child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
                 color: isBooked
-                    ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                    ? theme.colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.5,
+                      )
                     : (isSelected
-                          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.2)
+                          ? theme.colorScheme.primaryContainer.withValues(
+                              alpha: 0.2,
+                            )
                           : theme.colorScheme.surface),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isSelected ? theme.colorScheme.primary : (isBooked ? Colors.transparent : theme.colorScheme.surfaceContainerHighest),
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : (isBooked
+                            ? Colors.transparent
+                            : theme.colorScheme.surfaceContainerHighest),
                   width: 2,
                 ),
               ),
@@ -456,7 +481,11 @@ class SelectTimeView extends GetView<SelectTimeController> {
                     time,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: isBooked ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5) : theme.colorScheme.onSurface,
+                      color: isBooked
+                          ? theme.colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.5,
+                            )
+                          : theme.colorScheme.onSurface,
                       decoration: isBooked ? TextDecoration.lineThrough : null,
                     ),
                   ),
@@ -468,8 +497,12 @@ class SelectTimeView extends GetView<SelectTimeController> {
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.5,
                       color: isBooked
-                          ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)
-                          : (isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant),
+                          ? theme.colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.5,
+                            )
+                          : (isSelected
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurfaceVariant),
                     ),
                   ),
                 ],
@@ -477,7 +510,8 @@ class SelectTimeView extends GetView<SelectTimeController> {
             ),
           );
         });
-      },
-    );
+        },
+      );
+    });
   }
 }

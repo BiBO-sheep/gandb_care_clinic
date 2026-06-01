@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'app/routes/app_pages.dart';
 import 'app/services/theme_service.dart';
@@ -7,33 +10,43 @@ import 'app/services/polling_service.dart';
 import 'core/theme/app_theme.dart';
 
 void main() async {
+  // Ensure initialized before runZonedGuarded if initializing Firebase inside or outside
   WidgetsFlutterBinding.ensureInitialized();
+  
   try {
-    await dotenv.load(fileName: ".env");
+    await Firebase.initializeApp();
+    FlutterError.onError = (errorDetails) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
   } catch (e) {
-    debugPrint("DotEnv load error: $e");
+    debugPrint("Firebase init failed: $e");
   }
-  // LANGKAH 1: Hentikan timer polling lebih dulu sebelum apapun.
-  // Ini mencegah timer callback memicu update .obs ke widget tree lama.
-  if (Get.isRegistered<PollingService>()) {
+
+  runZonedGuarded(() async {
     try {
-      Get.find<PollingService>().stopPolling();
-    } catch (_) {}
-  }
+      await dotenv.load(fileName: ".env");
+    } catch (e) {
+      debugPrint("DotEnv load error: $e");
+    }
+    
+    if (Get.isRegistered<PollingService>()) {
+      try {
+        Get.find<PollingService>().stopPolling();
+      } catch (_) {}
+    }
 
-  // LANGKAH 2: Reset semua GetX instances
-  Get.reset(clearRouteBindings: true);
+    Get.reset(clearRouteBindings: true);
+    await Future.delayed(const Duration(milliseconds: 100));
 
-  // LANGKAH 3: Tunggu 100ms agar Flutter selesai membersihkan
-  // element tree lama setelah Rx subscriptions di-dispose.
-  // Tanpa ini, Obx() widget lama bisa trigger assertion error.
-  await Future.delayed(const Duration(milliseconds: 100));
+    await Get.putAsync(() => ThemeService().init(), permanent: true);
+    await Get.putAsync(() => PollingService().init(), permanent: true);
 
-  // LANGKAH 4: Daftarkan ulang services dan jalankan app
-  await Get.putAsync(() => ThemeService().init(), permanent: true);
-  await Get.putAsync(() => PollingService().init(), permanent: true);
-
-  runApp(const MyApp());
+    runApp(const MyApp());
+  }, (error, stackTrace) {
+    debugPrint("🚨 [ASYNC ERROR CAUGHT]: $error");
+    debugPrint("Stacktrace: $stackTrace");
+    FirebaseCrashlytics.instance.recordError(error, stackTrace, fatal: true);
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -47,7 +60,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeService.to.theme,
-      initialRoute: '/splash',
+      initialRoute: Routes.SPLASH,
       getPages: AppPages.routes,
     );
   }

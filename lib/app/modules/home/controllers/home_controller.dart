@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gandb_care_clinic/app/data/models/appointment_model.dart';
 import 'package:gandb_care_clinic/app/data/models/health_tip_model.dart';
 import 'package:gandb_care_clinic/app/modules/main_layout/controllers/main_layout_controller.dart';
-import 'package:gandb_care_clinic/core/theme/app_colors.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
