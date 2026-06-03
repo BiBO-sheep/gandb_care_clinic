@@ -4,11 +4,13 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../../data/providers/api_service.dart';
+import '../../../../core/utils/app_snackbar.dart';
+import '../../../routes/app_pages.dart';
 
 class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-  
+
   final ApiService _apiService = ApiService();
   final _storage = const FlutterSecureStorage();
 
@@ -41,21 +43,11 @@ class LoginController extends GetxController {
 
       await _storage.write(key: 'token', value: token);
 
-      Get.snackbar(
-        'Sukses',
-        'Login Google Berhasil! 🎉',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      AppSnackbar.success('Login Berhasil', 'Selamat datang kembali.');
 
-      Get.offAllNamed('/home');
+      Get.offAllNamed(Routes.HOME);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString().replaceAll('Exception: ', ''),
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      AppSnackbar.error('Login Gagal', e.toString().replaceAll('Exception: ', ''));
     } finally {
       isGoogleLoading.value = false;
     }
@@ -63,12 +55,7 @@ class LoginController extends GetxController {
 
   Future<void> login() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      Get.snackbar(
-        'Oops',
-        'Email dan Password tidak boleh kosong!',
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
-      );
+      AppSnackbar.warning('Form Tidak Lengkap', 'Email dan kata sandi tidak boleh kosong.');
       return;
     }
 
@@ -85,24 +72,13 @@ class LoginController extends GetxController {
 
       await _storage.write(key: 'token', value: token);
 
-      Get.snackbar(
-        'Sukses',
-        'Welcome back! 🎉',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-      );
+      AppSnackbar.success('Login Berhasil', 'Selamat datang kembali.');
 
-      Get.offAllNamed('/home');
+      Get.offAllNamed(Routes.HOME);
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString().replaceAll('Exception: ', ''),
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      AppSnackbar.error('Login Gagal', e.toString().replaceAll('Exception: ', ''));
     } finally {
       isLoading.value = false;
     }
   }
 }
-

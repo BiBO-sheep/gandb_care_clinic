@@ -29,11 +29,15 @@ class HomeController extends GetxController {
 
   Future<void> refreshData() async {
     if (isClosed) return;
-    await fetchUser();
-    if (isClosed) return;
-    await fetchDashboardData();
-    if (isClosed) return;
-    await fetchPoliAPI();
+    isLoading.value = true;
+    await Future.wait([
+      fetchUser(),
+      fetchDashboardData(),
+      fetchPoliAPI(),
+    ]);
+    if (!isClosed) {
+      isLoading.value = false;
+    }
   }
 
   Future<void> fetchUser() async {
@@ -50,7 +54,6 @@ class HomeController extends GetxController {
 
   Future<void> fetchDashboardData() async {
     try {
-      isLoading.value = true;
       final response = await _apiService.get('dashboard');
       final data = jsonDecode(response.body);
       
@@ -92,8 +95,6 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       debugPrint("Error fetching dashboard data: $e");
-    } finally {
-      isLoading.value = false;
     }
   }
 

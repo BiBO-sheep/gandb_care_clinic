@@ -98,18 +98,26 @@ class HomeView extends GetView<HomeController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Hello, ${controller.patientName.value} 👋',
+          'Selamat Datang,',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          controller.patientName.value,
           style: theme.textTheme.displaySmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.colorScheme.onSurface,
             letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 6),
         Text(
-          'Your health journey is looking great today.',
+          'Pantau kesehatan Anda hari ini.',
           style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w400,
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),

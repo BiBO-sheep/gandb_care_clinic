@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 import '../../../data/providers/api_service.dart';
+import '../../../../core/utils/app_snackbar.dart';
 
 class SelectTimeController extends GetxController {
   var clinicId = 0.obs;
@@ -92,12 +93,7 @@ class SelectTimeController extends GetxController {
     if (status != 'booked') {
       selectedTime.value = time;
     } else {
-      Get.snackbar(
-        'Jadwal Penuh',
-        'Waktu ini sudah dibooking oleh pasien lain.',
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
-      );
+      AppSnackbar.warning('Jadwal Tidak Tersedia', 'Waktu ini sudah dipesan oleh pasien lain.');
     }
   }
 
@@ -142,35 +138,16 @@ class SelectTimeController extends GetxController {
 
   void continueToPayment() {
     if (selectedTime.value.isEmpty) {
-      Get.snackbar(
-        'Pilih Jadwal',
-        'Silakan pilih waktu kunjungan Anda.',
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
+      AppSnackbar.warning('Jadwal Belum Dipilih', 'Silakan pilih waktu kunjungan Anda.');
       return;
     }
 
     if (dokterId.value == 0) {
-      Get.snackbar(
-        'Mohon Tunggu',
-        'Data dokter sedang dimuat atau tidak tersedia.',
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
-      );
+      AppSnackbar.info('Mohon Tunggu', 'Data dokter sedang dimuat atau tidak tersedia.');
       return;
     }
 
-    Get.snackbar(
-      'Meneruskan...',
-      'Membuka halaman konfirmasi',
-      backgroundColor: const Color(0xFF006A6A),
-      colorText: Colors.white,
-      duration: const Duration(seconds: 1),
-    );
-
-    Future.delayed(const Duration(seconds: 1), () {
-      Get.toNamed(
+    Get.toNamed(
         '/confirm-appointment',
         arguments: {
           'poli_id': clinicId.value,
@@ -182,7 +159,5 @@ class SelectTimeController extends GetxController {
           'price': estFee.value,
         },
       );
-    });
   }
 }
-

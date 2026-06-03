@@ -5,6 +5,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../data/providers/api_service.dart';
 import '../../profile/controllers/profile_controller.dart';
 import '../../../services/theme_service.dart';
+import '../../../../core/utils/app_snackbar.dart';
+import '../../../routes/app_pages.dart';
 
 class SettingsController extends GetxController {
   final profileCtrl = Get.find<ProfileController>();
@@ -60,19 +62,13 @@ class SettingsController extends GetxController {
 
       if (response.statusCode == 200) {
         await profileCtrl.fetchUserProfile();
-        Get.snackbar(
-          'Sukses',
-          'Profil berhasil diperbarui!',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        AppSnackbar.success('Profil Diperbarui', 'Data profil Anda berhasil disimpan.');
       } else {
         final data = jsonDecode(response.body);
-        Get.snackbar('Gagal', data['message'] ?? 'Terjadi kesalahan');
+        AppSnackbar.error('Pembaruan Gagal', data['message'] ?? 'Terjadi kesalahan.');
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString().replaceAll('Exception: ', ''));
+      AppSnackbar.error('Terjadi Kesalahan', e.toString().replaceAll('Exception: ', ''));
     } finally {
       isLoading.value = false;
     }
@@ -83,9 +79,9 @@ class SettingsController extends GetxController {
   void toggleWellnessTips(bool value) => wellnessTips.value = value;
   void toggleBiometric(bool value) => biometricLogin.value = value;
 
-  void changePassword() => Get.snackbar('Security', 'Membuka halaman ubah password...');
-  void openPrivacyPolicy() => Get.snackbar('Legal', 'Membuka Kebijakan Privasi...');
-  void openTerms() => Get.snackbar('Legal', 'Membuka Syarat & Ketentuan...');
+  void changePassword() => AppSnackbar.info('Keamanan', 'Fitur ubah kata sandi segera hadir.');
+  void openPrivacyPolicy() => AppSnackbar.info('Legal', 'Membuka Kebijakan Privasi...');
+  void openTerms() => AppSnackbar.info('Legal', 'Membuka Syarat & Ketentuan...');
 
   void signOut() {
     Get.defaultDialog(
@@ -97,7 +93,7 @@ class SettingsController extends GetxController {
       buttonColor: const Color(0xFFBA1A1A),
       onConfirm: () async {
         await _storage.delete(key: 'token');
-        Get.offAllNamed('/login');
+        Get.offAllNamed(Routes.LOGIN);
       },
     );
   }

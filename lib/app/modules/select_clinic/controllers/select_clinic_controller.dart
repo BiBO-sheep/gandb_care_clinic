@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import '../../../data/providers/api_service.dart';
+import '../../../../core/utils/app_snackbar.dart';
 
 class SelectClinicController extends GetxController {
   var isLoading = true.obs;
@@ -30,11 +31,7 @@ class SelectClinicController extends GetxController {
 
   void onClinicSelected(String uiClinicName) {
     if (isLoading.value) {
-      Get.snackbar(
-        'Tunggu',
-        'Sedang memuat data klinik...',
-        snackPosition: SnackPosition.TOP,
-      );
+      AppSnackbar.info('Mohon Tunggu', 'Sedang memuat data klinik...');
       return;
     }
 
@@ -54,25 +51,12 @@ class SelectClinicController extends GetxController {
         },
       );
     } else {
-      Get.snackbar(
-        'Mohon Maaf',
-        'Poli $uiClinicName belum tersedia di klinik saat ini.',
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[900],
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-      );
+      AppSnackbar.warning('Belum Tersedia', 'Poli $uiClinicName belum tersedia di klinik saat ini.');
     }
   }
 
   void callCenter() {
-    Get.snackbar(
-      'Menghubungi',
-      'Menyambungkan ke layanan pelanggan...',
-      backgroundColor: const Color(0xFF006970),
-      colorText: Colors.white,
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    AppSnackbar.info('Layanan Pelanggan', 'Menyambungkan ke layanan pelanggan...');
   }
 }
 

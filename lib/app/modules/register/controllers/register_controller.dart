@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../data/providers/api_service.dart';
+import '../../../../core/utils/app_snackbar.dart';
+import '../../../routes/app_pages.dart';
 
 class RegisterController extends GetxController {
   final nameController = TextEditingController();
@@ -71,15 +73,9 @@ class RegisterController extends GetxController {
 
       await _storage.write(key: 'token', value: token);
 
-      Get.snackbar(
-        'Pendaftaran Berhasil',
-        'Akun pasien Anda telah dibuat!',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFF006A6A),
-        colorText: Colors.white,
-      );
+      AppSnackbar.success('Pendaftaran Berhasil', 'Akun pasien Anda telah dibuat.');
 
-      Get.offAllNamed('/home');
+      Get.offAllNamed(Routes.HOME);
     } catch (e) {
       _showError(e.toString().replaceAll('Exception: ', ''));
     } finally {
@@ -88,12 +84,6 @@ class RegisterController extends GetxController {
   }
 
   void _showError(String message) {
-    Get.snackbar(
-      'Oops!',
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.redAccent,
-      colorText: Colors.white,
-    );
+    AppSnackbar.error('Terjadi Kesalahan', message);
   }
 }

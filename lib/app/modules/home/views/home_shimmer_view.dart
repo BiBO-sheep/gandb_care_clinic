@@ -11,16 +11,14 @@ class HomeShimmerView extends StatelessWidget {
     final Color baseColor = isDark ? Colors.grey[850]! : Colors.grey[200]!;
     final Color highlightColor = isDark ? Colors.grey[800]! : Colors.white;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-      child: Shimmer.fromColors(
-        baseColor: baseColor,
-        highlightColor: highlightColor,
-        direction: ShimmerDirection.ltr,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          child: Shimmer.fromColors(
+            baseColor: baseColor,
+            highlightColor: highlightColor,
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
@@ -33,26 +31,35 @@ class HomeShimmerView extends StatelessWidget {
                 const Icon(Icons.qr_code_scanner, color: Colors.white),
               ],
             ),
-            const SizedBox(height: 32),
-            Container(width: 250, height: 28, color: Colors.white),
-            const SizedBox(height: 8),
-            Container(width: 300, height: 14, color: Colors.white),
-            const SizedBox(height: 32),
-            _buildPoliSliderShimmer(),
-            const SizedBox(height: 32),
-            _buildAppointmentCardShimmer(),
-            const SizedBox(height: 32),
-            Container(width: 120, height: 12, color: Colors.white),
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              height: 100,
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
-            ),
-            const SizedBox(height: 100),
-          ],
+          ),
         ),
-      ),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Shimmer.fromColors(
+              baseColor: baseColor,
+              highlightColor: highlightColor,
+              direction: ShimmerDirection.ltr,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  Container(width: 250, height: 28, color: Colors.white),
+                  const SizedBox(height: 8),
+                  Container(width: 300, height: 14, color: Colors.white),
+                  const SizedBox(height: 32),
+                  _buildAppointmentCardShimmer(),
+                  const SizedBox(height: 32),
+                  _buildQuickActionsShimmer(),
+                  const SizedBox(height: 32),
+                  _buildPoliSliderShimmer(),
+                  const SizedBox(height: 100),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -120,6 +127,34 @@ class HomeShimmerView extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildQuickActionsShimmer() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(width: 120, height: 12, color: Colors.white),
+        const SizedBox(height: 16),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          childAspectRatio: 1.2,
+          children: List.generate(
+            3,
+            (index) => Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
