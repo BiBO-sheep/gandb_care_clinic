@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
+import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../data/providers/api_service.dart';
@@ -12,6 +13,7 @@ class InvoiceController extends GetxController {
 
   var invoiceData = Rxn<Map<String, dynamic>>();
   late int appointmentId;
+  Timer? _pollingTimer;
 
   final ApiService _apiService = ApiService();
 
@@ -46,6 +48,7 @@ class InvoiceController extends GetxController {
 
       if (responseData['success'] == true) {
         invoiceData.value = responseData['data'];
+        _checkAndStartPolling();
       } else {
         errorMessage.value =
             responseData['message'] ?? 'Gagal memuat data invoice.';
@@ -60,6 +63,63 @@ class InvoiceController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _checkAndStartPolling() {
+    final status = invoiceData.value?['status']?.toString().toLowerCase();
+    if (status != 'paid') {
+      _startPolling();
+    } else {
+      _stopPolling();
+    }
+  }
+
+  void _startPolling() {
+    if (_pollingTimer != null && _pollingTimer!.isActive) return;
+    _pollingTimer = Timer.periodic(const Duration(seconds: 3), (timer) async {
+      await _silentFetchInvoice();
+    });
+  }
+
+  void _stopPolling() {
+    _pollingTimer?.cancel();
+    _pollingTimer = null;
+  }
+
+  Future<void> _silentFetchInvoice() async {
+    try {
+      final response = await _apiService.get('invoice/$appointmentId');
+      final responseData = jsonDecode(response.body);
+
+      if (responseData['success'] == true) {
+        final oldStatus = invoiceData.value?['status']?.toString().toLowerCase();
+        invoiceData.value = responseData['data'];
+        final newStatus = invoiceData.value?['status']?.toString().toLowerCase();
+        
+        if (oldStatus != 'paid' && newStatus == 'paid') {
+          _stopPolling();
+          if (Get.isBottomSheetOpen ?? false) Get.back();
+          Get.snackbar(
+            'Pembayaran Diterima!',
+            'Pembayaran tagihan Anda telah dikonfirmasi oleh Kasir.',
+            backgroundColor: Colors.green.withValues(alpha: 0.1),
+            colorText: Colors.green[800],
+            snackPosition: SnackPosition.TOP,
+            icon: Icon(Icons.check_circle, color: Colors.green[800]),
+          );
+        } else if (newStatus == 'paid') {
+          _stopPolling();
+        }
+      }
+    } catch (e) {
+      debugPrint('Polling error: $e');
+    }
+  }
+
+  @override
+  void onClose() {
+    _stopPolling();
+    super.onClose();
   }
 
   Future<void> processPayment(String method) async {
