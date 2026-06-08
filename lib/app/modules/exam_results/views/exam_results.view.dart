@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/exam_results_controller.dart';
-import '../../invoice/views/tagihan_page.dart';
 
 class ExamResultsView extends GetView<ExamResultsController> {
   const ExamResultsView({super.key});
@@ -251,7 +250,7 @@ class ExamResultsView extends GetView<ExamResultsController> {
                     onPressed: () {
                       final appointmentId = record['appointment_id'] ?? record['appointment']?['id'];
                       if (appointmentId != null) {
-                        Get.to(() => TagihanPage(appointmentId: appointmentId is String ? int.parse(appointmentId) : appointmentId));
+                        Get.toNamed('/invoice', arguments: {'appointment_id': appointmentId});
                       } else {
                         Get.snackbar('Gagal', 'ID Appointment tidak ditemukan');
                       }
