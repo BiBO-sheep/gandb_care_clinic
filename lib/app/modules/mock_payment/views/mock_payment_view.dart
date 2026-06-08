@@ -9,7 +9,6 @@ class MockPaymentView extends GetView<MockPaymentController> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    bool isQris = controller.method == 'qris';
     
     // Format helper for amount
     String formatRupiah(int amount) {
@@ -30,7 +29,7 @@ class MockPaymentView extends GetView<MockPaymentController> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          isQris ? 'Pembayaran QRIS' : 'Transfer Bank (VA)',
+          'G&B Payment Gateway',
           style: theme.textTheme.titleMedium?.copyWith(
             color: theme.colorScheme.onPrimary,
             fontWeight: FontWeight.bold,
@@ -42,104 +41,138 @@ class MockPaymentView extends GetView<MockPaymentController> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
-            Text(
-              'Total Tagihan',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              formatRupiah(controller.amount),
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: theme.colorScheme.primary,
+            Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  Text(
+                    'Total Tagihan Anda',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    formatRupiah(controller.amount),
+                    style: theme.textTheme.headlineLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 40),
 
-            // KOTAK INSTRUKSI / QRIS
+            Text(
+              'Metode Pembayaran',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
-                boxShadow: isDark ? [] : [
-                  BoxShadow(
-                    color: theme.colorScheme.shadow.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
               ),
-              child: Column(
-                children: [
-                  if (isQris) ...[
-                    Icon(Icons.qr_code_2, size: 200, color: theme.colorScheme.onSurface),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Scan QR Code di atas\nmenggunakan aplikasi E-Wallet Anda.',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+              child: Obx(
+                () => DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: controller.selectedMethod.value,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    dropdownColor: theme.colorScheme.surface,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ] else ...[
-                    Text(
-                      'Bank BCA',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Nomor Virtual Account:',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '8077 0812 3456 7890',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.copy, size: 20, color: theme.colorScheme.primary),
-                          onPressed: () {
-                            Get.snackbar(
-                              'Disalin', 
-                              'Nomor VA berhasil disalin.',
-                              backgroundColor: theme.colorScheme.primaryContainer,
-                              colorText: theme.colorScheme.onPrimaryContainer,
-                            );
-                          },
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Atas Nama: GandB Care Clinic',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ]
-                ],
+                    items: controller.availableMethods.map((String method) {
+                      return DropdownMenuItem<String>(
+                        value: method,
+                        child: Text(method),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      if (newValue != null) {
+                        controller.selectedMethod.value = newValue;
+                      }
+                    },
+                  ),
+                ),
               ),
             ),
             
-            const SizedBox(height: 60),
+            const SizedBox(height: 24),
+            Text(
+              'Masukkan Nominal (Simulasi)',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller.inputAmountController,
+              keyboardType: TextInputType.number,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Cth: ${controller.amount}',
+                prefixText: 'Rp ',
+                prefixStyle: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                filled: true,
+                fillColor: theme.colorScheme.surface,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: theme.colorScheme.surfaceContainerHighest),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: theme.colorScheme.surfaceContainerHighest),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: theme.colorScheme.secondaryContainer),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: theme.colorScheme.secondary, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Ketikkan nominal yang sama dengan total tagihan untuk mensimulasikan pembayaran yang valid.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 40),
 
             // TOMBOL SIMULASI BAYAR
             Obx(() => ElevatedButton(
@@ -148,11 +181,11 @@ class MockPaymentView extends GetView<MockPaymentController> {
                   : controller.simulatePaymentSuccess,
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
-                minimumSize: const Size(double.infinity, 54),
+                minimumSize: const Size(double.infinity, 56),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                elevation: 0,
+                elevation: isDark ? 0 : 4,
               ),
               child: controller.isProcessing.value
                   ? SizedBox(
@@ -161,9 +194,10 @@ class MockPaymentView extends GetView<MockPaymentController> {
                       child: CircularProgressIndicator(color: theme.colorScheme.onPrimary, strokeWidth: 2),
                     )
                   : Text(
-                      'Tandai Lunas (Simulasi)',
+                      'BAYAR SEKARANG',
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.2,
                         color: theme.colorScheme.onPrimary,
                       ),
                     ),
@@ -171,7 +205,7 @@ class MockPaymentView extends GetView<MockPaymentController> {
             
             const SizedBox(height: 16),
             Text(
-              '*Halaman ini hanya untuk simulasi aplikasi karena gateway Midtrans belum aktif.',
+              '*Halaman ini mensimulasikan proses Payment Gateway pihak ketiga. Saat pembayaran sukses, data akan langsung diperbarui di server tanpa konfirmasi manual kasir.',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.error,
@@ -184,4 +218,3 @@ class MockPaymentView extends GetView<MockPaymentController> {
     );
   }
 }
-

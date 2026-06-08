@@ -98,6 +98,7 @@ class InvoiceController extends GetxController {
     Get.toNamed('/mock-payment', arguments: {
       'method': method,
       'amount': parsedAmount,
+      'invoiceId': invoiceId,
     });
   }
 
@@ -153,17 +154,10 @@ class InvoiceController extends GetxController {
             ),
             const Divider(height: 1),
             _buildMethodItem(
-              'QRIS / E-Wallet',
-              'GoPay, OVO, DANA, ShopeePay',
-              Icons.qr_code,
-              () => processPayment('qris'),
-            ),
-            const Divider(height: 1),
-            _buildMethodItem(
-              'Transfer Bank / VA',
-              'BCA, Mandiri, BNI, BRI',
-              Icons.account_balance,
-              () => processPayment('bank_transfer'),
+              'Payment Gateway (Virtual)',
+              'Bayar via QRIS, Bank Transfer, E-Wallet',
+              Icons.payment,
+              () => processPayment('virtual'),
             ),
             const SizedBox(height: 16),
           ],

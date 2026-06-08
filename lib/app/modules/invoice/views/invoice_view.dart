@@ -88,8 +88,8 @@ class InvoiceView extends GetView<InvoiceController> {
           return priceNum <= 0;
         });
 
-    // canPay: status unpaid DAN semua harga obat sudah diisi (atau tidak ada resep)
-    final bool canPay = !isPaid && !isPending && !hasUnpricedMedicine;
+    // canPay: status unpaid DAN semua harga obat sudah diisi (atau tidak ada resep) DAN grandTotal > 0
+    final bool canPay = !isPaid && !isPending && !hasUnpricedMedicine && grandTotal > 0;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -452,7 +452,46 @@ class InvoiceView extends GetView<InvoiceController> {
       );
     }
 
-    // canPay = unpaid + semua harga obat sudah diisi
+    // Jika tidak bisa bayar (misal grandTotal == 0)
+    if (!canPay) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.red.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 28),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Tagihan Tidak Valid',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.red[700],
+                    ),
+                  ),
+                  Text(
+                    'Total tagihan Rp 0. Silakan hubungi kasir atau resepsionis.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.red[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // canPay = unpaid + semua harga obat sudah diisi + grandTotal > 0
     return SizedBox(
       width: double.infinity,
       height: 60,

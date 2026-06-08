@@ -45,7 +45,14 @@ class LoginController extends GetxController {
 
       AppSnackbar.success('Login Berhasil', 'Selamat datang kembali.');
 
-      Get.offAllNamed(Routes.HOME);
+      // Cek kelengkapan data
+      final userData = data['data'];
+      if (userData['phone'] == null || userData['phone'].toString().isEmpty || 
+          userData['address'] == null || userData['address'].toString().isEmpty) {
+        Get.offAllNamed(Routes.COMPLETE_PROFILE);
+      } else {
+        Get.offAllNamed(Routes.HOME);
+      }
     } catch (e) {
       AppSnackbar.error('Login Gagal', e.toString().replaceAll('Exception: ', ''));
     } finally {

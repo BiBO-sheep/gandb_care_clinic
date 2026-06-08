@@ -13,6 +13,9 @@ class ProfileController extends GetxController {
   var userEmail = ''.obs;
   var userPhone = ''.obs;
   var userBloodType = ''.obs;
+  var userAddress = ''.obs;
+  var userHeight = ''.obs;
+  var userWeight = ''.obs;
   var isLoading = false.obs;
 
   final ApiService _apiService = ApiService();
@@ -36,6 +39,9 @@ class ProfileController extends GetxController {
       userEmail.value = userData['email']?.toString() ?? '-';
       userPhone.value = userData['phone']?.toString() ?? '-';
       userBloodType.value = userData['blood_type']?.toString() ?? '-';
+      userAddress.value = userData['address']?.toString() ?? '-';
+      userHeight.value = userData['height']?.toString() ?? '-';
+      userWeight.value = userData['weight']?.toString() ?? '-';
     } on UnauthorizedException {
       logout(confirm: false);
     } catch (e) {

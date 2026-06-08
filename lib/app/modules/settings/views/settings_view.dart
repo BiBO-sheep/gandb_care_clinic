@@ -90,6 +90,16 @@ class SettingsView extends GetView<SettingsController> {
                     _buildSettingsTextField('Phone', controller.phoneController, theme),
                     const SizedBox(height: 12),
                     _buildSettingsTextField('Address', controller.addressController, theme, maxLines: 2),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(child: _buildSettingsTextField('Tinggi (cm)', controller.heightController, theme)),
+                        const SizedBox(width: 12),
+                        Expanded(child: _buildSettingsTextField('Berat (kg)', controller.weightController, theme)),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    _buildSettingsTextField('Golongan Darah', controller.bloodTypeController, theme),
                     const SizedBox(height: 20),
                     Obx(
                       () => SizedBox(

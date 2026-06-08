@@ -36,6 +36,8 @@ import '../modules/onboarding/bindings/onboarding_binding.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
 import '../modules/mock_payment/bindings/mock_payment_binding.dart';
 import '../modules/mock_payment/views/mock_payment_view.dart';
+import '../modules/complete_profile/bindings/complete_profile_binding.dart';
+import '../modules/complete_profile/views/complete_profile_view.dart';
 
 part 'app_routes.dart';
 
@@ -147,6 +149,12 @@ class AppPages {
       page: () => const MockPaymentView(),
       binding: MockPaymentBinding(),
       transition: Transition.downToUp,
+    ),
+    GetPage(
+      name: Routes.COMPLETE_PROFILE,
+      page: () => const CompleteProfileView(),
+      binding: CompleteProfileBinding(),
+      transition: Transition.fadeIn,
     ),
   ];
 }

@@ -15,6 +15,9 @@ class SettingsController extends GetxController {
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
+  final heightController = TextEditingController();
+  final weightController = TextEditingController();
+  final bloodTypeController = TextEditingController();
 
   final ApiService _apiService = ApiService();
   final _storage = const FlutterSecureStorage();
@@ -32,7 +35,11 @@ class SettingsController extends GetxController {
     super.onInit();
     nameController.text = profileCtrl.userName.value;
     emailController.text = profileCtrl.userEmail.value;
-    phoneController.text = profileCtrl.userPhone.value;
+    phoneController.text = profileCtrl.userPhone.value == '-' ? '' : profileCtrl.userPhone.value;
+    addressController.text = profileCtrl.userAddress.value == '-' ? '' : profileCtrl.userAddress.value;
+    heightController.text = profileCtrl.userHeight.value == '-' ? '' : profileCtrl.userHeight.value;
+    weightController.text = profileCtrl.userWeight.value == '-' ? '' : profileCtrl.userWeight.value;
+    bloodTypeController.text = profileCtrl.userBloodType.value == '-' ? '' : profileCtrl.userBloodType.value;
     isDarkMode.value = ThemeService.to.theme == ThemeMode.dark;
   }
 
@@ -42,6 +49,9 @@ class SettingsController extends GetxController {
     emailController.dispose();
     phoneController.dispose();
     addressController.dispose();
+    heightController.dispose();
+    weightController.dispose();
+    bloodTypeController.dispose();
     super.onClose();
   }
 
@@ -58,6 +68,9 @@ class SettingsController extends GetxController {
         'email': emailController.text,
         'phone': phoneController.text,
         'address': addressController.text,
+        'height': heightController.text,
+        'weight': weightController.text,
+        'blood_type': bloodTypeController.text,
       });
 
       if (response.statusCode == 200) {
