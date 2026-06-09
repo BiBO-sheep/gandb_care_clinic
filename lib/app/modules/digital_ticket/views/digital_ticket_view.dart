@@ -142,36 +142,62 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                       padding: const EdgeInsets.all(24.0),
                       child: Column(
                         children: [
-                          // QR CODE DIHAPUS, DIGANTI INSTRUKSI JELAS
-                          Container(
+                          Obx(() => Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.tertiaryContainer,
+                              color: controller.peopleAhead.value == 0
+                                  ? theme.colorScheme.primaryContainer
+                                  : theme.colorScheme.tertiaryContainer,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: theme.colorScheme.tertiary.withValues(alpha: 0.3),
+                                color: controller.peopleAhead.value == 0
+                                    ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                                    : theme.colorScheme.tertiary.withValues(alpha: 0.3),
                               ),
                             ),
                             child: Row(
                               children: [
                                 Icon(
-                                  Icons.volume_up_rounded,
-                                  color: theme.colorScheme.tertiary,
+                                  controller.peopleAhead.value == 0 
+                                      ? Icons.notifications_active_rounded
+                                      : Icons.groups_rounded,
+                                  color: controller.peopleAhead.value == 0
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.tertiary,
                                   size: 32,
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
-                                  child: Text(
-                                    'Silakan duduk di ruang tunggu. Nomor Anda akan dipanggil oleh perawat.',
-                                    style: theme.textTheme.labelMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: theme.colorScheme.onTertiaryContainer,
-                                    ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Sedang diperiksa: ${controller.nowServing.value}',
+                                        style: theme.textTheme.labelMedium?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: controller.peopleAhead.value == 0
+                                              ? theme.colorScheme.onPrimaryContainer
+                                              : theme.colorScheme.onTertiaryContainer,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        controller.peopleAhead.value == 0
+                                            ? 'Giliran Anda selanjutnya! Silakan bersiap.'
+                                            : 'Ada ${controller.peopleAhead.value} antrean di depan Anda.',
+                                        style: theme.textTheme.labelSmall?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: controller.peopleAhead.value == 0
+                                              ? theme.colorScheme.primary
+                                              : theme.colorScheme.tertiary,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                          ),
+                          )),
                           const SizedBox(height: 24),
                           Obx(
                             () => Column(

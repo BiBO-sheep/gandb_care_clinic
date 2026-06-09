@@ -27,12 +27,14 @@ class SelectTimeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _initBaseSlots();
     if (Get.arguments != null && Get.arguments is Map) {
       final args = Get.arguments as Map<String, dynamic>;
       clinicId.value = args['poli_id'] ?? 0;
       clinicName.value = args['poli_name'] ?? 'Klinik';
 
       fetchDokterByPoli(clinicId.value);
+      fetchAvailableSlots();
     }
   }
 
@@ -87,6 +89,7 @@ class SelectTimeController extends GetxController {
   void selectDate(DateTime date) {
     selectedDate.value = date;
     selectedTime.value = '';
+    fetchAvailableSlots();
   }
 
   void selectTime(String time, String status) {
@@ -114,26 +117,56 @@ class SelectTimeController extends GetxController {
     {'time': '17:45', 'period': 'Afternoon', 'status': 'available'},
   ];
 
-  List<Map<String, dynamic>> get timeSlots {
-    DateTime now = DateTime.now();
-    bool isToday = selectedDate.value.year == now.year &&
-                   selectedDate.value.month == now.month &&
-                   selectedDate.value.day == now.day;
+  var timeSlots = <Map<String, dynamic>>[].obs;
+  var isFetchingSlots = false.obs;
 
-    return _baseTimeSlots.map((slot) {
-      if (isToday) {
-        List<String> parts = slot['time'].split(':');
-        int hour = int.parse(parts[0]);
-        int minute = int.parse(parts[1]);
-        
-        DateTime slotTime = DateTime(now.year, now.month, now.day, hour, minute);
-        
-        if (slotTime.isBefore(now)) {
-          return {...slot, 'status': 'booked'};
+  void _initBaseSlots() {
+    timeSlots.value = _baseTimeSlots.map((s) => {...s, 'status': 'available'}).toList();
+  }
+
+  Future<void> fetchAvailableSlots() async {
+    try {
+      isFetchingSlots.value = true;
+      String dateStr = getFormattedSelectedDate();
+      final response = await _apiService.get('available-slots?tanggal=$dateStr&poli_id=${clinicId.value}');
+      final responseData = jsonDecode(response.body);
+      
+      if (responseData['success'] == true) {
+        List slotsFromApi = responseData['data'] ?? [];
+        DateTime now = DateTime.now();
+        bool isToday = selectedDate.value.year == now.year &&
+                       selectedDate.value.month == now.month &&
+                       selectedDate.value.day == now.day;
+
+        List<Map<String, dynamic>> newSlots = [];
+        for (var baseSlot in _baseTimeSlots) {
+          String jam = baseSlot['time'] as String;
+          var apiSlot = slotsFromApi.firstWhere((s) => s['jam'] == jam, orElse: () => null);
+          String status = apiSlot != null ? apiSlot['status'] : 'available';
+
+          if (isToday && status != 'booked') {
+            List<String> parts = jam.split(':');
+            int hour = int.parse(parts[0]);
+            int minute = int.parse(parts[1]);
+            DateTime slotTime = DateTime(now.year, now.month, now.day, hour, minute);
+            if (slotTime.isBefore(now)) {
+              status = 'booked';
+            }
+          }
+
+          newSlots.add({
+            ...baseSlot,
+            'status': status,
+            'sisa_kuota': apiSlot != null ? apiSlot['sisa_kuota'] : 3,
+          });
         }
+        timeSlots.value = newSlots;
       }
-      return {...slot, 'status': 'available'};
-    }).toList();
+    } catch (e) {
+      debugPrint("Error fetching slots: $e");
+    } finally {
+      isFetchingSlots.value = false;
+    }
   }
 
   void continueToPayment() {

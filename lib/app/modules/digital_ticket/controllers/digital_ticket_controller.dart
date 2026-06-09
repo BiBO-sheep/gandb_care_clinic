@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../../data/providers/api_service.dart';
 import 'package:gandb_care_clinic/app/modules/main_layout/controllers/main_layout_controller.dart';
 
 class DigitalTicketController extends GetxController {
@@ -21,6 +25,10 @@ class DigitalTicketController extends GetxController {
   final String location =
       'G&B Care Central, 4th Floor, Suite 400, Medical Plaza';
 
+  var nowServing = 'A-00'.obs;
+  var peopleAhead = 0.obs;
+  Timer? _timer;
+
   @override
   void onInit() {
     super.onInit();
@@ -36,6 +44,30 @@ class DigitalTicketController extends GetxController {
       
       appointmentId.value = data['id'].toString();
       status.value = data['status'] ?? 'confirmed';
+    }
+
+    fetchQueueStatus();
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      fetchQueueStatus();
+    });
+  }
+
+  @override
+  void onClose() {
+    _timer?.cancel();
+    super.onClose();
+  }
+
+  Future<void> fetchQueueStatus() async {
+    try {
+      final response = await ApiService().get('queue-status');
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        nowServing.value = data['now_serving'] ?? 'A-00';
+        peopleAhead.value = data['people_ahead'] ?? 0;
+      }
+    } catch (e) {
+      debugPrint("Error fetching queue status: $e");
     }
   }
 
