@@ -339,8 +339,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     
     // Map Laravel status to Timeline status
     String mappedCurrent = 'scheduled';
-    if (current == 'check_in') mappedCurrent = 'check-in';
-    else if (current == 'pemeriksaan') mappedCurrent = 'consult';
+    if (current == 'check_in' || current == 'pemeriksaan') mappedCurrent = 'consult';
     else if (['selesai', 'pending_kasir', 'unpaid', 'paid'].contains(current)) mappedCurrent = 'completed';
 
     List<String> statuses = ['scheduled', 'check-in', 'pre-screen', 'waiting', 'consult', 'completed'];
