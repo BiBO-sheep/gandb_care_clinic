@@ -249,7 +249,8 @@ class NotificationsView extends GetView<NotificationsController> {
       onTap: () => controller.changePage(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        width: 76,
+          padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3) : Colors.transparent,
           borderRadius: BorderRadius.circular(24),

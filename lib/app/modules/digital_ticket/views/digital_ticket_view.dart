@@ -451,8 +451,9 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
     return GestureDetector(
       onTap: () => controller.changePage(index),
       child: AnimatedContainer(
+        width: 76,
         duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
               ? theme.colorScheme.primaryContainer

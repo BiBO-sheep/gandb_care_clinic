@@ -65,8 +65,9 @@ class MainLayoutView extends GetView<MainLayoutController> {
       return GestureDetector(
         onTap: () => controller.changePage(index),
         child: AnimatedContainer(
+          width: 76,
           duration: const Duration(milliseconds: 300),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
             color: isSelected
                 ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
