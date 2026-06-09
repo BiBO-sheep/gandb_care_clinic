@@ -27,9 +27,9 @@ class HomeController extends GetxController {
     refreshData();
   }
 
-  Future<void> refreshData() async {
+  Future<void> refreshData({bool showLoading = true}) async {
     if (isClosed) return;
-    isLoading.value = true;
+    if (showLoading && listPoli.isEmpty) isLoading.value = true;
     await Future.wait([
       fetchUser(),
       fetchDashboardData(),
@@ -122,7 +122,7 @@ class HomeController extends GetxController {
 
   void onQuickActionTapped(String action) {
     if (action == 'My History') {
-      Get.toNamed('/exam-results');
+      changePage(1);
     } else if (action == 'Book Appointment') {
       Get.toNamed('/select-clinic');
     } else if (action == 'Poli Info') {

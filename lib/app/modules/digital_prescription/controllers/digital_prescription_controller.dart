@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gandb_care_clinic/app/modules/main_layout/controllers/main_layout_controller.dart';
 import 'package:get/get.dart';
 
 class DigitalPrescriptionController extends GetxController {
@@ -27,7 +28,12 @@ class DigitalPrescriptionController extends GetxController {
   void changePage(int index) {
     currentIndex.value = index;
     if (index == 0) {
-      Get.offAllNamed('/home');
+      if (Get.isRegistered<MainLayoutController>()) {
+        Get.find<MainLayoutController>().changePage(0);
+        Get.until((route) => route.settings.name == '/home' || route.isFirst);
+      } else {
+        Get.offAllNamed('/home');
+      }
     } else if (index == 1) {
       Get.offAllNamed('/exam-results'); // Bisa disesuaikan
     }

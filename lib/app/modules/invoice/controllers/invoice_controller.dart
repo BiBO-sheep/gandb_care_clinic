@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../data/providers/api_service.dart';
+import 'package:gandb_care_clinic/app/modules/main_layout/controllers/main_layout_controller.dart';
 
 class InvoiceController extends GetxController {
   var isLoading = true.obs;
@@ -120,6 +121,15 @@ class InvoiceController extends GetxController {
   void onClose() {
     _stopPolling();
     super.onClose();
+  }
+
+  void backToHome() {
+    if (Get.isRegistered<MainLayoutController>()) {
+      Get.find<MainLayoutController>().changePage(0);
+      Get.until((route) => route.settings.name == '/home' || route.isFirst);
+    } else {
+      Get.offAllNamed('/home');
+    }
   }
 
   Future<void> processPayment(String method) async {

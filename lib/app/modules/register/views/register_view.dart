@@ -192,6 +192,45 @@ class RegisterView extends GetView<RegisterController> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(child: Divider(color: isDark ? Colors.white12 : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.2))),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Text('OR', style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5))),
+                        ),
+                        Expanded(child: Divider(color: isDark ? Colors.white12 : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.2))),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Obx(
+                      () => SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: OutlinedButton(
+                          onPressed: controller.isGoogleLoading.value ? null : controller.signInWithGoogle,
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: theme.colorScheme.surface,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              controller.isGoogleLoading.value
+                                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                                  : Image.asset('assets/images/google_logo.png', width: 24, height: 24, errorBuilder: (c, e, s) => const Icon(Icons.g_mobiledata, size: 24)),
+                              const SizedBox(width: 12),
+                              Text(
+                                controller.isGoogleLoading.value ? 'Connecting...' : 'Continue with Google',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

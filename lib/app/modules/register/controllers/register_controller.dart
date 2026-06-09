@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../../data/providers/api_service.dart';
 import '../../../../core/utils/app_snackbar.dart';
 import '../../../routes/app_pages.dart';
@@ -19,6 +20,7 @@ class RegisterController extends GetxController {
   var isTermsAccepted = false.obs;
   var isPasswordVisible = false.obs;
   var isLoading = false.obs;
+  var isGoogleLoading = false.obs;
 
   final List<String> bloodTypes = [
     'A+', 'B+', 'O+', 'AB+', 'A-', 'B-', 'O-', 'AB-',
@@ -39,6 +41,43 @@ class RegisterController extends GetxController {
 
   void toggleTerms(bool? value) {
     if (value != null) isTermsAccepted.value = value;
+  }
+
+  Future<void> signInWithGoogle() async {
+    isGoogleLoading.value = true;
+
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        isGoogleLoading.value = false;
+        return;
+      }
+
+      final response = await _apiService.post('auth/google', body: {
+        'email': googleUser.email,
+        'name': googleUser.displayName ?? '',
+        'google_id': googleUser.id,
+      });
+
+      final data = jsonDecode(response.body);
+      String token = data['access_token'];
+
+      await _storage.write(key: 'token', value: token);
+
+      AppSnackbar.success('Login Berhasil', 'Selamat datang.');
+
+      final userData = data['data'];
+      if (userData['phone'] == null || userData['phone'].toString().isEmpty || 
+          userData['address'] == null || userData['address'].toString().isEmpty) {
+        Get.offAllNamed(Routes.COMPLETE_PROFILE);
+      } else {
+        Get.offAllNamed(Routes.HOME);
+      }
+    } catch (e) {
+      _showError(e.toString().replaceAll('Exception: ', ''));
+    } finally {
+      isGoogleLoading.value = false;
+    }
   }
 
   Future<void> register() async {

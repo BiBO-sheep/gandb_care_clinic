@@ -53,8 +53,9 @@ class ConfirmAppointmentController extends GetxController {
         colorText: Colors.white,
       );
 
-      Get.offAllNamed(
+      Get.offNamedUntil(
         '/digital-ticket',
+        (route) => route.settings.name == '/home' || route.isFirst,
         arguments: {
           'id': appointment['id'],
           'queue_number': appointment['queue_number'],

@@ -5,7 +5,7 @@
     <application
         android:label="G&amp;B Care Clinic"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher_icon"
         android:usesCleartextTraffic="true">
         
         <activity

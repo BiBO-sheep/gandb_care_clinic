@@ -283,7 +283,7 @@ class InvoiceView extends GetView<InvoiceController> {
           const SizedBox(height: 16),
           Center(
             child: TextButton(
-              onPressed: () => Get.offAllNamed('/home'),
+              onPressed: controller.backToHome,
               child: Text('Kembali ke Beranda', style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600, color: theme.colorScheme.secondary)),
             ),
           ),

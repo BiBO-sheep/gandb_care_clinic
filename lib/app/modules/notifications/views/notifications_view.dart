@@ -20,7 +20,7 @@ class NotificationsView extends GetView<NotificationsController> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: theme.colorScheme.primary),
-          onPressed: () => Get.back(),
+          onPressed: () => controller.changePage(0),
         ),
         title: Text(
           'Notifications',

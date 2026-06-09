@@ -6,6 +6,7 @@ import '../../home/views/home_view.dart';
 import '../../payment_history/views/payment_history_view.dart';
 import '../../notifications/views/notifications_view.dart';
 import '../../profile/views/profile_view.dart';
+import 'package:move_to_background/move_to_background.dart';
 
 class MainLayoutView extends GetView<MainLayoutController> {
   const MainLayoutView({super.key});
@@ -15,8 +16,14 @@ class MainLayoutView extends GetView<MainLayoutController> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        MoveToBackground.moveTaskToBack();
+      },
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
       extendBody: true,
       body: Obx(() {
         return IndexedStack(
@@ -30,6 +37,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
         );
       }),
       bottomNavigationBar: _buildBottomNav(theme, isDark),
+      ),
     );
   }
 
