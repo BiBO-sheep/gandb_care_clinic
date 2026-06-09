@@ -144,7 +144,7 @@ class InvoiceController extends GetxController {
       return;
     }
 
-    final totalAmount = invoiceData.value?['total_amount'] ?? 0;
+    final totalAmount = invoiceData.value?['grand_total'] ?? 0;
     
     int parsedAmount = 0;
     if (totalAmount is int) {

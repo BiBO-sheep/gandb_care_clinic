@@ -149,29 +149,32 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
       ),
       child: Column(
         children: [
-          Text(
-            'QUEUE POSITION',
+          Obx(() => Text(
+            controller.currentStatus.value == 'check_in' ? 'STATUS' : 'QUEUE POSITION',
             style: theme.textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.onTertiary.withValues(alpha: 0.8),
               letterSpacing: 2,
             ),
-          ),
+          )),
           const SizedBox(height: 16),
-          Text(
-            'Number',
+          Obx(() => Text(
+            controller.currentStatus.value == 'check_in' ? 'Saat Ini' : 'Number',
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w800,
               color: theme.colorScheme.onTertiary,
               height: 1,
             ),
-          ),
+          )),
           Obx(
             () => Text(
-              controller.currentQueue.value,
+              controller.currentStatus.value == 'check_in' 
+                  ? 'DIPANGGIL' 
+                  : controller.currentQueue.value,
               style: theme.textTheme.displayLarge?.copyWith(
                 fontWeight: FontWeight.w900,
                 color: theme.colorScheme.onTertiary,
+                fontSize: controller.currentStatus.value == 'check_in' ? 48 : null,
                 height: 1,
               ),
             ),
@@ -237,16 +240,20 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  Obx(
-                    () => Text(
+                  Obx(() {
+                    bool isCalled = controller.currentStatus.value == 'check_in';
+                    if (isCalled) {
+                      return const AnimatedBlinkingText(text: 'CONSULT');
+                    }
+                    return Text(
                       '~${controller.estimatedWait.value} min',
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: theme.colorScheme.primary,
                         height: 1.2,
                       ),
-                    ),
-                  ),
+                    );
+                  }),
                 ],
               ),
               Container(
@@ -328,8 +335,16 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
   }
 
   bool _isStatusReached(String target, bool checkCompleted) {
+    String current = controller.currentStatus.value.toLowerCase();
+    
+    // Map Laravel status to Timeline status
+    String mappedCurrent = 'scheduled';
+    if (current == 'check_in') mappedCurrent = 'check-in';
+    else if (current == 'pemeriksaan') mappedCurrent = 'consult';
+    else if (['selesai', 'pending_kasir', 'unpaid', 'paid'].contains(current)) mappedCurrent = 'completed';
+
     List<String> statuses = ['scheduled', 'check-in', 'pre-screen', 'waiting', 'consult', 'completed'];
-    int currentIdx = statuses.indexOf(controller.currentStatus.value.toLowerCase());
+    int currentIdx = statuses.indexOf(mappedCurrent);
     int targetIdx = statuses.indexOf(target.toLowerCase());
     
     if (checkCompleted) {
@@ -732,6 +747,49 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class AnimatedBlinkingText extends StatefulWidget {
+  final String text;
+  const AnimatedBlinkingText({Key? key, required this.text}) : super(key: key);
+
+  @override
+  State<AnimatedBlinkingText> createState() => _AnimatedBlinkingTextState();
+}
+
+class _AnimatedBlinkingTextState extends State<AnimatedBlinkingText> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _controller,
+      child: Text(
+        widget.text,
+        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+          fontWeight: FontWeight.w800,
+          color: Theme.of(context).colorScheme.primary,
+          height: 1.2,
+          letterSpacing: 2,
         ),
       ),
     );
