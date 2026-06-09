@@ -25,7 +25,9 @@ class HomeView extends GetView<HomeController> {
               : _buildHomeContent(theme, isDark),
         ),
       ),
-      bottomNavigationBar: isFromMainLayout ? null : _buildBottomNav(theme, isDark),
+      bottomNavigationBar: isFromMainLayout
+          ? null
+          : _buildBottomNav(theme, isDark),
     );
   }
 
@@ -68,8 +70,8 @@ class HomeView extends GetView<HomeController> {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundColor: theme.colorScheme.primaryContainer,
-                child: Icon(Icons.person, size: 28, color: theme.colorScheme.onPrimaryContainer),
+                backgroundColor: Colors.white,
+                backgroundImage: const AssetImage('assets/logo_klinik.png'),
               ),
               const SizedBox(width: 12),
               Text(
@@ -143,7 +145,10 @@ class HomeView extends GetView<HomeController> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [theme.colorScheme.primary, theme.colorScheme.primaryContainer],
+              colors: [
+                theme.colorScheme.primary,
+                theme.colorScheme.primaryContainer,
+              ],
             ),
             boxShadow: isDark
                 ? []
@@ -334,7 +339,9 @@ class HomeView extends GetView<HomeController> {
                       ? []
                       : [
                           BoxShadow(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.3,
+                            ),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -348,7 +355,11 @@ class HomeView extends GetView<HomeController> {
                         color: Colors.white.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.add_circle, color: Colors.white, size: 32),
+                      child: const Icon(
+                        Icons.add_circle,
+                        color: Colors.white,
+                        size: 32,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -372,7 +383,11 @@ class HomeView extends GetView<HomeController> {
                         ],
                       ),
                     ),
-                    const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.white,
+                      size: 16,
+                    ),
                   ],
                 ),
               ),
@@ -490,9 +505,7 @@ class HomeView extends GetView<HomeController> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: theme.colorScheme.surfaceContainerHighest,
-        ),
+        border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
       ),
       child: Row(
         children: [
@@ -506,7 +519,9 @@ class HomeView extends GetView<HomeController> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.2),
+                      color: theme.colorScheme.primaryContainer.withValues(
+                        alpha: 0.2,
+                      ),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -522,7 +537,9 @@ class HomeView extends GetView<HomeController> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.5),
+                      color: theme.colorScheme.secondaryContainer.withValues(
+                        alpha: 0.5,
+                      ),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -581,7 +598,9 @@ class HomeView extends GetView<HomeController> {
                     child: Center(
                       child: Icon(
                         Icons.health_and_safety,
-                        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                        color: theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.5,
+                        ),
                         size: 32,
                       ),
                     ),
@@ -671,18 +690,18 @@ class HomeView extends GetView<HomeController> {
 
     IconData iconPoli = Icons.medical_services;
     if (namaPoli.toLowerCase().contains('gigi')) iconPoli = Icons.sick;
-    if (namaPoli.toLowerCase().contains('jantung')) iconPoli = Icons.monitor_heart;
+    if (namaPoli.toLowerCase().contains('jantung'))
+      iconPoli = Icons.monitor_heart;
     if (namaPoli.toLowerCase().contains('anak')) iconPoli = Icons.child_care;
-    if (namaPoli.toLowerCase().contains('mata')) iconPoli = Icons.remove_red_eye;
+    if (namaPoli.toLowerCase().contains('mata'))
+      iconPoli = Icons.remove_red_eye;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: theme.colorScheme.surfaceContainerHighest,
-        ),
+        border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -742,7 +761,13 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon, ThemeData theme, bool isDark) {
+  Widget _buildNavItem(
+    int index,
+    String label,
+    IconData icon,
+    ThemeData theme,
+    bool isDark,
+  ) {
     return Obx(() {
       bool isSelected = controller.currentIndex.value == index;
       return GestureDetector(
@@ -774,7 +799,9 @@ class HomeView extends GetView<HomeController> {
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                   color: isSelected
                       ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                      : theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.5,
+                        ),
                   letterSpacing: 1,
                 ),
               ),

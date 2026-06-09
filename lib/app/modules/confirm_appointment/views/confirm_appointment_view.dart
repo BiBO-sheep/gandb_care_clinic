@@ -24,8 +24,8 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
               children: [
                 CircleAvatar(
                   radius: 18,
-                  backgroundColor: theme.colorScheme.primaryContainer,
-                  child: Icon(Icons.person, size: 24, color: theme.colorScheme.onPrimaryContainer),
+                  backgroundColor: Colors.white,
+                  backgroundImage: const AssetImage('assets/logo_klinik.png'),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -38,7 +38,10 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
               ],
             ),
             IconButton(
-              icon: Icon(Icons.qr_code_scanner, color: theme.colorScheme.primary),
+              icon: Icon(
+                Icons.qr_code_scanner,
+                color: theme.colorScheme.primary,
+              ),
               onPressed: () {},
             ),
           ],
@@ -114,13 +117,17 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primary,
                   borderRadius: BorderRadius.circular(24),
-                  boxShadow: isDark ? [] : [
-                    BoxShadow(
-                      color: theme.colorScheme.shadow.withValues(alpha: 0.1),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
+                  boxShadow: isDark
+                      ? []
+                      : [
+                          BoxShadow(
+                            color: theme.colorScheme.shadow.withValues(
+                              alpha: 0.1,
+                            ),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
                 ),
                 child: Column(
                   children: [
@@ -161,7 +168,9 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
+                  border: Border.all(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                  ),
                 ),
                 child: Row(
                   children: [

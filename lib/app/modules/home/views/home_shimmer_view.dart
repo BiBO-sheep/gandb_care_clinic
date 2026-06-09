@@ -23,7 +23,11 @@ class HomeShimmerView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const CircleAvatar(radius: 22, backgroundColor: Colors.white),
+                    const CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.white,
+                      backgroundImage: AssetImage('assets/logo_klinik.png'),
+                    ),
                     const SizedBox(width: 12),
                     Container(width: 120, height: 18, color: Colors.white),
                   ],
@@ -51,8 +55,9 @@ class HomeShimmerView extends StatelessWidget {
                   _buildAppointmentCardShimmer(),
                   const SizedBox(height: 32),
                   _buildQuickActionsShimmer(),
+                  _buildHealthTipsShimmer(),
                   const SizedBox(height: 32),
-                  _buildPoliSliderShimmer(),
+                  _buildPoliGridShimmer(),
                   const SizedBox(height: 100),
                 ],
               ),
@@ -63,7 +68,7 @@ class HomeShimmerView extends StatelessWidget {
     );
   }
 
-  Widget _buildPoliSliderShimmer() {
+  Widget _buildPoliGridShimmer() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -75,27 +80,59 @@ class HomeShimmerView extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            childAspectRatio: 1.1,
+          ),
+          itemCount: 4,
+          itemBuilder: (context, index) {
+            return Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const CircleAvatar(radius: 16, backgroundColor: Colors.grey),
+                  const Spacer(),
+                  Container(width: 80, height: 14, color: Colors.white),
+                  const SizedBox(height: 4),
+                  Container(width: 60, height: 11, color: Colors.white),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHealthTipsShimmer() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(width: 100, height: 12, color: Colors.white),
+        const SizedBox(height: 16),
         SizedBox(
-          height: 160,
+          height: 200,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: 3,
+            itemCount: 2,
             itemBuilder: (context, index) {
               return Container(
-                width: 140,
+                width: 280,
                 margin: const EdgeInsets.only(right: 16),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const CircleAvatar(radius: 16, backgroundColor: Colors.grey),
-                    const Spacer(),
-                    Container(width: 80, height: 14, color: Colors.white),
-                    const SizedBox(height: 4),
-                    Container(width: 60, height: 11, color: Colors.white),
-                  ],
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
                 ),
               );
             },
@@ -109,7 +146,10 @@ class HomeShimmerView extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 200,
-      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(24)),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(24),
+      ),
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,7 +163,10 @@ class HomeShimmerView extends StatelessWidget {
           Container(
             width: double.infinity,
             height: 60,
-            decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
         ],
       ),
@@ -136,23 +179,41 @@ class HomeShimmerView extends StatelessWidget {
       children: [
         Container(width: 120, height: 12, color: Colors.white),
         const SizedBox(height: 16),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 1.2,
-          children: List.generate(
-            3,
-            (index) => Container(
-              padding: const EdgeInsets.all(16),
+        Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 80,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-          ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ],
     );

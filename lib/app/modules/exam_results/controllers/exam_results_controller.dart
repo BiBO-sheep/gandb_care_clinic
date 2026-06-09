@@ -22,7 +22,7 @@ class ExamResultsController extends GetxController {
     try {
       final response = await _apiService.get('exam-results');
       final data = json.decode(response.body);
-      
+
       if (data['success'] == true) {
         resultsList.value = data['data'];
       } else {
@@ -68,4 +68,3 @@ class ExamResultsController extends GetxController {
     }
   }
 }
-

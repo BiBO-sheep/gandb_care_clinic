@@ -88,13 +88,18 @@ class QueueMonitorController extends GetxController {
   }
 
   void openQRScanner() {
-    Get.snackbar('Info', 'Fitur Scan QR dinonaktifkan. Gunakan monitor antrean.');
+    Get.snackbar(
+      'Info',
+      'Fitur Scan QR dinonaktifkan. Gunakan monitor antrean.',
+    );
   }
 
   void testAudio() {
     if (!Get.isRegistered<PollingService>()) return;
     PollingService.to.playNotificationSound();
-    Get.snackbar('Audio Test', 'Memutar suara notifikasi...',
+    Get.snackbar(
+      'Audio Test',
+      'Memutar suara notifikasi...',
       snackPosition: SnackPosition.BOTTOM,
       duration: const Duration(seconds: 2),
       backgroundColor: Colors.blueGrey,

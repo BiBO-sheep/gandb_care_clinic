@@ -16,7 +16,11 @@ class InvoiceView extends GetView<InvoiceController> {
       body: SafeArea(
         child: Obx(() {
           if (controller.isLoading.value) {
-            return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
+            return Center(
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+              ),
+            );
           }
           if (controller.errorMessage.isNotEmpty) {
             return _buildErrorState(theme, isDark);
@@ -24,7 +28,11 @@ class InvoiceView extends GetView<InvoiceController> {
           if (controller.invoiceData.value == null) {
             return _buildEmptyState(theme, isDark);
           }
-          return _buildInvoiceContent(controller.invoiceData.value!, theme, isDark);
+          return _buildInvoiceContent(
+            controller.invoiceData.value!,
+            theme,
+            isDark,
+          );
         }),
       ),
     );
@@ -35,7 +43,11 @@ class InvoiceView extends GetView<InvoiceController> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new, color: theme.colorScheme.primary, size: 20),
+        icon: Icon(
+          Icons.arrow_back_ios_new,
+          color: theme.colorScheme.primary,
+          size: 20,
+        ),
         onPressed: () => Get.back(),
       ),
       title: Row(
@@ -43,7 +55,11 @@ class InvoiceView extends GetView<InvoiceController> {
           CircleAvatar(
             radius: 16,
             backgroundColor: theme.colorScheme.primaryContainer,
-            child: Icon(Icons.receipt_long, size: 18, color: theme.colorScheme.onPrimaryContainer),
+            child: Icon(
+              Icons.receipt_long,
+              size: 18,
+              color: theme.colorScheme.onPrimaryContainer,
+            ),
           ),
           const SizedBox(width: 10),
           Text(
@@ -58,29 +74,39 @@ class InvoiceView extends GetView<InvoiceController> {
     );
   }
 
-  Widget _buildInvoiceContent(Map<String, dynamic> data, ThemeData theme, bool isDark) {
+  Widget _buildInvoiceContent(
+    Map<String, dynamic> data,
+    ThemeData theme,
+    bool isDark,
+  ) {
     final appointment = data['appointment'] ?? {};
     final medicalRecord = appointment['medical_record'] ?? {};
     final poli = appointment['poli'] ?? {};
     final user = appointment['user'] ?? {};
     final dokter = appointment['dokter'] ?? {};
 
-    final String diagnosis = medicalRecord['diagnosis'] ?? 'Belum ada diagnosis';
+    final String diagnosis =
+        medicalRecord['diagnosis'] ?? 'Belum ada diagnosis';
     final String patientName = user['name'] ?? 'Pasien';
     final String clinicName = poli['name'] ?? 'G&B Care Clinic';
     final String doctorName = dokter['name'] ?? 'Dokter';
-    final String invoiceNumber = data['invoice_number'] ?? 'INV-${data['id'] ?? '000'}';
+    final String invoiceNumber =
+        data['invoice_number'] ?? 'INV-${data['id'] ?? '000'}';
     final String status = data['status'] ?? 'unpaid';
     final bool isPaid = status.toLowerCase() == 'paid';
     final bool isPending = status.toLowerCase() == 'pending';
 
-    final consultationFee = double.tryParse(data['total_consultation']?.toString() ?? '0') ?? 0;
-    final medicineFee = double.tryParse(data['total_medicines']?.toString() ?? '0') ?? 0;
-    final grandTotal = double.tryParse(data['grand_total']?.toString() ?? '0') ?? 0;
+    final consultationFee =
+        double.tryParse(data['total_consultation']?.toString() ?? '0') ?? 0;
+    final medicineFee =
+        double.tryParse(data['total_medicines']?.toString() ?? '0') ?? 0;
+    final grandTotal =
+        double.tryParse(data['grand_total']?.toString() ?? '0') ?? 0;
     final List<dynamic> medicines = List<dynamic>.from(data['medicines'] ?? []);
 
     // Cek apakah semua obat sudah diberi harga oleh kasir
-    final bool hasUnpricedMedicine = medicines.isNotEmpty &&
+    final bool hasUnpricedMedicine =
+        medicines.isNotEmpty &&
         medicines.any((obat) {
           final price = obat['price'];
           if (price == null) return true;
@@ -89,7 +115,8 @@ class InvoiceView extends GetView<InvoiceController> {
         });
 
     // canPay: status unpaid DAN semua harga obat sudah diisi (atau tidak ada resep) DAN grandTotal > 0
-    final bool canPay = !isPaid && !isPending && !hasUnpricedMedicine && grandTotal > 0;
+    final bool canPay =
+        !isPaid && !isPending && !hasUnpricedMedicine && grandTotal > 0;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -116,7 +143,9 @@ class InvoiceView extends GetView<InvoiceController> {
                 const TextSpan(text: 'Tagihan\n'),
                 TextSpan(
                   text: 'Pembayaran',
-                  style: TextStyle(color: isPaid ? Colors.green : theme.colorScheme.primary),
+                  style: TextStyle(
+                    color: isPaid ? Colors.green : theme.colorScheme.primary,
+                  ),
                 ),
               ],
             ),
@@ -128,10 +157,10 @@ class InvoiceView extends GetView<InvoiceController> {
               color: isPaid
                   ? Colors.green.withValues(alpha: 0.1)
                   : isPending
-                      ? Colors.orange.withValues(alpha: 0.1)
-                      : hasUnpricedMedicine
-                          ? Colors.amber.withValues(alpha: 0.1)
-                          : theme.colorScheme.primary.withValues(alpha: 0.1),
+                  ? Colors.orange.withValues(alpha: 0.1)
+                  : hasUnpricedMedicine
+                  ? Colors.amber.withValues(alpha: 0.1)
+                  : theme.colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -141,37 +170,37 @@ class InvoiceView extends GetView<InvoiceController> {
                   isPaid
                       ? Icons.check_circle
                       : isPending
-                          ? Icons.hourglass_top
-                          : hasUnpricedMedicine
-                              ? Icons.pending_actions
-                              : Icons.payment,
+                      ? Icons.hourglass_top
+                      : hasUnpricedMedicine
+                      ? Icons.pending_actions
+                      : Icons.payment,
                   size: 14,
                   color: isPaid
                       ? Colors.green
                       : isPending
-                          ? Colors.orange
-                          : hasUnpricedMedicine
-                              ? Colors.amber
-                              : theme.colorScheme.primary,
+                      ? Colors.orange
+                      : hasUnpricedMedicine
+                      ? Colors.amber
+                      : theme.colorScheme.primary,
                 ),
                 const SizedBox(width: 6),
                 Text(
                   isPaid
                       ? 'LUNAS'
                       : isPending
-                          ? 'MENUNGGU KASIR'
-                          : hasUnpricedMedicine
-                              ? 'MENUNGGU HARGA OBAT'
-                              : 'SIAP BAYAR',
+                      ? 'MENUNGGU KASIR'
+                      : hasUnpricedMedicine
+                      ? 'MENUNGGU HARGA OBAT'
+                      : 'SIAP BAYAR',
                   style: theme.textTheme.labelSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: isPaid
                         ? Colors.green
                         : isPending
-                            ? Colors.orange
-                            : hasUnpricedMedicine
-                                ? Colors.amber
-                                : theme.colorScheme.primary,
+                        ? Colors.orange
+                        : hasUnpricedMedicine
+                        ? Colors.amber
+                        : theme.colorScheme.primary,
                   ),
                 ),
               ],
@@ -184,19 +213,49 @@ class InvoiceView extends GetView<InvoiceController> {
             decoration: BoxDecoration(
               color: theme.colorScheme.secondaryContainer,
               borderRadius: BorderRadius.circular(20),
-              boxShadow: isDark ? [] : [
-                BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, 8)),
-              ],
+              boxShadow: isDark
+                  ? []
+                  : [
+                      BoxShadow(
+                        color: theme.colorScheme.shadow.withValues(alpha: 0.05),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
             ),
             child: Column(
               children: [
-                _buildInfoRow(Icons.person, 'PASIEN', patientName, theme, isDark),
+                _buildInfoRow(
+                  Icons.person,
+                  'PASIEN',
+                  patientName,
+                  theme,
+                  isDark,
+                ),
                 const SizedBox(height: 16),
-                _buildInfoRow(Icons.local_hospital, 'KLINIK / POLI', clinicName, theme, isDark),
+                _buildInfoRow(
+                  Icons.local_hospital,
+                  'KLINIK / POLI',
+                  clinicName,
+                  theme,
+                  isDark,
+                ),
                 const SizedBox(height: 16),
-                _buildInfoRow(Icons.medical_services, 'DOKTER', 'Dr. $doctorName', theme, isDark),
+                _buildInfoRow(
+                  Icons.medical_services,
+                  'DOKTER',
+                  'Dr. $doctorName',
+                  theme,
+                  isDark,
+                ),
                 const SizedBox(height: 16),
-                _buildInfoRow(Icons.tag, 'NO. INVOICE', invoiceNumber, theme, isDark),
+                _buildInfoRow(
+                  Icons.tag,
+                  'NO. INVOICE',
+                  invoiceNumber,
+                  theme,
+                  isDark,
+                ),
               ],
             ),
           ),
@@ -207,7 +266,9 @@ class InvoiceView extends GetView<InvoiceController> {
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
+              border: Border.all(
+                color: theme.colorScheme.surfaceContainerHighest,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,20 +277,33 @@ class InvoiceView extends GetView<InvoiceController> {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(color: theme.colorScheme.primaryContainer, borderRadius: BorderRadius.circular(10)),
-                      child: Icon(Icons.medical_information, color: theme.colorScheme.primary, size: 20),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.medical_information,
+                        color: theme.colorScheme.primary,
+                        size: 20,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Text(
                       'Diagnosis Dokter',
-                      style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
                 Text(
                   diagnosis,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant, height: 1.6),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.6,
+                  ),
                 ),
               ],
             ),
@@ -241,50 +315,103 @@ class InvoiceView extends GetView<InvoiceController> {
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(20),
-              boxShadow: isDark ? [] : [
-                BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.04), blurRadius: 20, offset: const Offset(0, 8)),
-              ],
-              border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
+              boxShadow: isDark
+                  ? []
+                  : [
+                      BoxShadow(
+                        color: theme.colorScheme.shadow.withValues(alpha: 0.04),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+              border: Border.all(
+                color: theme.colorScheme.surfaceContainerHighest,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.receipt_long, color: theme.colorScheme.primary, size: 20),
+                    Icon(
+                      Icons.receipt_long,
+                      color: theme.colorScheme.primary,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Rincian Biaya',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: theme.colorScheme.onSurface),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
-                _buildFeeRow('Jasa Dokter', controller.formatRupiah(consultationFee), theme, isDark),
+                _buildFeeRow(
+                  'Jasa Dokter',
+                  controller.formatRupiah(consultationFee),
+                  theme,
+                  isDark,
+                ),
                 const SizedBox(height: 12),
-                _buildFeeRow('Biaya Obat-obatan', controller.formatRupiah(medicineFee), theme, isDark),
+                _buildFeeRow(
+                  'Biaya Obat-obatan',
+                  controller.formatRupiah(medicineFee),
+                  theme,
+                  isDark,
+                ),
                 const SizedBox(height: 4),
                 _buildMedicineList(medicines, theme, isDark),
                 const SizedBox(height: 16),
-                Container(height: 1, color: theme.colorScheme.surfaceContainerHighest),
+                Container(
+                  height: 1,
+                  color: theme.colorScheme.surfaceContainerHighest,
+                ),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Total Tagihan', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
-                    Text(controller.formatRupiah(grandTotal), style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800, color: theme.colorScheme.primary)),
+                    Text(
+                      'Total Tagihan',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    Text(
+                      controller.formatRupiah(grandTotal),
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
                   ],
                 ),
               ],
             ),
           ),
           const SizedBox(height: 32),
-          _buildPaymentAction(isPaid, isPending, canPay, hasUnpricedMedicine, theme, isDark),
+          _buildPaymentAction(
+            isPaid,
+            isPending,
+            canPay,
+            hasUnpricedMedicine,
+            theme,
+            isDark,
+          ),
           const SizedBox(height: 16),
           Center(
             child: TextButton(
               onPressed: controller.backToHome,
-              child: Text('Kembali ke Beranda', style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600, color: theme.colorScheme.secondary)),
+              child: Text(
+                'Kembali ke Beranda',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.secondary,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 40),
@@ -296,7 +423,11 @@ class InvoiceView extends GetView<InvoiceController> {
   // =========================================
   // HELPER: Daftar Obat (aman dari spread error)
   // =========================================
-  Widget _buildMedicineList(List<dynamic> medicines, ThemeData theme, bool isDark) {
+  Widget _buildMedicineList(
+    List<dynamic> medicines,
+    ThemeData theme,
+    bool isDark,
+  ) {
     if (medicines.isEmpty) {
       return Padding(
         padding: const EdgeInsets.only(left: 16, top: 4, bottom: 4),
@@ -348,7 +479,14 @@ class InvoiceView extends GetView<InvoiceController> {
   // =========================================
   // HELPER: Tombol / Banner Pembayaran
   // =========================================
-  Widget _buildPaymentAction(bool isPaid, bool isPending, bool canPay, bool hasUnpricedMedicine, ThemeData theme, bool isDark) {
+  Widget _buildPaymentAction(
+    bool isPaid,
+    bool isPending,
+    bool canPay,
+    bool hasUnpricedMedicine,
+    ThemeData theme,
+    bool isDark,
+  ) {
     if (isPaid) {
       return Container(
         width: double.infinity,
@@ -499,7 +637,9 @@ class InvoiceView extends GetView<InvoiceController> {
         onPressed: controller.showPaymentMethods,
         style: ElevatedButton.styleFrom(
           backgroundColor: theme.colorScheme.primary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           elevation: isDark ? 0 : 8,
           shadowColor: theme.colorScheme.primary.withValues(alpha: 0.4),
         ),
@@ -522,13 +662,22 @@ class InvoiceView extends GetView<InvoiceController> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value, ThemeData theme, bool isDark) {
+  Widget _buildInfoRow(
+    IconData icon,
+    String label,
+    String value,
+    ThemeData theme,
+    bool isDark,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: theme.colorScheme.primary.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary.withValues(alpha: 0.2),
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Icon(icon, color: theme.colorScheme.primary, size: 20),
         ),
         const SizedBox(width: 14),
@@ -536,9 +685,25 @@ class InvoiceView extends GetView<InvoiceController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.7), letterSpacing: 1.5)),
+              Text(
+                label,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSecondaryContainer.withValues(
+                    alpha: 0.7,
+                  ),
+                  letterSpacing: 1.5,
+                ),
+              ),
               const SizedBox(height: 4),
-              Text(value, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSecondaryContainer, height: 1.4)),
+              Text(
+                value,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSecondaryContainer,
+                  height: 1.4,
+                ),
+              ),
             ],
           ),
         ),
@@ -546,12 +711,28 @@ class InvoiceView extends GetView<InvoiceController> {
     );
   }
 
-  Widget _buildFeeRow(String label, String value, ThemeData theme, bool isDark) {
+  Widget _buildFeeRow(
+    String label,
+    String value,
+    ThemeData theme,
+    bool isDark,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-        Text(value, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600, color: theme.colorScheme.onSurface)),
+        Text(
+          label,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        Text(
+          value,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
       ],
     );
   }
@@ -565,17 +746,34 @@ class InvoiceView extends GetView<InvoiceController> {
           children: [
             Icon(Icons.error_outline, size: 80, color: theme.colorScheme.error),
             const SizedBox(height: 16),
-            Text('Gagal Memuat Invoice', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
+            Text(
+              'Gagal Memuat Invoice',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(controller.errorMessage.value, textAlign: TextAlign.center, style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(
+              controller.errorMessage.value,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: controller.fetchInvoice,
               icon: Icon(Icons.refresh, color: theme.colorScheme.onError),
-              label: Text('Coba Lagi', style: TextStyle(color: theme.colorScheme.onError)),
+              label: Text(
+                'Coba Lagi',
+                style: TextStyle(color: theme.colorScheme.onError),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.error,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
             ),
           ],
@@ -589,9 +787,19 @@ class InvoiceView extends GetView<InvoiceController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.receipt_long, size: 80, color: theme.colorScheme.surfaceContainerHighest),
+          Icon(
+            Icons.receipt_long,
+            size: 80,
+            color: theme.colorScheme.surfaceContainerHighest,
+          ),
           const SizedBox(height: 16),
-          Text('Invoice tidak ditemukan', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.onSurfaceVariant)),
+          Text(
+            'Invoice tidak ditemukan',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );

@@ -25,7 +25,7 @@ class NotificationsController extends GetxController {
   Future<void> fetchNotifications() async {
     try {
       isLoading.value = true;
-      
+
       final response = await _apiService.get('notifications');
       final data = jsonDecode(response.body);
       final List fetchedData = data['data'] ?? data;
@@ -113,4 +113,3 @@ class NotificationsController extends GetxController {
     }
   }
 }
-

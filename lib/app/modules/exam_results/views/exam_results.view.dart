@@ -25,8 +25,8 @@ class ExamResultsView extends GetView<ExamResultsController> {
               children: [
                 CircleAvatar(
                   radius: 18,
-                  backgroundColor: theme.colorScheme.primaryContainer,
-                  child: Icon(Icons.person, size: 24, color: theme.colorScheme.onPrimaryContainer),
+                  backgroundColor: Colors.white,
+                  backgroundImage: const AssetImage('assets/logo_klinik.png'),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -51,7 +51,10 @@ class ExamResultsView extends GetView<ExamResultsController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16.0,
+              ),
               child: Text(
                 'Examination Results',
                 style: theme.textTheme.headlineMedium?.copyWith(
@@ -64,14 +67,24 @@ class ExamResultsView extends GetView<ExamResultsController> {
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value) {
-                  return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: theme.colorScheme.primary,
+                    ),
+                  );
                 }
                 if (controller.resultsList.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.assignment_outlined, size: 80, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3)),
+                        Icon(
+                          Icons.assignment_outlined,
+                          size: 80,
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.3,
+                          ),
+                        ),
                         const SizedBox(height: 16),
                         Text(
                           'Belum ada riwayat rekam medis',
@@ -85,7 +98,10 @@ class ExamResultsView extends GetView<ExamResultsController> {
                   );
                 }
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 8.0,
+                  ),
                   itemCount: controller.resultsList.length,
                   itemBuilder: (context, index) {
                     final record = controller.resultsList[index];
@@ -103,7 +119,8 @@ class ExamResultsView extends GetView<ExamResultsController> {
   }
 
   Widget _buildRecordCard(dynamic record, ThemeData theme, bool isDark) {
-    final appointmentDate = record['appointment']?['appointment_date'] ?? 'Tanggal tidak tersedia';
+    final appointmentDate =
+        record['appointment']?['appointment_date'] ?? 'Tanggal tidak tersedia';
     final doctorName = record['doctor']?['name'] ?? 'Dokter tidak tersedia';
     final doctorSpec = record['doctor']?['specialization'] ?? '';
 
@@ -113,9 +130,15 @@ class ExamResultsView extends GetView<ExamResultsController> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
-        boxShadow: isDark ? [] : [
-          BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.04), blurRadius: 20, offset: const Offset(0, 10)),
-        ],
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: theme.colorScheme.shadow.withValues(alpha: 0.04),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
         border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
       ),
       child: Column(
@@ -143,7 +166,10 @@ class ExamResultsView extends GetView<ExamResultsController> {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.secondaryContainer,
                       borderRadius: BorderRadius.circular(20),
@@ -151,7 +177,11 @@ class ExamResultsView extends GetView<ExamResultsController> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.person, size: 12, color: theme.colorScheme.secondary),
+                        Icon(
+                          Icons.person,
+                          size: 12,
+                          color: theme.colorScheme.secondary,
+                        ),
                         const SizedBox(width: 4),
                         Flexible(
                           child: Text(
@@ -178,7 +208,9 @@ class ExamResultsView extends GetView<ExamResultsController> {
               child: Text(
                 doctorSpec,
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.5,
+                  ),
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -186,7 +218,8 @@ class ExamResultsView extends GetView<ExamResultsController> {
             ),
           ],
           const SizedBox(height: 16),
-          if (record['keluhan'] != null && record['keluhan'].toString().isNotEmpty) ...[
+          if (record['keluhan'] != null &&
+              record['keluhan'].toString().isNotEmpty) ...[
             Text(
               'KELUHAN PASIEN',
               style: theme.textTheme.labelSmall?.copyWith(
@@ -246,7 +279,11 @@ class ExamResultsView extends GetView<ExamResultsController> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => controller.goToPrescription(record),
-                  icon: Icon(Icons.medication, color: theme.colorScheme.onPrimaryContainer, size: 18),
+                  icon: Icon(
+                    Icons.medication,
+                    color: theme.colorScheme.onPrimaryContainer,
+                    size: 18,
+                  ),
                   label: Text(
                     'Lihat Resep',
                     style: theme.textTheme.labelMedium?.copyWith(
@@ -257,7 +294,9 @@ class ExamResultsView extends GetView<ExamResultsController> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.primaryContainer,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     elevation: 0,
                   ),
                 ),
@@ -267,14 +306,23 @@ class ExamResultsView extends GetView<ExamResultsController> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      final appointmentId = record['appointment_id'] ?? record['appointment']?['id'];
+                      final appointmentId =
+                          record['appointment_id'] ??
+                          record['appointment']?['id'];
                       if (appointmentId != null) {
-                        Get.toNamed('/invoice', arguments: {'appointment_id': appointmentId});
+                        Get.toNamed(
+                          '/invoice',
+                          arguments: {'appointment_id': appointmentId},
+                        );
                       } else {
                         Get.snackbar('Gagal', 'ID Appointment tidak ditemukan');
                       }
                     },
-                    icon: Icon(Icons.payment, color: theme.colorScheme.onPrimary, size: 18),
+                    icon: Icon(
+                      Icons.payment,
+                      color: theme.colorScheme.onPrimary,
+                      size: 18,
+                    ),
                     label: Text(
                       'Bayar Sekarang',
                       style: theme.textTheme.labelMedium?.copyWith(
@@ -285,7 +333,9 @@ class ExamResultsView extends GetView<ExamResultsController> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       elevation: 0,
                     ),
                   ),
@@ -299,7 +349,10 @@ class ExamResultsView extends GetView<ExamResultsController> {
 
   Widget _buildBottomNav(ThemeData theme, bool isDark) {
     return ClipRRect(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(40),
+        topRight: Radius.circular(40),
+      ),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
@@ -322,7 +375,13 @@ class ExamResultsView extends GetView<ExamResultsController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon, ThemeData theme, bool isDark) {
+  Widget _buildNavItem(
+    int index,
+    String label,
+    IconData icon,
+    ThemeData theme,
+    bool isDark,
+  ) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
@@ -331,7 +390,9 @@ class ExamResultsView extends GetView<ExamResultsController> {
         duration: const Duration(milliseconds: 300),
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primaryContainer : Colors.transparent,
+          color: isSelected
+              ? theme.colorScheme.primaryContainer
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
@@ -339,7 +400,9 @@ class ExamResultsView extends GetView<ExamResultsController> {
           children: [
             Icon(
               icon,
-              color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -348,7 +411,9 @@ class ExamResultsView extends GetView<ExamResultsController> {
               style: theme.textTheme.labelSmall?.copyWith(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                 letterSpacing: 1,
               ),
             ),
@@ -358,4 +423,3 @@ class ExamResultsView extends GetView<ExamResultsController> {
     );
   }
 }
-

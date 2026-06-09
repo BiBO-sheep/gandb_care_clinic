@@ -3,7 +3,8 @@ import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../routes/app_pages.dart';
 
-class SplashController extends GetxController with GetSingleTickerProviderStateMixin {
+class SplashController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   final _storage = const FlutterSecureStorage();
 
   late AnimationController animationController;
@@ -67,7 +68,9 @@ class SplashController extends GetxController with GetSingleTickerProviderStateM
     try {
       String? token;
       try {
-        token = await _storage.read(key: 'token').timeout(const Duration(seconds: 3));
+        token = await _storage
+            .read(key: 'token')
+            .timeout(const Duration(seconds: 3));
       } catch (e) {
         debugPrint("Storage read error/timeout: $e");
         token = null;

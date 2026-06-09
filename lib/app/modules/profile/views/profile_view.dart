@@ -38,7 +38,11 @@ class ProfileView extends GetView<ProfileController> {
         bottom: false,
         child: Obx(() {
           if (controller.isLoading.value) {
-            return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
+            return Center(
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+              ),
+            );
           }
 
           return SingleChildScrollView(
@@ -53,13 +57,22 @@ class ProfileView extends GetView<ProfileController> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: theme.colorScheme.primaryContainer,
-                    border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3), width: 4),
+                    border: Border.all(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                      width: 4,
+                    ),
                   ),
-                  child: Icon(Icons.person, size: 50, color: theme.colorScheme.onPrimaryContainer),
+                  child: Icon(
+                    Icons.person,
+                    size: 50,
+                    color: theme.colorScheme.onPrimaryContainer,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  controller.userName.value.isEmpty ? 'User' : controller.userName.value,
+                  controller.userName.value.isEmpty
+                      ? 'User'
+                      : controller.userName.value,
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.onSurface,
@@ -67,7 +80,9 @@ class ProfileView extends GetView<ProfileController> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  controller.userEmail.value.isEmpty ? 'No Email' : controller.userEmail.value,
+                  controller.userEmail.value.isEmpty
+                      ? 'No Email'
+                      : controller.userEmail.value,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -78,23 +93,66 @@ class ProfileView extends GetView<ProfileController> {
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surface,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
+                    border: Border.all(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                    ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildInfoStat('Gol. Darah', controller.userBloodType.value.isEmpty ? '-' : controller.userBloodType.value, theme),
-                      Container(height: 40, width: 1, color: theme.colorScheme.surfaceContainerHighest),
-                      _buildInfoStat('Tinggi', controller.userHeight.value.isEmpty ? '-' : '${controller.userHeight.value} cm', theme),
-                      Container(height: 40, width: 1, color: theme.colorScheme.surfaceContainerHighest),
-                      _buildInfoStat('Berat', controller.userWeight.value.isEmpty ? '-' : '${controller.userWeight.value} kg', theme),
+                      _buildInfoStat(
+                        'Gol. Darah',
+                        controller.userBloodType.value.isEmpty
+                            ? '-'
+                            : controller.userBloodType.value,
+                        theme,
+                      ),
+                      Container(
+                        height: 40,
+                        width: 1,
+                        color: theme.colorScheme.surfaceContainerHighest,
+                      ),
+                      _buildInfoStat(
+                        'Tinggi',
+                        controller.userHeight.value.isEmpty
+                            ? '-'
+                            : '${controller.userHeight.value} cm',
+                        theme,
+                      ),
+                      Container(
+                        height: 40,
+                        width: 1,
+                        color: theme.colorScheme.surfaceContainerHighest,
+                      ),
+                      _buildInfoStat(
+                        'Berat',
+                        controller.userWeight.value.isEmpty
+                            ? '-'
+                            : '${controller.userWeight.value} kg',
+                        theme,
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 32),
-                _buildMenuItem(Icons.history, 'Riwayat Medis', () => Get.toNamed('/exam-results'), theme),
-                _buildMenuItem(Icons.receipt_long, 'Tagihan & Pembayaran', () => Get.toNamed('/payment-history'), theme),
-                _buildMenuItem(Icons.security, 'Keamanan Akun', () => Get.snackbar('Info', 'Fitur segera hadir'), theme),
+                _buildMenuItem(
+                  Icons.history,
+                  'Riwayat Medis',
+                  () => Get.toNamed('/exam-results'),
+                  theme,
+                ),
+                _buildMenuItem(
+                  Icons.receipt_long,
+                  'Tagihan & Pembayaran',
+                  () => Get.toNamed('/payment-history'),
+                  theme,
+                ),
+                _buildMenuItem(
+                  Icons.security,
+                  'Keamanan Akun',
+                  () => Get.snackbar('Info', 'Fitur segera hadir'),
+                  theme,
+                ),
                 const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
@@ -110,8 +168,12 @@ class ProfileView extends GetView<ProfileController> {
                     ),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: BorderSide(color: Colors.red.withValues(alpha: 0.5)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      side: BorderSide(
+                        color: Colors.red.withValues(alpha: 0.5),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                 ),
@@ -121,7 +183,9 @@ class ProfileView extends GetView<ProfileController> {
           );
         }),
       ),
-      bottomNavigationBar: isFromMainLayout ? null : _buildBottomNav(theme, isDark),
+      bottomNavigationBar: isFromMainLayout
+          ? null
+          : _buildBottomNav(theme, isDark),
     );
   }
 
@@ -146,7 +210,12 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap, ThemeData theme) {
+  Widget _buildMenuItem(
+    IconData icon,
+    String title,
+    VoidCallback onTap,
+    ThemeData theme,
+  ) {
     return ListTile(
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
@@ -165,13 +234,19 @@ class ProfileView extends GetView<ProfileController> {
           color: theme.colorScheme.onSurface,
         ),
       ),
-      trailing: Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+      trailing: Icon(
+        Icons.chevron_right,
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
     );
   }
 
   Widget _buildBottomNav(ThemeData theme, bool isDark) {
     return ClipRRect(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(40),
+        topRight: Radius.circular(40),
+      ),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
@@ -194,16 +269,24 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon, ThemeData theme, bool isDark) {
+  Widget _buildNavItem(
+    int index,
+    String label,
+    IconData icon,
+    ThemeData theme,
+    bool isDark,
+  ) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         width: 76,
-          padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3) : Colors.transparent,
+          color: isSelected
+              ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
@@ -211,7 +294,9 @@ class ProfileView extends GetView<ProfileController> {
           children: [
             Icon(
               icon,
-              color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -219,7 +304,9 @@ class ProfileView extends GetView<ProfileController> {
               label.toUpperCase(),
               style: theme.textTheme.labelSmall?.copyWith(
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                 letterSpacing: 1,
               ),
             ),

@@ -25,8 +25,8 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
               children: [
                 CircleAvatar(
                   radius: 18,
-                  backgroundColor: theme.colorScheme.primaryContainer,
-                  child: Icon(Icons.person, size: 24, color: theme.colorScheme.onPrimaryContainer),
+                  backgroundColor: Colors.white,
+                  backgroundImage: const AssetImage('assets/logo_klinik.png'),
                 ),
                 const SizedBox(width: 12),
                 Text(
@@ -96,7 +96,9 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                       ? []
                       : [
                           BoxShadow(
-                            color: theme.colorScheme.shadow.withValues(alpha: 0.05),
+                            color: theme.colorScheme.shadow.withValues(
+                              alpha: 0.05,
+                            ),
                             blurRadius: 24,
                             offset: const Offset(0, 12),
                           ),
@@ -119,7 +121,9 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                             'NOMOR ANTREAN',
                             style: theme.textTheme.labelSmall?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
+                              color: theme.colorScheme.onPrimary.withValues(
+                                alpha: 0.8,
+                              ),
                               letterSpacing: 2,
                             ),
                           ),
@@ -142,62 +146,85 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                       padding: const EdgeInsets.all(24.0),
                       child: Column(
                         children: [
-                          Obx(() => Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: controller.peopleAhead.value == 0
-                                  ? theme.colorScheme.primaryContainer
-                                  : theme.colorScheme.tertiaryContainer,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
+                          Obx(
+                            () => Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
                                 color: controller.peopleAhead.value == 0
-                                    ? theme.colorScheme.primary.withValues(alpha: 0.3)
-                                    : theme.colorScheme.tertiary.withValues(alpha: 0.3),
+                                    ? theme.colorScheme.primaryContainer
+                                    : theme.colorScheme.tertiaryContainer,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: controller.peopleAhead.value == 0
+                                      ? theme.colorScheme.primary.withValues(
+                                          alpha: 0.3,
+                                        )
+                                      : theme.colorScheme.tertiary.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    controller.peopleAhead.value == 0
+                                        ? Icons.notifications_active_rounded
+                                        : Icons.groups_rounded,
+                                    color: controller.peopleAhead.value == 0
+                                        ? theme.colorScheme.primary
+                                        : theme.colorScheme.tertiary,
+                                    size: 32,
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Sedang diperiksa: ${controller.nowServing.value}',
+                                          style: theme.textTheme.labelMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    controller
+                                                            .peopleAhead
+                                                            .value ==
+                                                        0
+                                                    ? theme
+                                                          .colorScheme
+                                                          .onPrimaryContainer
+                                                    : theme
+                                                          .colorScheme
+                                                          .onTertiaryContainer,
+                                              ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          controller.peopleAhead.value == 0
+                                              ? 'Giliran Anda selanjutnya! Silakan bersiap.'
+                                              : 'Ada ${controller.peopleAhead.value} antrean di depan Anda.',
+                                          style: theme.textTheme.labelSmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                color:
+                                                    controller
+                                                            .peopleAhead
+                                                            .value ==
+                                                        0
+                                                    ? theme.colorScheme.primary
+                                                    : theme
+                                                          .colorScheme
+                                                          .tertiary,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  controller.peopleAhead.value == 0 
-                                      ? Icons.notifications_active_rounded
-                                      : Icons.groups_rounded,
-                                  color: controller.peopleAhead.value == 0
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.tertiary,
-                                  size: 32,
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Sedang diperiksa: ${controller.nowServing.value}',
-                                        style: theme.textTheme.labelMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: controller.peopleAhead.value == 0
-                                              ? theme.colorScheme.onPrimaryContainer
-                                              : theme.colorScheme.onTertiaryContainer,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        controller.peopleAhead.value == 0
-                                            ? 'Giliran Anda selanjutnya! Silakan bersiap.'
-                                            : 'Ada ${controller.peopleAhead.value} antrean di depan Anda.',
-                                        style: theme.textTheme.labelSmall?.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                          color: controller.peopleAhead.value == 0
-                                              ? theme.colorScheme.primary
-                                              : theme.colorScheme.tertiary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )),
+                          ),
                           const SizedBox(height: 24),
                           Obx(
                             () => Column(
@@ -360,7 +387,8 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
 
               // --- TOMBOL PEMBAYARAN (Hanya muncul jika status completed/selesai) ---
               Obx(() {
-                if (controller.status.value == 'completed' || controller.status.value == 'selesai') {
+                if (controller.status.value == 'completed' ||
+                    controller.status.value == 'selesai') {
                   return SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
@@ -378,7 +406,10 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
                           );
                         }
                       },
-                      icon: Icon(Icons.payment, color: theme.colorScheme.onPrimaryContainer),
+                      icon: Icon(
+                        Icons.payment,
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
                       label: Text(
                         'Lanjut ke Pembayaran',
                         style: theme.textTheme.titleMedium?.copyWith(
@@ -472,7 +503,13 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon, ThemeData theme, bool isDark) {
+  Widget _buildNavItem(
+    int index,
+    String label,
+    IconData icon,
+    ThemeData theme,
+    bool isDark,
+  ) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
@@ -514,4 +551,3 @@ class DigitalTicketView extends GetView<DigitalTicketController> {
     );
   }
 }
-

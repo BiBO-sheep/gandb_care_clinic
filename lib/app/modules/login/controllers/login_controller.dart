@@ -32,11 +32,14 @@ class LoginController extends GetxController {
         return;
       }
 
-      final response = await _apiService.post('auth/google', body: {
-        'email': googleUser.email,
-        'name': googleUser.displayName ?? '',
-        'google_id': googleUser.id,
-      });
+      final response = await _apiService.post(
+        'auth/google',
+        body: {
+          'email': googleUser.email,
+          'name': googleUser.displayName ?? '',
+          'google_id': googleUser.id,
+        },
+      );
 
       final data = jsonDecode(response.body);
       String token = data['access_token'];
@@ -47,14 +50,19 @@ class LoginController extends GetxController {
 
       // Cek kelengkapan data
       final userData = data['data'];
-      if (userData['phone'] == null || userData['phone'].toString().isEmpty || 
-          userData['address'] == null || userData['address'].toString().isEmpty) {
+      if (userData['phone'] == null ||
+          userData['phone'].toString().isEmpty ||
+          userData['address'] == null ||
+          userData['address'].toString().isEmpty) {
         Get.offAllNamed(Routes.COMPLETE_PROFILE);
       } else {
         Get.offAllNamed(Routes.HOME);
       }
     } catch (e) {
-      AppSnackbar.error('Login Gagal', e.toString().replaceAll('Exception: ', ''));
+      AppSnackbar.error(
+        'Login Gagal',
+        e.toString().replaceAll('Exception: ', ''),
+      );
     } finally {
       isGoogleLoading.value = false;
     }
@@ -62,17 +70,23 @@ class LoginController extends GetxController {
 
   Future<void> login() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      AppSnackbar.warning('Form Tidak Lengkap', 'Email dan kata sandi tidak boleh kosong.');
+      AppSnackbar.warning(
+        'Form Tidak Lengkap',
+        'Email dan kata sandi tidak boleh kosong.',
+      );
       return;
     }
 
     isLoading.value = true;
 
     try {
-      final response = await _apiService.post('login', body: {
-        'email': emailController.text,
-        'password': passwordController.text,
-      });
+      final response = await _apiService.post(
+        'login',
+        body: {
+          'email': emailController.text,
+          'password': passwordController.text,
+        },
+      );
 
       final data = jsonDecode(response.body);
       String token = data['access_token'];
@@ -83,7 +97,10 @@ class LoginController extends GetxController {
 
       Get.offAllNamed(Routes.HOME);
     } catch (e) {
-      AppSnackbar.error('Login Gagal', e.toString().replaceAll('Exception: ', ''));
+      AppSnackbar.error(
+        'Login Gagal',
+        e.toString().replaceAll('Exception: ', ''),
+      );
     } finally {
       isLoading.value = false;
     }

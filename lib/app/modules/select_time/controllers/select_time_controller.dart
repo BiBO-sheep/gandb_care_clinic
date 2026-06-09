@@ -21,7 +21,18 @@ class SelectTimeController extends GetxController {
   final ApiService _apiService = ApiService();
 
   final List<String> monthNames = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
 
   @override
@@ -96,7 +107,10 @@ class SelectTimeController extends GetxController {
     if (status != 'booked') {
       selectedTime.value = time;
     } else {
-      AppSnackbar.warning('Jadwal Tidak Tersedia', 'Waktu ini sudah dipesan oleh pasien lain.');
+      AppSnackbar.warning(
+        'Jadwal Tidak Tersedia',
+        'Waktu ini sudah dipesan oleh pasien lain.',
+      );
     }
   }
 
@@ -121,34 +135,48 @@ class SelectTimeController extends GetxController {
   var isFetchingSlots = false.obs;
 
   void _initBaseSlots() {
-    timeSlots.value = _baseTimeSlots.map((s) => {...s, 'status': 'available'}).toList();
+    timeSlots.value = _baseTimeSlots
+        .map((s) => {...s, 'status': 'available'})
+        .toList();
   }
 
   Future<void> fetchAvailableSlots() async {
     try {
       isFetchingSlots.value = true;
       String dateStr = getFormattedSelectedDate();
-      final response = await _apiService.get('available-slots?tanggal=$dateStr&poli_id=${clinicId.value}');
+      final response = await _apiService.get(
+        'available-slots?tanggal=$dateStr&poli_id=${clinicId.value}',
+      );
       final responseData = jsonDecode(response.body);
-      
+
       if (responseData['success'] == true) {
         List slotsFromApi = responseData['data'] ?? [];
         DateTime now = DateTime.now();
-        bool isToday = selectedDate.value.year == now.year &&
-                       selectedDate.value.month == now.month &&
-                       selectedDate.value.day == now.day;
+        bool isToday =
+            selectedDate.value.year == now.year &&
+            selectedDate.value.month == now.month &&
+            selectedDate.value.day == now.day;
 
         List<Map<String, dynamic>> newSlots = [];
         for (var baseSlot in _baseTimeSlots) {
           String jam = baseSlot['time'] as String;
-          var apiSlot = slotsFromApi.firstWhere((s) => s['jam'] == jam, orElse: () => null);
+          var apiSlot = slotsFromApi.firstWhere(
+            (s) => s['jam'] == jam,
+            orElse: () => null,
+          );
           String status = apiSlot != null ? apiSlot['status'] : 'available';
 
           if (isToday && status != 'booked') {
             List<String> parts = jam.split(':');
             int hour = int.parse(parts[0]);
             int minute = int.parse(parts[1]);
-            DateTime slotTime = DateTime(now.year, now.month, now.day, hour, minute);
+            DateTime slotTime = DateTime(
+              now.year,
+              now.month,
+              now.day,
+              hour,
+              minute,
+            );
             if (slotTime.isBefore(now)) {
               status = 'booked';
             }
@@ -171,26 +199,32 @@ class SelectTimeController extends GetxController {
 
   void continueToPayment() {
     if (selectedTime.value.isEmpty) {
-      AppSnackbar.warning('Jadwal Belum Dipilih', 'Silakan pilih waktu kunjungan Anda.');
+      AppSnackbar.warning(
+        'Jadwal Belum Dipilih',
+        'Silakan pilih waktu kunjungan Anda.',
+      );
       return;
     }
 
     if (dokterId.value == 0) {
-      AppSnackbar.info('Mohon Tunggu', 'Data dokter sedang dimuat atau tidak tersedia.');
+      AppSnackbar.info(
+        'Mohon Tunggu',
+        'Data dokter sedang dimuat atau tidak tersedia.',
+      );
       return;
     }
 
     Get.toNamed(
-        '/confirm-appointment',
-        arguments: {
-          'poli_id': clinicId.value,
-          'clinic_name': clinicName.value,
-          'date': getFormattedSelectedDate(),
-          'time': selectedTime.value,
-          'dokter_id': dokterId.value,
-          'doctor_name': doctorName.value,
-          'price': estFee.value,
-        },
-      );
+      '/confirm-appointment',
+      arguments: {
+        'poli_id': clinicId.value,
+        'clinic_name': clinicName.value,
+        'date': getFormattedSelectedDate(),
+        'time': selectedTime.value,
+        'dokter_id': dokterId.value,
+        'doctor_name': doctorName.value,
+        'price': estFee.value,
+      },
+    );
   }
 }

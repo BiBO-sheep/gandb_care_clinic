@@ -29,7 +29,10 @@ class CompleteProfileController extends GetxController {
 
   Future<void> submitProfile() async {
     if (phoneController.text.isEmpty || addressController.text.isEmpty) {
-      AppSnackbar.warning('Data Belum Lengkap', 'Nomor Handphone dan Alamat wajib diisi.');
+      AppSnackbar.warning(
+        'Data Belum Lengkap',
+        'Nomor Handphone dan Alamat wajib diisi.',
+      );
       return;
     }
 
@@ -39,8 +42,8 @@ class CompleteProfileController extends GetxController {
       final Map<String, dynamic> body = {
         // Karena ini endpoint /profile/update, dan nama/email required di validation backend,
         // Tapi kita anggap saja backend sudah mengabaikan validation rule tersebut jika field tidak dikirim.
-        // Wait, di backend: 'name' => 'required', 'email' => 'required'. 
-        // Oh, ProfileController meminta 'name' dan 'email' selalu ada. 
+        // Wait, di backend: 'name' => 'required', 'email' => 'required'.
+        // Oh, ProfileController meminta 'name' dan 'email' selalu ada.
         // Mari kita panggil get profile dulu, lalu kirim kembali name dan emailnya.
       };
 
@@ -53,9 +56,12 @@ class CompleteProfileController extends GetxController {
       body['phone'] = phoneController.text;
       body['address'] = addressController.text;
 
-      if (selectedBloodType.value != null) body['blood_type'] = selectedBloodType.value!;
-      if (heightController.text.isNotEmpty) body['height'] = heightController.text;
-      if (weightController.text.isNotEmpty) body['weight'] = weightController.text;
+      if (selectedBloodType.value != null)
+        body['blood_type'] = selectedBloodType.value!;
+      if (heightController.text.isNotEmpty)
+        body['height'] = heightController.text;
+      if (weightController.text.isNotEmpty)
+        body['weight'] = weightController.text;
 
       final response = await _apiService.put('profile/update', body: body);
 
@@ -64,7 +70,10 @@ class CompleteProfileController extends GetxController {
         Get.offAllNamed(Routes.HOME);
       } else {
         final data = jsonDecode(response.body);
-        AppSnackbar.error('Gagal', data['message'] ?? 'Gagal menyimpan profil.');
+        AppSnackbar.error(
+          'Gagal',
+          data['message'] ?? 'Gagal menyimpan profil.',
+        );
       }
     } catch (e) {
       AppSnackbar.error('Error', 'Terjadi kesalahan saat menyimpan profil.');

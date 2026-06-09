@@ -9,7 +9,7 @@ class OnboardingView extends GetView<OnboardingController> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
@@ -17,7 +17,10 @@ class OnboardingView extends GetView<OnboardingController> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 40.0,
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -28,7 +31,11 @@ class OnboardingView extends GetView<OnboardingController> {
                         color: theme.colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: Icon(Icons.medical_services, color: theme.colorScheme.onPrimaryContainer, size: 36),
+                      child: Icon(
+                        Icons.medical_services,
+                        color: theme.colorScheme.onPrimaryContainer,
+                        size: 36,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -51,13 +58,16 @@ class OnboardingView extends GetView<OnboardingController> {
                             decoration: BoxDecoration(
                               color: theme.colorScheme.surface,
                               borderRadius: BorderRadius.circular(32),
-                              boxShadow: isDark ? [] : [
-                                BoxShadow(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.06),
-                                  blurRadius: 32,
-                                  offset: const Offset(0, 12),
-                                ),
-                              ],
+                              boxShadow: isDark
+                                  ? []
+                                  : [
+                                      BoxShadow(
+                                        color: theme.colorScheme.primary
+                                            .withValues(alpha: 0.06),
+                                        blurRadius: 32,
+                                        offset: const Offset(0, 12),
+                                      ),
+                                    ],
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(32),
@@ -125,7 +135,10 @@ class OnboardingView extends GetView<OnboardingController> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 24.0,
+              ),
               child: Column(
                 children: [
                   Obx(
@@ -133,21 +146,28 @@ class OnboardingView extends GetView<OnboardingController> {
                       width: double.infinity,
                       height: 60,
                       child: ElevatedButton(
-                        onPressed: controller.isLoading.value ? null : controller.onGetStartedPressed,
+                        onPressed: controller.isLoading.value
+                            ? null
+                            : controller.onGetStartedPressed,
                         style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
                         ),
                         child: controller.isLoading.value
-                            ? const CircularProgressIndicator(color: Colors.white)
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
                             : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
                                     'Get Started',
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
                                   const SizedBox(width: 8),
                                   const Icon(Icons.arrow_forward),
@@ -158,24 +178,24 @@ class OnboardingView extends GetView<OnboardingController> {
                   ),
                   const SizedBox(height: 16),
                   Row(
-                     mainAxisAlignment: MainAxisAlignment.center,
-                     children: [
-                       Text(
-                         'Already have an account? ',
-                         style: theme.textTheme.bodyMedium,
-                       ),
-                       GestureDetector(
-                         onTap: controller.goToLogin,
-                         child: Text(
-                           'Log In',
-                           style: theme.textTheme.bodyMedium?.copyWith(
-                             fontWeight: FontWeight.bold,
-                             color: theme.colorScheme.primary,
-                           ),
-                         ),
-                       ),
-                     ],
-                   ),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account? ',
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      GestureDetector(
+                        onTap: controller.goToLogin,
+                        child: Text(
+                          'Log In',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -183,14 +203,8 @@ class OnboardingView extends GetView<OnboardingController> {
                       Container(
                         width: 32,
                         height: 6,
-                        decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: BorderRadius.circular(3)),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        width: 6,
-                        height: 6,
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white12 : theme.colorScheme.surfaceContainerHighest,
+                          color: theme.colorScheme.primary,
                           borderRadius: BorderRadius.circular(3),
                         ),
                       ),
@@ -199,7 +213,20 @@ class OnboardingView extends GetView<OnboardingController> {
                         width: 6,
                         height: 6,
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white12 : theme.colorScheme.surfaceContainerHighest,
+                          color: isDark
+                              ? Colors.white12
+                              : theme.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? Colors.white12
+                              : theme.colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(3),
                         ),
                       ),
@@ -227,10 +254,18 @@ class OnboardingView extends GetView<OnboardingController> {
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isDark ? Colors.white10 : Colors.white.withValues(alpha: 0.5)),
-        boxShadow: isDark ? [] : [
-          BoxShadow(color: theme.colorScheme.primary.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 4)),
-        ],
+        border: Border.all(
+          color: isDark ? Colors.white10 : Colors.white.withValues(alpha: 0.5),
+        ),
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

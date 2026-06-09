@@ -25,7 +25,11 @@ class RegisterView extends GetView<RegisterController> {
                 color: theme.colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(Icons.medical_services, color: theme.colorScheme.onPrimaryContainer, size: 18),
+              child: Icon(
+                Icons.medical_services,
+                color: theme.colorScheme.onPrimaryContainer,
+                size: 18,
+              ),
             ),
             const SizedBox(width: 8),
             Text(
@@ -70,46 +74,77 @@ class RegisterView extends GetView<RegisterController> {
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(24),
-                  boxShadow: isDark ? [] : [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4)),
-                  ],
+                  boxShadow: isDark
+                      ? []
+                      : [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.02),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInputField('FULL NAME', Icons.person, 'e.g. Julian Montgomery', controller.nameController, theme),
-                    const SizedBox(height: 20),
-                    _buildInputField('PHONE NUMBER', Icons.call, '+1 (555) 000-0000', controller.phoneController, theme, isPhone: true),
-                    const SizedBox(height: 20),
-                    _buildInputField('EMAIL ADDRESS', Icons.mail, 'julian@example.com', controller.emailController, theme, isEmail: true),
-                    const SizedBox(height: 20),
-                    Obx(() => _buildInputField(
-                      'PASSWORD',
-                      Icons.lock,
-                      '••••••••',
-                      controller.passwordController,
+                    _buildInputField(
+                      'FULL NAME',
+                      Icons.person,
+                      'e.g. Julian Montgomery',
+                      controller.nameController,
                       theme,
-                      isPassword: true,
-                      obscureText: !controller.isPasswordVisible.value,
-                      onToggleVisibility: () => controller.isPasswordVisible.toggle(),
-                    )),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildInputField(
+                      'PHONE NUMBER',
+                      Icons.call,
+                      '+1 (555) 000-0000',
+                      controller.phoneController,
+                      theme,
+                      isPhone: true,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildInputField(
+                      'EMAIL ADDRESS',
+                      Icons.mail,
+                      'julian@example.com',
+                      controller.emailController,
+                      theme,
+                      isEmail: true,
+                    ),
+                    const SizedBox(height: 20),
+                    Obx(
+                      () => _buildInputField(
+                        'PASSWORD',
+                        Icons.lock,
+                        '••••••••',
+                        controller.passwordController,
+                        theme,
+                        isPassword: true,
+                        obscureText: !controller.isPasswordVisible.value,
+                        onToggleVisibility: () =>
+                            controller.isPasswordVisible.toggle(),
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     _buildLabel('BLOOD TYPE', theme),
                     const SizedBox(height: 8),
                     GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 1.2,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 1.2,
+                          ),
                       itemCount: controller.bloodTypes.length,
                       itemBuilder: (context, index) {
                         final type = controller.bloodTypes[index];
                         return Obx(() {
-                          final isSelected = controller.selectedBloodType.value == type;
+                          final isSelected =
+                              controller.selectedBloodType.value == type;
                           return GestureDetector(
                             onTap: () => controller.selectBloodType(type),
                             child: AnimatedContainer(
@@ -120,7 +155,9 @@ class RegisterView extends GetView<RegisterController> {
                                     : theme.colorScheme.surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: isSelected ? theme.colorScheme.primary : Colors.transparent,
+                                  color: isSelected
+                                      ? theme.colorScheme.primary
+                                      : Colors.transparent,
                                   width: 2,
                                 ),
                               ),
@@ -129,7 +166,9 @@ class RegisterView extends GetView<RegisterController> {
                                 type,
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: isSelected ? theme.colorScheme.onPrimaryContainer : theme.colorScheme.onSurface,
+                                  color: isSelected
+                                      ? theme.colorScheme.onPrimaryContainer
+                                      : theme.colorScheme.onSurface,
                                 ),
                               ),
                             ),
@@ -150,8 +189,13 @@ class RegisterView extends GetView<RegisterController> {
                               onChanged: controller.toggleTerms,
                               activeColor: theme.colorScheme.secondary,
                               checkColor: theme.colorScheme.onSecondary,
-                              side: BorderSide(color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                              side: BorderSide(
+                                color: theme.colorScheme.onSurfaceVariant
+                                    .withValues(alpha: 0.5),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
                             ),
                           ),
                         ),
@@ -172,7 +216,10 @@ class RegisterView extends GetView<RegisterController> {
                                     color: theme.colorScheme.secondary,
                                   ),
                                 ),
-                                const TextSpan(text: ' and consent to medical data processing for clinic purposes.'),
+                                const TextSpan(
+                                  text:
+                                      ' and consent to medical data processing for clinic purposes.',
+                                ),
                               ],
                             ),
                           ),
@@ -185,9 +232,18 @@ class RegisterView extends GetView<RegisterController> {
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: controller.isLoading.value ? null : controller.register,
+                          onPressed: controller.isLoading.value
+                              ? null
+                              : controller.register,
                           child: controller.isLoading.value
-                              ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3))
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 3,
+                                  ),
+                                )
                               : const Text('Create Patient Account'),
                         ),
                       ),
@@ -195,12 +251,34 @@ class RegisterView extends GetView<RegisterController> {
                     const SizedBox(height: 24),
                     Row(
                       children: [
-                        Expanded(child: Divider(color: isDark ? Colors.white12 : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.2))),
+                        Expanded(
+                          child: Divider(
+                            color: isDark
+                                ? Colors.white12
+                                : theme.colorScheme.onSurfaceVariant.withValues(
+                                    alpha: 0.2,
+                                  ),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text('OR', style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5))),
+                          child: Text(
+                            'OR',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant
+                                  .withValues(alpha: 0.5),
+                            ),
+                          ),
                         ),
-                        Expanded(child: Divider(color: isDark ? Colors.white12 : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.2))),
+                        Expanded(
+                          child: Divider(
+                            color: isDark
+                                ? Colors.white12
+                                : theme.colorScheme.onSurfaceVariant.withValues(
+                                    alpha: 0.2,
+                                  ),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -209,7 +287,9 @@ class RegisterView extends GetView<RegisterController> {
                         width: double.infinity,
                         height: 56,
                         child: OutlinedButton(
-                          onPressed: controller.isGoogleLoading.value ? null : controller.signInWithGoogle,
+                          onPressed: controller.isGoogleLoading.value
+                              ? null
+                              : controller.signInWithGoogle,
                           style: OutlinedButton.styleFrom(
                             backgroundColor: theme.colorScheme.surface,
                           ),
@@ -217,11 +297,27 @@ class RegisterView extends GetView<RegisterController> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               controller.isGoogleLoading.value
-                                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                                  : Image.asset('assets/images/google_logo.png', width: 24, height: 24, errorBuilder: (c, e, s) => const Icon(Icons.g_mobiledata, size: 24)),
+                                  ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : Image.asset(
+                                      'assets/images/google_logo.png',
+                                      width: 24,
+                                      height: 24,
+                                      errorBuilder: (c, e, s) => const Icon(
+                                        Icons.g_mobiledata,
+                                        size: 24,
+                                      ),
+                                    ),
                               const SizedBox(width: 12),
                               Text(
-                                controller.isGoogleLoading.value ? 'Connecting...' : 'Continue with Google',
+                                controller.isGoogleLoading.value
+                                    ? 'Connecting...'
+                                    : 'Continue with Google',
                                 style: theme.textTheme.titleSmall?.copyWith(
                                   color: theme.colorScheme.onSurface,
                                 ),
@@ -252,7 +348,8 @@ class RegisterView extends GetView<RegisterController> {
                     child: _buildInfoCard(
                       icon: Icons.speed,
                       title: 'Fast Intake',
-                      desc: 'Skip the waiting room paperwork on your first visit.',
+                      desc:
+                          'Skip the waiting room paperwork on your first visit.',
                       bgColor: theme.colorScheme.primaryContainer,
                       iconColor: theme.colorScheme.onPrimaryContainer,
                       theme: theme,
@@ -299,16 +396,23 @@ class RegisterView extends GetView<RegisterController> {
         TextField(
           controller: controller,
           style: theme.textTheme.bodyLarge,
-          keyboardType: isEmail ? TextInputType.emailAddress : (isPhone ? TextInputType.phone : TextInputType.text),
+          keyboardType: isEmail
+              ? TextInputType.emailAddress
+              : (isPhone ? TextInputType.phone : TextInputType.text),
           obscureText: obscureText,
           decoration: InputDecoration(
             hintText: hint,
-            prefixIcon: Icon(icon, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+            prefixIcon: Icon(
+              icon,
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+            ),
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(
                       obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
                     ),
                     onPressed: onToggleVisibility,
                   )
@@ -329,7 +433,10 @@ class RegisterView extends GetView<RegisterController> {
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -337,7 +444,10 @@ class RegisterView extends GetView<RegisterController> {
           const SizedBox(height: 8),
           Text(
             title,
-            style: theme.textTheme.titleSmall?.copyWith(color: iconColor, fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: iconColor,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 4),
           Text(

@@ -34,10 +34,15 @@ class NotificationsView extends GetView<NotificationsController> {
       body: SafeArea(
         child: Obx(() {
           if (controller.isLoading.value) {
-            return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
+            return Center(
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+              ),
+            );
           }
 
-          if (controller.todayNotifs.isEmpty && controller.earlierNotifs.isEmpty) {
+          if (controller.todayNotifs.isEmpty &&
+              controller.earlierNotifs.isEmpty) {
             return Center(
               child: Text(
                 'Belum ada notifikasi.',
@@ -67,9 +72,14 @@ class NotificationsView extends GetView<NotificationsController> {
                     GestureDetector(
                       onTap: controller.markAllAsRead,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                          color: theme.colorScheme.primaryContainer.withValues(
+                            alpha: 0.5,
+                          ),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -87,14 +97,24 @@ class NotificationsView extends GetView<NotificationsController> {
                 if (controller.todayNotifs.isNotEmpty) ...[
                   _buildSectionHeader('TODAY', theme),
                   Column(
-                    children: controller.todayNotifs.map((notif) => _buildDynamicNotifCard(notif, theme, isDark)).toList(),
+                    children: controller.todayNotifs
+                        .map(
+                          (notif) =>
+                              _buildDynamicNotifCard(notif, theme, isDark),
+                        )
+                        .toList(),
                   ),
                 ],
                 if (controller.earlierNotifs.isNotEmpty) ...[
                   const SizedBox(height: 16),
                   _buildSectionHeader('EARLIER', theme),
                   Column(
-                    children: controller.earlierNotifs.map((notif) => _buildDynamicNotifCard(notif, theme, isDark)).toList(),
+                    children: controller.earlierNotifs
+                        .map(
+                          (notif) =>
+                              _buildDynamicNotifCard(notif, theme, isDark),
+                        )
+                        .toList(),
                   ),
                 ],
                 const SizedBox(height: 120),
@@ -103,7 +123,9 @@ class NotificationsView extends GetView<NotificationsController> {
           );
         }),
       ),
-      bottomNavigationBar: isFromMainLayout ? null : _buildBottomNav(theme, isDark),
+      bottomNavigationBar: isFromMainLayout
+          ? null
+          : _buildBottomNav(theme, isDark),
     );
   }
 
@@ -121,13 +143,22 @@ class NotificationsView extends GetView<NotificationsController> {
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(child: Container(height: 1, color: theme.colorScheme.surfaceContainerHighest)),
+          Expanded(
+            child: Container(
+              height: 1,
+              color: theme.colorScheme.surfaceContainerHighest,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildDynamicNotifCard(Map<String, dynamic> notif, ThemeData theme, bool isDark) {
+  Widget _buildDynamicNotifCard(
+    Map<String, dynamic> notif,
+    ThemeData theme,
+    bool isDark,
+  ) {
     String type = notif['type'] ?? 'info';
     bool isRead = notif['isRead'] ?? false;
     IconData icon;
@@ -152,14 +183,30 @@ class NotificationsView extends GetView<NotificationsController> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark 
-          ? (isRead ? Colors.transparent : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5))
-          : (isRead ? theme.colorScheme.surface.withValues(alpha: 0.5) : theme.colorScheme.surface),
+        color: isDark
+            ? (isRead
+                  ? Colors.transparent
+                  : theme.colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.5,
+                    ))
+            : (isRead
+                  ? theme.colorScheme.surface.withValues(alpha: 0.5)
+                  : theme.colorScheme.surface),
         borderRadius: BorderRadius.circular(12),
-        border: isRead ? Border.all(color: theme.colorScheme.surfaceContainerHighest) : Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.1)),
-        boxShadow: isRead || isDark ? [] : [
-          BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
-        ],
+        border: isRead
+            ? Border.all(color: theme.colorScheme.surfaceContainerHighest)
+            : Border.all(
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+              ),
+        boxShadow: isRead || isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: theme.colorScheme.shadow.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,7 +216,10 @@ class NotificationsView extends GetView<NotificationsController> {
               margin: const EdgeInsets.only(top: 20, right: 8),
               width: 6,
               height: 6,
-              decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary,
+                shape: BoxShape.circle,
+              ),
             )
           else
             const SizedBox(width: 14),
@@ -191,7 +241,9 @@ class NotificationsView extends GetView<NotificationsController> {
                       child: Text(
                         notif['title'],
                         style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: isRead ? FontWeight.w600 : FontWeight.bold,
+                          fontWeight: isRead
+                              ? FontWeight.w600
+                              : FontWeight.bold,
                           color: theme.colorScheme.onSurface,
                         ),
                       ),
@@ -222,37 +274,50 @@ class NotificationsView extends GetView<NotificationsController> {
 
   Widget _buildBottomNav(ThemeData theme, bool isDark) {
     return ClipRRect(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(40),
+        topRight: Radius.circular(40),
+      ),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           height: 90,
           color: theme.scaffoldBackgroundColor.withValues(alpha: 0.85),
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Obx(() => Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildNavItem(0, 'Home', Icons.home, theme, isDark),
-              _buildNavItem(1, 'History', Icons.history, theme, isDark),
-              _buildNavItem(2, 'Notifs', Icons.notifications, theme, isDark),
-              _buildNavItem(3, 'Profile', Icons.person, theme, isDark),
-            ],
-          )),
+          child: Obx(
+            () => Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildNavItem(0, 'Home', Icons.home, theme, isDark),
+                _buildNavItem(1, 'History', Icons.history, theme, isDark),
+                _buildNavItem(2, 'Notifs', Icons.notifications, theme, isDark),
+                _buildNavItem(3, 'Profile', Icons.person, theme, isDark),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon, ThemeData theme, bool isDark) {
+  Widget _buildNavItem(
+    int index,
+    String label,
+    IconData icon,
+    ThemeData theme,
+    bool isDark,
+  ) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         width: 76,
-          padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3) : Colors.transparent,
+          color: isSelected
+              ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
@@ -260,7 +325,9 @@ class NotificationsView extends GetView<NotificationsController> {
           children: [
             Icon(
               icon,
-              color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -268,7 +335,9 @@ class NotificationsView extends GetView<NotificationsController> {
               label.toUpperCase(),
               style: theme.textTheme.labelSmall?.copyWith(
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                 letterSpacing: 1,
               ),
             ),

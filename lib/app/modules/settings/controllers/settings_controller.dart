@@ -35,11 +35,21 @@ class SettingsController extends GetxController {
     super.onInit();
     nameController.text = profileCtrl.userName.value;
     emailController.text = profileCtrl.userEmail.value;
-    phoneController.text = profileCtrl.userPhone.value == '-' ? '' : profileCtrl.userPhone.value;
-    addressController.text = profileCtrl.userAddress.value == '-' ? '' : profileCtrl.userAddress.value;
-    heightController.text = profileCtrl.userHeight.value == '-' ? '' : profileCtrl.userHeight.value;
-    weightController.text = profileCtrl.userWeight.value == '-' ? '' : profileCtrl.userWeight.value;
-    bloodTypeController.text = profileCtrl.userBloodType.value == '-' ? '' : profileCtrl.userBloodType.value;
+    phoneController.text = profileCtrl.userPhone.value == '-'
+        ? ''
+        : profileCtrl.userPhone.value;
+    addressController.text = profileCtrl.userAddress.value == '-'
+        ? ''
+        : profileCtrl.userAddress.value;
+    heightController.text = profileCtrl.userHeight.value == '-'
+        ? ''
+        : profileCtrl.userHeight.value;
+    weightController.text = profileCtrl.userWeight.value == '-'
+        ? ''
+        : profileCtrl.userWeight.value;
+    bloodTypeController.text = profileCtrl.userBloodType.value == '-'
+        ? ''
+        : profileCtrl.userBloodType.value;
     isDarkMode.value = ThemeService.to.theme == ThemeMode.dark;
   }
 
@@ -63,25 +73,37 @@ class SettingsController extends GetxController {
   Future<void> updateProfile() async {
     isLoading.value = true;
     try {
-      final response = await _apiService.put('profile/update', body: {
-        'name': nameController.text,
-        'email': emailController.text,
-        'phone': phoneController.text,
-        'address': addressController.text,
-        'height': heightController.text,
-        'weight': weightController.text,
-        'blood_type': bloodTypeController.text,
-      });
+      final response = await _apiService.put(
+        'profile/update',
+        body: {
+          'name': nameController.text,
+          'email': emailController.text,
+          'phone': phoneController.text,
+          'address': addressController.text,
+          'height': heightController.text,
+          'weight': weightController.text,
+          'blood_type': bloodTypeController.text,
+        },
+      );
 
       if (response.statusCode == 200) {
         await profileCtrl.fetchUserProfile();
-        AppSnackbar.success('Profil Diperbarui', 'Data profil Anda berhasil disimpan.');
+        AppSnackbar.success(
+          'Profil Diperbarui',
+          'Data profil Anda berhasil disimpan.',
+        );
       } else {
         final data = jsonDecode(response.body);
-        AppSnackbar.error('Pembaruan Gagal', data['message'] ?? 'Terjadi kesalahan.');
+        AppSnackbar.error(
+          'Pembaruan Gagal',
+          data['message'] ?? 'Terjadi kesalahan.',
+        );
       }
     } catch (e) {
-      AppSnackbar.error('Terjadi Kesalahan', e.toString().replaceAll('Exception: ', ''));
+      AppSnackbar.error(
+        'Terjadi Kesalahan',
+        e.toString().replaceAll('Exception: ', ''),
+      );
     } finally {
       isLoading.value = false;
     }
@@ -92,9 +114,12 @@ class SettingsController extends GetxController {
   void toggleWellnessTips(bool value) => wellnessTips.value = value;
   void toggleBiometric(bool value) => biometricLogin.value = value;
 
-  void changePassword() => AppSnackbar.info('Keamanan', 'Fitur ubah kata sandi segera hadir.');
-  void openPrivacyPolicy() => AppSnackbar.info('Legal', 'Membuka Kebijakan Privasi...');
-  void openTerms() => AppSnackbar.info('Legal', 'Membuka Syarat & Ketentuan...');
+  void changePassword() =>
+      AppSnackbar.info('Keamanan', 'Fitur ubah kata sandi segera hadir.');
+  void openPrivacyPolicy() =>
+      AppSnackbar.info('Legal', 'Membuka Kebijakan Privasi...');
+  void openTerms() =>
+      AppSnackbar.info('Legal', 'Membuka Syarat & Ketentuan...');
 
   void signOut() {
     Get.defaultDialog(
@@ -111,4 +136,3 @@ class SettingsController extends GetxController {
     );
   }
 }
-

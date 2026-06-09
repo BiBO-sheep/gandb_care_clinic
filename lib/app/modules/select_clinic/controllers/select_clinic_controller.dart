@@ -51,12 +51,17 @@ class SelectClinicController extends GetxController {
         },
       );
     } else {
-      AppSnackbar.warning('Belum Tersedia', 'Poli $uiClinicName belum tersedia di klinik saat ini.');
+      AppSnackbar.warning(
+        'Belum Tersedia',
+        'Poli $uiClinicName belum tersedia di klinik saat ini.',
+      );
     }
   }
 
   void callCenter() {
-    AppSnackbar.info('Layanan Pelanggan', 'Menyambungkan ke layanan pelanggan...');
+    AppSnackbar.info(
+      'Layanan Pelanggan',
+      'Menyambungkan ke layanan pelanggan...',
+    );
   }
 }
-

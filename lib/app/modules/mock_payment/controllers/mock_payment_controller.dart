@@ -54,26 +54,36 @@ class MockPaymentController extends GetxController {
       return;
     }
 
-    final inputAmount = int.tryParse(inputAmountController.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-    
+    final inputAmount =
+        int.tryParse(
+          inputAmountController.text.replaceAll(RegExp(r'[^0-9]'), ''),
+        ) ??
+        0;
+
     if (amount <= 0) {
-      AppSnackbar.error('Error', 'Total tagihan Rp 0. Tidak ada yang perlu dibayar atau tagihan belum valid.');
+      AppSnackbar.error(
+        'Error',
+        'Total tagihan Rp 0. Tidak ada yang perlu dibayar atau tagihan belum valid.',
+      );
       return;
     }
 
     if (inputAmount != amount) {
-      AppSnackbar.warning('Nominal Tidak Sesuai', 'Jumlah yang dimasukkan harus persis sama dengan total tagihan (Rp $amount).');
+      AppSnackbar.warning(
+        'Nominal Tidak Sesuai',
+        'Jumlah yang dimasukkan harus persis sama dengan total tagihan (Rp $amount).',
+      );
       return;
     }
 
     isProcessing.value = true;
-    
+
     try {
       final response = await _apiService.post(
         'simulate-payment-success/$invoiceId',
         body: {'payment_method': selectedMethod.value},
       );
-      
+
       final responseData = jsonDecode(response.body);
 
       if (responseData['success'] == true) {
@@ -94,12 +104,16 @@ class MockPaymentController extends GetxController {
           final invoiceController = Get.find<InvoiceController>();
           if (invoiceController.invoiceData.value != null) {
             invoiceController.invoiceData.value!['status'] = 'paid';
-            invoiceController.invoiceData.value!['payment_method'] = selectedMethod.value;
+            invoiceController.invoiceData.value!['payment_method'] =
+                selectedMethod.value;
             invoiceController.invoiceData.refresh(); // Memicu UI untuk update
           }
         }
       } else {
-        AppSnackbar.error('Gagal', responseData['message'] ?? 'Gagal mensimulasikan pembayaran.');
+        AppSnackbar.error(
+          'Gagal',
+          responseData['message'] ?? 'Gagal mensimulasikan pembayaran.',
+        );
       }
     } catch (e) {
       AppSnackbar.error('Error', e.toString().replaceAll('Exception: ', ''));

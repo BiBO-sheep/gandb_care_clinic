@@ -17,7 +17,7 @@ class DigitalTicketController extends GetxController {
   var service = '...'.obs;
   var dateTime = '...'.obs;
   var appointmentId = '0'.obs;
-  
+
   // Variabel untuk parsing tanggal
   String _rawDate = "";
   String _rawTime = "";
@@ -37,11 +37,11 @@ class DigitalTicketController extends GetxController {
       queueNumber.value = data['queue_number'] ?? 'A-00';
       patientName.value = data['patient_name'] ?? 'Patient';
       service.value = data['service'] ?? 'Clinic';
-      
+
       _rawDate = data['date'] ?? '';
       _rawTime = data['time'] ?? '';
       dateTime.value = "$_rawDate, $_rawTime";
-      
+
       appointmentId.value = data['id'].toString();
       status.value = data['status'] ?? 'confirmed';
     }
@@ -95,12 +95,13 @@ class DigitalTicketController extends GetxController {
         // Fallback jika format berbeda (misal Apr 28, 2026)
         start = DateTime.now().add(const Duration(hours: 1));
       }
-      
+
       final DateTime end = start.add(const Duration(hours: 1));
 
       final Event event = Event(
         title: "Jadwal Periksa - ${service.value}",
-        description: "Jadwal periksa untuk pasien ${patientName.value} di klinik G&B Care.",
+        description:
+            "Jadwal periksa untuk pasien ${patientName.value} di klinik G&B Care.",
         location: location,
         startDate: start,
         endDate: end,
@@ -113,13 +114,14 @@ class DigitalTicketController extends GetxController {
   }
 
   void shareTicket() {
-    final String shareText = "🏥 *Jadwal Konsultasi G&B Care Clinic*\n\n"
+    final String shareText =
+        "🏥 *Jadwal Konsultasi G&B Care Clinic*\n\n"
         "Pasien: ${patientName.value}\n"
         "Layanan: ${service.value}\n"
         "Jadwal: ${dateTime.value}\n"
         "Lokasi: $location\n\n"
         "Mohon datang 15 menit sebelum jadwal pemeriksaan. Terima kasih!";
-    
+
     Share.share(shareText);
   }
 }

@@ -20,23 +20,25 @@ class MainLayoutView extends GetView<MainLayoutController> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        const MethodChannel('com.example.gandb_care_clinic/app_retain').invokeMethod('sendToBackground');
+        const MethodChannel(
+          'com.example.gandb_care_clinic/app_retain',
+        ).invokeMethod('sendToBackground');
       },
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
-      extendBody: true,
-      body: Obx(() {
-        return IndexedStack(
-          index: controller.currentIndex.value,
-          children: const [
-            HomeView(isFromMainLayout: true),
-            PaymentHistoryView(isFromMainLayout: true),
-            NotificationsView(isFromMainLayout: true),
-            ProfileView(isFromMainLayout: true),
-          ],
-        );
-      }),
-      bottomNavigationBar: _buildBottomNav(theme, isDark),
+        extendBody: true,
+        body: Obx(() {
+          return IndexedStack(
+            index: controller.currentIndex.value,
+            children: const [
+              HomeView(isFromMainLayout: true),
+              PaymentHistoryView(isFromMainLayout: true),
+              NotificationsView(isFromMainLayout: true),
+              ProfileView(isFromMainLayout: true),
+            ],
+          );
+        }),
+        bottomNavigationBar: _buildBottomNav(theme, isDark),
       ),
     );
   }
@@ -67,7 +69,13 @@ class MainLayoutView extends GetView<MainLayoutController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon, ThemeData theme, bool isDark) {
+  Widget _buildNavItem(
+    int index,
+    String label,
+    IconData icon,
+    ThemeData theme,
+    bool isDark,
+  ) {
     return Obx(() {
       bool isSelected = controller.currentIndex.value == index;
       return GestureDetector(
@@ -99,7 +107,9 @@ class MainLayoutView extends GetView<MainLayoutController> {
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                   color: isSelected
                       ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                      : theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.5,
+                        ),
                   letterSpacing: 1,
                 ),
               ),

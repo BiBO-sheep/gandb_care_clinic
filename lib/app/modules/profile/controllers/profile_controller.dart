@@ -46,10 +46,7 @@ class ProfileController extends GetxController {
       logout(confirm: false);
     } catch (e) {
       debugPrint("ERROR PAS AMBIL DATA PROFILE: $e");
-      Get.snackbar(
-        'Error Koneksi',
-        e.toString().replaceAll('Exception: ', ''),
-      );
+      Get.snackbar('Error Koneksi', e.toString().replaceAll('Exception: ', ''));
     } finally {
       isLoading.value = false;
     }
@@ -63,9 +60,7 @@ class ProfileController extends GetxController {
 
     Get.dialog(
       Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         elevation: 0,
         backgroundColor: Colors.transparent,
         child: Container(
@@ -87,7 +82,9 @@ class ProfileController extends GetxController {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Get.theme.colorScheme.errorContainer.withValues(alpha: 0.5),
+                  color: Get.theme.colorScheme.errorContainer.withValues(
+                    alpha: 0.5,
+                  ),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -187,4 +184,3 @@ class ProfileController extends GetxController {
     }
   }
 }
-

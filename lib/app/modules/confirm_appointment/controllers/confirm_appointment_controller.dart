@@ -35,12 +35,15 @@ class ConfirmAppointmentController extends GetxController {
     isConfirming.value = true;
 
     try {
-      final response = await _apiService.post('appointments', body: {
-        'poli_id': poliId.toString(),
-        'dokter_id': dokterId.toString(),
-        'tanggal': date,
-        'jam': time,
-      });
+      final response = await _apiService.post(
+        'appointments',
+        body: {
+          'poli_id': poliId.toString(),
+          'dokter_id': dokterId.toString(),
+          'tanggal': date,
+          'jam': time,
+        },
+      );
 
       final responseData = jsonDecode(response.body);
       final appointment = responseData['data'];
@@ -87,4 +90,3 @@ class ConfirmAppointmentController extends GetxController {
     Get.back();
   }
 }
-

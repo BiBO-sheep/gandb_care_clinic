@@ -12,7 +12,8 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
     final dynamic record = Get.arguments ?? {};
     final List<dynamic> prescriptions = record['prescriptions'] ?? [];
     final String diagnosis = record['diagnosis'] ?? 'Tidak ada diagnosis';
-    final String doctorName = record['doctor']?['name'] ?? 'Dokter tidak tersedia';
+    final String doctorName =
+        record['doctor']?['name'] ?? 'Dokter tidak tersedia';
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -81,7 +82,11 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.medical_services, color: theme.colorScheme.secondary, size: 20),
+                        Icon(
+                          Icons.medical_services,
+                          color: theme.colorScheme.secondary,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'DIAGNOSIS',
@@ -103,11 +108,20 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Divider(color: theme.colorScheme.secondary.withValues(alpha: 0.2), height: 1),
+                      child: Divider(
+                        color: theme.colorScheme.secondary.withValues(
+                          alpha: 0.2,
+                        ),
+                        height: 1,
+                      ),
                     ),
                     Row(
                       children: [
-                        Icon(Icons.person, color: theme.colorScheme.secondary, size: 20),
+                        Icon(
+                          Icons.person,
+                          color: theme.colorScheme.secondary,
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'DOKTER',
@@ -137,7 +151,13 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                     padding: const EdgeInsets.symmetric(vertical: 40),
                     child: Column(
                       children: [
-                        Icon(Icons.medical_information_outlined, size: 60, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3)),
+                        Icon(
+                          Icons.medical_information_outlined,
+                          size: 60,
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.3,
+                          ),
+                        ),
                         const SizedBox(height: 16),
                         Text(
                           'Tidak ada resep obat',
@@ -150,7 +170,9 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                   ),
                 )
               else
-                ...prescriptions.map((med) => _buildMedicineTile(med, theme, isDark)),
+                ...prescriptions.map(
+                  (med) => _buildMedicineTile(med, theme, isDark),
+                ),
               const SizedBox(height: 100),
             ],
           ),
@@ -166,13 +188,15 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: isDark ? [] : [
-          BoxShadow(
-            color: theme.colorScheme.shadow.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: theme.colorScheme.shadow.withValues(alpha: 0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
         border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
       ),
       child: Row(
@@ -205,7 +229,13 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.science, size: 14, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+                    Icon(
+                      Icons.science,
+                      size: 14,
+                      color: theme.colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       med['dosage'] ?? 'Dosis',
@@ -217,14 +247,21 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.schedule, size: 14, color: theme.colorScheme.secondary),
+                      Icon(
+                        Icons.schedule,
+                        size: 14,
+                        color: theme.colorScheme.secondary,
+                      ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
@@ -246,4 +283,3 @@ class DigitalPrescriptionView extends GetView<DigitalPrescriptionController> {
     );
   }
 }
-

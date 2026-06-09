@@ -23,7 +23,14 @@ class RegisterController extends GetxController {
   var isGoogleLoading = false.obs;
 
   final List<String> bloodTypes = [
-    'A+', 'B+', 'O+', 'AB+', 'A-', 'B-', 'O-', 'AB-',
+    'A+',
+    'B+',
+    'O+',
+    'AB+',
+    'A-',
+    'B-',
+    'O-',
+    'AB-',
   ];
 
   @override
@@ -53,11 +60,14 @@ class RegisterController extends GetxController {
         return;
       }
 
-      final response = await _apiService.post('auth/google', body: {
-        'email': googleUser.email,
-        'name': googleUser.displayName ?? '',
-        'google_id': googleUser.id,
-      });
+      final response = await _apiService.post(
+        'auth/google',
+        body: {
+          'email': googleUser.email,
+          'name': googleUser.displayName ?? '',
+          'google_id': googleUser.id,
+        },
+      );
 
       final data = jsonDecode(response.body);
       String token = data['access_token'];
@@ -67,8 +77,10 @@ class RegisterController extends GetxController {
       AppSnackbar.success('Login Berhasil', 'Selamat datang.');
 
       final userData = data['data'];
-      if (userData['phone'] == null || userData['phone'].toString().isEmpty || 
-          userData['address'] == null || userData['address'].toString().isEmpty) {
+      if (userData['phone'] == null ||
+          userData['phone'].toString().isEmpty ||
+          userData['address'] == null ||
+          userData['address'].toString().isEmpty) {
         Get.offAllNamed(Routes.COMPLETE_PROFILE);
       } else {
         Get.offAllNamed(Routes.HOME);
@@ -99,20 +111,26 @@ class RegisterController extends GetxController {
     isLoading.value = true;
 
     try {
-      final response = await _apiService.post('register', body: {
-        'name': nameController.text,
-        'email': emailController.text,
-        'phone': phoneController.text,
-        'blood_type': selectedBloodType.value,
-        'password': passwordController.text,
-      });
+      final response = await _apiService.post(
+        'register',
+        body: {
+          'name': nameController.text,
+          'email': emailController.text,
+          'phone': phoneController.text,
+          'blood_type': selectedBloodType.value,
+          'password': passwordController.text,
+        },
+      );
 
       final data = jsonDecode(response.body);
       String token = data['access_token'] ?? data['token'];
 
       await _storage.write(key: 'token', value: token);
 
-      AppSnackbar.success('Pendaftaran Berhasil', 'Akun pasien Anda telah dibuat.');
+      AppSnackbar.success(
+        'Pendaftaran Berhasil',
+        'Akun pasien Anda telah dibuat.',
+      );
 
       Get.offAllNamed(Routes.HOME);
     } catch (e) {

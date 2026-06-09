@@ -22,9 +22,13 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value) {
-                  return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: theme.colorScheme.primary,
+                    ),
+                  );
                 }
-                
+
                 if (!controller.isHasActiveSession.value) {
                   return _buildNoSessionState(theme, isDark);
                 }
@@ -69,8 +73,8 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundColor: theme.colorScheme.primaryContainer,
-                child: Icon(Icons.person, size: 28, color: theme.colorScheme.onPrimaryContainer),
+                backgroundColor: Colors.white,
+                backgroundImage: const AssetImage('assets/logo_klinik.png'),
               ),
               const SizedBox(width: 12),
               Text(
@@ -149,32 +153,42 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
       ),
       child: Column(
         children: [
-          Obx(() => Text(
-            controller.currentStatus.value == 'check_in' ? 'STATUS' : 'QUEUE POSITION',
-            style: theme.textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onTertiary.withValues(alpha: 0.8),
-              letterSpacing: 2,
-            ),
-          )),
-          const SizedBox(height: 16),
-          Obx(() => Text(
-            controller.currentStatus.value == 'check_in' ? 'Saat Ini' : 'Number',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: theme.colorScheme.onTertiary,
-              height: 1,
-            ),
-          )),
           Obx(
             () => Text(
-              controller.currentStatus.value == 'check_in' 
-                  ? 'DIPANGGIL' 
+              controller.currentStatus.value == 'check_in'
+                  ? 'STATUS'
+                  : 'QUEUE POSITION',
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onTertiary.withValues(alpha: 0.8),
+                letterSpacing: 2,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Obx(
+            () => Text(
+              controller.currentStatus.value == 'check_in'
+                  ? 'Saat Ini'
+                  : 'Number',
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: theme.colorScheme.onTertiary,
+                height: 1,
+              ),
+            ),
+          ),
+          Obx(
+            () => Text(
+              controller.currentStatus.value == 'check_in'
+                  ? 'DIPANGGIL'
                   : controller.currentQueue.value,
               style: theme.textTheme.displayLarge?.copyWith(
                 fontWeight: FontWeight.w900,
                 color: theme.colorScheme.onTertiary,
-                fontSize: controller.currentStatus.value == 'check_in' ? 48 : null,
+                fontSize: controller.currentStatus.value == 'check_in'
+                    ? 48
+                    : null,
                 height: 1,
               ),
             ),
@@ -241,7 +255,8 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                     ),
                   ),
                   Obx(() {
-                    bool isCalled = controller.currentStatus.value == 'check_in';
+                    bool isCalled =
+                        controller.currentStatus.value == 'check_in';
                     if (isCalled) {
                       return const AnimatedBlinkingText(text: 'CONSULT');
                     }
@@ -311,7 +326,9 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                   _buildTimelineDot(
                     isCompleted: _isStatusReached('consult', true),
                     isCurrent: _isStatusReached('consult', false),
-                    isFuture: !_isStatusReached('consult', true) && !_isStatusReached('consult', false),
+                    isFuture:
+                        !_isStatusReached('consult', true) &&
+                        !_isStatusReached('consult', false),
                     theme: theme,
                     isDark: isDark,
                   ),
@@ -323,10 +340,34 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildTimelineText('CHECK-IN', _isStatusReached('check-in', false) || _isStatusReached('check-in', true), theme, isDark),
-              _buildTimelineText('PRE-SCREEN', _isStatusReached('pre-screen', false) || _isStatusReached('pre-screen', true), theme, isDark),
-              _buildTimelineText('WAITING', _isStatusReached('waiting', false) || _isStatusReached('waiting', true), theme, isDark),
-              _buildTimelineText('CONSULT', _isStatusReached('consult', false) || _isStatusReached('consult', true), theme, isDark),
+              _buildTimelineText(
+                'CHECK-IN',
+                _isStatusReached('check-in', false) ||
+                    _isStatusReached('check-in', true),
+                theme,
+                isDark,
+              ),
+              _buildTimelineText(
+                'PRE-SCREEN',
+                _isStatusReached('pre-screen', false) ||
+                    _isStatusReached('pre-screen', true),
+                theme,
+                isDark,
+              ),
+              _buildTimelineText(
+                'WAITING',
+                _isStatusReached('waiting', false) ||
+                    _isStatusReached('waiting', true),
+                theme,
+                isDark,
+              ),
+              _buildTimelineText(
+                'CONSULT',
+                _isStatusReached('consult', false) ||
+                    _isStatusReached('consult', true),
+                theme,
+                isDark,
+              ),
             ],
           ),
         ],
@@ -336,16 +377,25 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
 
   bool _isStatusReached(String target, bool checkCompleted) {
     String current = controller.currentStatus.value.toLowerCase();
-    
+
     // Map Laravel status to Timeline status
     String mappedCurrent = 'scheduled';
-    if (current == 'check_in' || current == 'pemeriksaan') mappedCurrent = 'consult';
-    else if (['selesai', 'pending_kasir', 'unpaid', 'paid'].contains(current)) mappedCurrent = 'completed';
+    if (current == 'check_in' || current == 'pemeriksaan')
+      mappedCurrent = 'consult';
+    else if (['selesai', 'pending_kasir', 'unpaid', 'paid'].contains(current))
+      mappedCurrent = 'completed';
 
-    List<String> statuses = ['scheduled', 'check-in', 'pre-screen', 'waiting', 'consult', 'completed'];
+    List<String> statuses = [
+      'scheduled',
+      'check-in',
+      'pre-screen',
+      'waiting',
+      'consult',
+      'completed',
+    ];
     int currentIdx = statuses.indexOf(mappedCurrent);
     int targetIdx = statuses.indexOf(target.toLowerCase());
-    
+
     if (checkCompleted) {
       return currentIdx > targetIdx;
     } else {
@@ -353,15 +403,20 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     }
   }
 
-  Widget _buildTimelineText(String label, bool isActive, ThemeData theme, bool isDark) {
+  Widget _buildTimelineText(
+    String label,
+    bool isActive,
+    ThemeData theme,
+    bool isDark,
+  ) {
     return Text(
       label,
       style: theme.textTheme.labelSmall?.copyWith(
         fontSize: 9,
         fontWeight: FontWeight.bold,
-        color: isActive 
-          ? theme.colorScheme.primary 
-          : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+        color: isActive
+            ? theme.colorScheme.primary
+            : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
       ),
     );
   }
@@ -373,7 +428,11 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.calendar_today_outlined, size: 80, color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3)),
+            Icon(
+              Icons.calendar_today_outlined,
+              size: 80,
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+            ),
             const SizedBox(height: 24),
             Text(
               "Belum ada jadwal pemeriksaan hari ini.",
@@ -411,10 +470,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
         decoration: BoxDecoration(
           color: theme.colorScheme.primary,
           shape: BoxShape.circle,
-          border: Border.all(
-            color: theme.colorScheme.surface,
-            width: 2,
-          ),
+          border: Border.all(color: theme.colorScheme.surface, width: 2),
         ),
         child: Icon(Icons.check, color: theme.colorScheme.onPrimary, size: 10),
       );
@@ -527,7 +583,8 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                          color: theme.colorScheme.surfaceContainerHighest
+                              .withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Obx(
@@ -584,9 +641,7 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: theme.colorScheme.surfaceContainerHighest,
-        ),
+        border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -652,7 +707,9 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                 return Center(
                   child: Icon(
                     Icons.image_not_supported,
-                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                    color: theme.colorScheme.onSurfaceVariant.withValues(
+                      alpha: 0.5,
+                    ),
                     size: 40,
                   ),
                 );
@@ -663,7 +720,10 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent],
+                  colors: [
+                    Colors.black.withValues(alpha: 0.8),
+                    Colors.transparent,
+                  ],
                 ),
               ),
               padding: const EdgeInsets.all(20),
@@ -710,7 +770,13 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon, ThemeData theme, bool isDark) {
+  Widget _buildNavItem(
+    int index,
+    String label,
+    IconData icon,
+    ThemeData theme,
+    bool isDark,
+  ) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
@@ -761,7 +827,8 @@ class AnimatedBlinkingText extends StatefulWidget {
   State<AnimatedBlinkingText> createState() => _AnimatedBlinkingTextState();
 }
 
-class _AnimatedBlinkingTextState extends State<AnimatedBlinkingText> with SingleTickerProviderStateMixin {
+class _AnimatedBlinkingTextState extends State<AnimatedBlinkingText>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override

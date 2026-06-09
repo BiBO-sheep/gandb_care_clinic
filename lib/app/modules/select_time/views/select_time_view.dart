@@ -453,63 +453,65 @@ class SelectTimeView extends GetView<SelectTimeController> {
             return GestureDetector(
               onTap: () => controller.selectTime(time, slot['status']),
               child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                color: isBooked
-                    ? theme.colorScheme.surfaceContainerHighest.withValues(
-                        alpha: 0.5,
-                      )
-                    : (isSelected
-                          ? theme.colorScheme.primaryContainer.withValues(
-                              alpha: 0.2,
-                            )
-                          : theme.colorScheme.surface),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: isSelected
-                      ? theme.colorScheme.primary
-                      : (isBooked
-                            ? Colors.transparent
-                            : theme.colorScheme.surfaceContainerHighest),
-                  width: 2,
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  color: isBooked
+                      ? theme.colorScheme.surfaceContainerHighest.withValues(
+                          alpha: 0.5,
+                        )
+                      : (isSelected
+                            ? theme.colorScheme.primaryContainer.withValues(
+                                alpha: 0.2,
+                              )
+                            : theme.colorScheme.surface),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isSelected
+                        ? theme.colorScheme.primary
+                        : (isBooked
+                              ? Colors.transparent
+                              : theme.colorScheme.surfaceContainerHighest),
+                    width: 2,
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      time,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isBooked
+                            ? theme.colorScheme.onSurfaceVariant.withValues(
+                                alpha: 0.5,
+                              )
+                            : theme.colorScheme.onSurface,
+                        decoration: isBooked
+                            ? TextDecoration.lineThrough
+                            : null,
+                      ),
+                    ),
+                    Text(
+                      isBooked
+                          ? 'BOOKED'
+                          : (isSelected ? 'SELECTED' : period.toUpperCase()),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                        color: isBooked
+                            ? theme.colorScheme.onSurfaceVariant.withValues(
+                                alpha: 0.5,
+                              )
+                            : (isSelected
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurfaceVariant),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    time,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: isBooked
-                          ? theme.colorScheme.onSurfaceVariant.withValues(
-                              alpha: 0.5,
-                            )
-                          : theme.colorScheme.onSurface,
-                      decoration: isBooked ? TextDecoration.lineThrough : null,
-                    ),
-                  ),
-                  Text(
-                    isBooked
-                        ? 'BOOKED'
-                        : (isSelected ? 'SELECTED' : period.toUpperCase()),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
-                      color: isBooked
-                          ? theme.colorScheme.onSurfaceVariant.withValues(
-                              alpha: 0.5,
-                            )
-                          : (isSelected
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.onSurfaceVariant),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
+            );
+          });
         },
       );
     });

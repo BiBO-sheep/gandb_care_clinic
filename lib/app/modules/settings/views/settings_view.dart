@@ -43,11 +43,17 @@ class SettingsView extends GetView<SettingsController> {
                         shape: BoxShape.circle,
                         color: theme.colorScheme.primaryContainer,
                         border: Border.all(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                          color: theme.colorScheme.primary.withValues(
+                            alpha: 0.3,
+                          ),
                           width: 4,
                         ),
                       ),
-                      child: Icon(Icons.person, size: 50, color: theme.colorScheme.onPrimaryContainer),
+                      child: Icon(
+                        Icons.person,
+                        size: 50,
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Obx(
@@ -79,38 +85,78 @@ class SettingsView extends GetView<SettingsController> {
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
+                  border: Border.all(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                  ),
                 ),
                 child: Column(
                   children: [
-                    _buildSettingsTextField('Full Name', controller.nameController, theme),
+                    _buildSettingsTextField(
+                      'Full Name',
+                      controller.nameController,
+                      theme,
+                    ),
                     const SizedBox(height: 12),
-                    _buildSettingsTextField('Email', controller.emailController, theme),
+                    _buildSettingsTextField(
+                      'Email',
+                      controller.emailController,
+                      theme,
+                    ),
                     const SizedBox(height: 12),
-                    _buildSettingsTextField('Phone', controller.phoneController, theme),
+                    _buildSettingsTextField(
+                      'Phone',
+                      controller.phoneController,
+                      theme,
+                    ),
                     const SizedBox(height: 12),
-                    _buildSettingsTextField('Address', controller.addressController, theme, maxLines: 2),
+                    _buildSettingsTextField(
+                      'Address',
+                      controller.addressController,
+                      theme,
+                      maxLines: 2,
+                    ),
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        Expanded(child: _buildSettingsTextField('Tinggi (cm)', controller.heightController, theme)),
+                        Expanded(
+                          child: _buildSettingsTextField(
+                            'Tinggi (cm)',
+                            controller.heightController,
+                            theme,
+                          ),
+                        ),
                         const SizedBox(width: 12),
-                        Expanded(child: _buildSettingsTextField('Berat (kg)', controller.weightController, theme)),
+                        Expanded(
+                          child: _buildSettingsTextField(
+                            'Berat (kg)',
+                            controller.weightController,
+                            theme,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    _buildSettingsTextField('Golongan Darah', controller.bloodTypeController, theme),
+                    _buildSettingsTextField(
+                      'Golongan Darah',
+                      controller.bloodTypeController,
+                      theme,
+                    ),
                     const SizedBox(height: 20),
                     Obx(
                       () => SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: controller.isLoading.value ? null : controller.updateProfile,
+                          onPressed: controller.isLoading.value
+                              ? null
+                              : controller.updateProfile,
                           child: controller.isLoading.value
                               ? const SizedBox(
                                   height: 20,
                                   width: 20,
-                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
                                 )
                               : const Text('Simpan Perubahan'),
                         ),
@@ -121,12 +167,18 @@ class SettingsView extends GetView<SettingsController> {
               ),
               const SizedBox(height: 24),
 
-              _buildSectionTitle(Icons.display_settings, 'Display & App Info', theme),
+              _buildSectionTitle(
+                Icons.display_settings,
+                'Display & App Info',
+                theme,
+              ),
               Container(
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
+                  border: Border.all(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -141,9 +193,17 @@ class SettingsView extends GetView<SettingsController> {
                       ),
                     ),
                     _buildDivider(theme),
-                    _buildLinkItem('Privacy Policy', controller.openPrivacyPolicy, theme),
+                    _buildLinkItem(
+                      'Privacy Policy',
+                      controller.openPrivacyPolicy,
+                      theme,
+                    ),
                     _buildDivider(theme),
-                    _buildLinkItem('Terms of Service', controller.openTerms, theme),
+                    _buildLinkItem(
+                      'Terms of Service',
+                      controller.openTerms,
+                      theme,
+                    ),
                   ],
                 ),
               ),
@@ -153,7 +213,11 @@ class SettingsView extends GetView<SettingsController> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: controller.signOut,
-                  icon: Icon(Icons.logout, color: theme.colorScheme.error, size: 20),
+                  icon: Icon(
+                    Icons.logout,
+                    color: theme.colorScheme.error,
+                    size: 20,
+                  ),
                   label: Text(
                     'Sign Out',
                     style: theme.textTheme.titleMedium?.copyWith(
@@ -165,7 +229,9 @@ class SettingsView extends GetView<SettingsController> {
                     backgroundColor: theme.colorScheme.errorContainer,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
               ),
@@ -259,7 +325,11 @@ class SettingsView extends GetView<SettingsController> {
                 color: theme.colorScheme.onSurface,
               ),
             ),
-            Icon(Icons.open_in_new, color: theme.colorScheme.onSurfaceVariant, size: 18),
+            Icon(
+              Icons.open_in_new,
+              color: theme.colorScheme.onSurfaceVariant,
+              size: 18,
+            ),
           ],
         ),
       ),
@@ -294,9 +364,14 @@ class SettingsView extends GetView<SettingsController> {
         TextField(
           controller: textController,
           maxLines: maxLines,
-          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurface,
+          ),
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
           ),
         ),
       ],

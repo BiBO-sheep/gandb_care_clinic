@@ -47,11 +47,11 @@ class SplashView extends GetView<SplashController> {
                       ..setEntry(3, 2, 0.001) // perspective
                       ..rotateY(controller.rotateAnimation.value * 3.14159)
                       ..scaleByDouble(
-                          controller.scaleAnimation.value,
-                          controller.scaleAnimation.value,
-                          controller.scaleAnimation.value,
-                          1.0,
-                        ),
+                        controller.scaleAnimation.value,
+                        controller.scaleAnimation.value,
+                        controller.scaleAnimation.value,
+                        1.0,
+                      ),
                     child: child,
                   ),
                 );
@@ -97,7 +97,10 @@ class SplashView extends GetView<SplashController> {
 
                   // Tagline badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 7,
+                    ),
                     decoration: BoxDecoration(
                       color: secondaryColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),

@@ -13,7 +13,7 @@ class HomeController extends GetxController {
   var patientName = 'Pasien'.obs;
   var currentIndex = 0.obs;
   var isLoading = true.obs;
-  
+
   final ApiService _apiService = ApiService();
   final _storage = const FlutterSecureStorage();
 
@@ -30,11 +30,7 @@ class HomeController extends GetxController {
   Future<void> refreshData({bool showLoading = true}) async {
     if (isClosed) return;
     if (showLoading && listPoli.isEmpty) isLoading.value = true;
-    await Future.wait([
-      fetchUser(),
-      fetchDashboardData(),
-      fetchPoliAPI(),
-    ]);
+    await Future.wait([fetchUser(), fetchDashboardData(), fetchPoliAPI()]);
     if (!isClosed) {
       isLoading.value = false;
     }
@@ -56,11 +52,11 @@ class HomeController extends GetxController {
     try {
       final response = await _apiService.get('dashboard');
       final data = jsonDecode(response.body);
-      
+
       if (data['upcoming_appointment'] != null) {
         final apt = AppointmentModel.fromJson(data['upcoming_appointment']);
         bool isValid = true;
-        
+
         final status = apt.status.toLowerCase();
         if (['completed', 'selesai', 'cancelled', 'batal'].contains(status)) {
           isValid = false;
@@ -71,7 +67,7 @@ class HomeController extends GetxController {
           final aptDate = DateFormat('MMM d, yyyy', 'en_US').parse(apt.tanggal);
           final now = DateTime.now();
           final today = DateTime(now.year, now.month, now.day);
-          
+
           if (aptDate.isBefore(today)) {
             isValid = false;
           }
@@ -122,7 +118,7 @@ class HomeController extends GetxController {
 
   void onQuickActionTapped(String action) {
     if (action == 'My History') {
-      changePage(1);
+      Get.toNamed('/exam-results');
     } else if (action == 'Book Appointment') {
       Get.toNamed('/select-clinic');
     } else if (action == 'Poli Info') {

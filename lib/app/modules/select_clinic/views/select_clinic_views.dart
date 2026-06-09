@@ -27,8 +27,8 @@ class SelectClinicView extends GetView<SelectClinicController> {
           children: [
             CircleAvatar(
               radius: 16,
-              backgroundColor: theme.colorScheme.primaryContainer,
-              child: Icon(Icons.person, size: 20, color: theme.colorScheme.onPrimaryContainer),
+              backgroundColor: Colors.white,
+              backgroundImage: const AssetImage('assets/logo_klinik.png'),
             ),
             const SizedBox(width: 8),
             Text(
@@ -42,7 +42,10 @@ class SelectClinicView extends GetView<SelectClinicController> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.qr_code_scanner, color: theme.colorScheme.onSurfaceVariant),
+            icon: Icon(
+              Icons.qr_code_scanner,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
             onPressed: () {},
           ),
         ],
@@ -194,9 +197,15 @@ class SelectClinicView extends GetView<SelectClinicController> {
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
-          boxShadow: isDark ? [] : [
-            BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
-          ],
+          boxShadow: isDark
+              ? []
+              : [
+                  BoxShadow(
+                    color: theme.colorScheme.shadow.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,9 +258,15 @@ class SelectClinicView extends GetView<SelectClinicController> {
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
-          boxShadow: isDark ? [] : [
-            BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
-          ],
+          boxShadow: isDark
+              ? []
+              : [
+                  BoxShadow(
+                    color: theme.colorScheme.shadow.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -322,9 +337,15 @@ class SelectClinicView extends GetView<SelectClinicController> {
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
-          boxShadow: isDark ? [] : [
-            BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
-          ],
+          boxShadow: isDark
+              ? []
+              : [
+                  BoxShadow(
+                    color: theme.colorScheme.shadow.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
         child: Row(
           children: [
@@ -359,7 +380,10 @@ class SelectClinicView extends GetView<SelectClinicController> {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+            Icon(
+              Icons.chevron_right,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ],
         ),
       ),

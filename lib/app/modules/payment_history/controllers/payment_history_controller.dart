@@ -48,14 +48,16 @@ class PaymentHistoryController extends GetxController {
       } else {
         errorMessage.value =
             responseData['message'] ?? 'Gagal memuat rincian pembayaran';
-        if (Get.overlayContext != null) Get.snackbar('Error', errorMessage.value);
+        if (Get.overlayContext != null)
+          Get.snackbar('Error', errorMessage.value);
       }
     } on UnauthorizedException {
       if (!isClosed) Get.offAllNamed('/login');
     } catch (e) {
       if (!isClosed) {
         errorMessage.value = e.toString().replaceAll('Exception: ', '');
-        if (Get.overlayContext != null) Get.snackbar('Error', errorMessage.value);
+        if (Get.overlayContext != null)
+          Get.snackbar('Error', errorMessage.value);
       }
     } finally {
       if (!isClosed) isLoading.value = false;
@@ -80,7 +82,8 @@ class PaymentHistoryController extends GetxController {
     } catch (e) {
       if (!isClosed) {
         errorMessage.value = e.toString().replaceAll('Exception: ', '');
-        if (Get.overlayContext != null) Get.snackbar('Error', errorMessage.value);
+        if (Get.overlayContext != null)
+          Get.snackbar('Error', errorMessage.value);
       }
     } finally {
       if (!isClosed) isLoading.value = false;
@@ -232,7 +235,10 @@ class PaymentHistoryController extends GetxController {
       );
 
       try {
-        final response = await _apiService.post('payment/process', body: {'invoice_id': invoiceId, 'method': method});
+        final response = await _apiService.post(
+          'payment/process',
+          body: {'invoice_id': invoiceId, 'method': method},
+        );
 
         if (Get.isDialogOpen ?? false) Get.back();
 
@@ -286,4 +292,3 @@ class PaymentHistoryController extends GetxController {
     return 'Rp $formatted';
   }
 }
-

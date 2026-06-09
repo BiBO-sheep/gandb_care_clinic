@@ -29,7 +29,11 @@ class LoginView extends GetView<LoginController> {
                 color: theme.colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(Icons.medical_services, color: theme.colorScheme.onPrimaryContainer, size: 18),
+              child: Icon(
+                Icons.medical_services,
+                color: theme.colorScheme.onPrimaryContainer,
+                size: 18,
+              ),
             ),
             const SizedBox(width: 8),
             Text(
@@ -54,13 +58,21 @@ class LoginView extends GetView<LoginController> {
                 height: 96,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
+                  color: Colors.white,
                   image: const DecorationImage(
-                    image: NetworkImage('https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=200&auto=format&fit=crop'),
-                    fit: BoxFit.cover,
+                    image: AssetImage('assets/logo_klinik.png'),
+                    fit: BoxFit.contain,
                   ),
-                  boxShadow: isDark ? [] : [
-                    BoxShadow(color: theme.colorScheme.primaryContainer.withValues(alpha: 0.2), blurRadius: 40, spreadRadius: 10),
-                  ],
+                  boxShadow: isDark
+                      ? []
+                      : [
+                          BoxShadow(
+                            color: theme.colorScheme.primaryContainer
+                                .withValues(alpha: 0.2),
+                            blurRadius: 40,
+                            spreadRadius: 10,
+                          ),
+                        ],
                 ),
               ),
               const SizedBox(height: 24),
@@ -115,8 +127,12 @@ class LoginView extends GetView<LoginController> {
                     hintText: '••••••••',
                     suffixIcon: IconButton(
                       icon: Icon(
-                        controller.isPasswordHidden.value ? Icons.visibility_off : Icons.visibility,
-                        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                        controller.isPasswordHidden.value
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
                       onPressed: controller.togglePasswordVisibility,
                     ),
@@ -129,9 +145,18 @@ class LoginView extends GetView<LoginController> {
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
-                    onPressed: controller.isLoading.value ? null : controller.login,
+                    onPressed: controller.isLoading.value
+                        ? null
+                        : controller.login,
                     child: controller.isLoading.value
-                        ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3))
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          )
                         : Text('Login'),
                   ),
                 ),
@@ -139,12 +164,35 @@ class LoginView extends GetView<LoginController> {
               const SizedBox(height: 24),
               Row(
                 children: [
-                  Expanded(child: Divider(color: isDark ? Colors.white12 : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.2))),
+                  Expanded(
+                    child: Divider(
+                      color: isDark
+                          ? Colors.white12
+                          : theme.colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.2,
+                            ),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text('OR', style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5))),
+                    child: Text(
+                      'OR',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                    ),
                   ),
-                  Expanded(child: Divider(color: isDark ? Colors.white12 : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.2))),
+                  Expanded(
+                    child: Divider(
+                      color: isDark
+                          ? Colors.white12
+                          : theme.colorScheme.onSurfaceVariant.withValues(
+                              alpha: 0.2,
+                            ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -153,7 +201,9 @@ class LoginView extends GetView<LoginController> {
                   width: double.infinity,
                   height: 56,
                   child: OutlinedButton(
-                    onPressed: controller.isGoogleLoading.value ? null : controller.signInWithGoogle,
+                    onPressed: controller.isGoogleLoading.value
+                        ? null
+                        : controller.signInWithGoogle,
                     style: OutlinedButton.styleFrom(
                       backgroundColor: theme.colorScheme.surface,
                     ),
@@ -161,11 +211,23 @@ class LoginView extends GetView<LoginController> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         controller.isGoogleLoading.value
-                            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                            : Image.asset('assets/images/google_logo.png', width: 24, height: 24),
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Image.asset(
+                                'assets/images/google_logo.png',
+                                width: 24,
+                                height: 24,
+                              ),
                         const SizedBox(width: 12),
                         Text(
-                          controller.isGoogleLoading.value ? 'Connecting...' : 'Continue with Google',
+                          controller.isGoogleLoading.value
+                              ? 'Connecting...'
+                              : 'Continue with Google',
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: theme.colorScheme.onSurface,
                           ),
@@ -179,10 +241,21 @@ class LoginView extends GetView<LoginController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('New to the clinic? ', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                  Text(
+                    'New to the clinic? ',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                   GestureDetector(
                     onTap: () => Get.toNamed('/register'),
-                    child: Text('Sign Up', style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary)),
+                    child: Text(
+                      'Sign Up',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
                   ),
                 ],
               ),

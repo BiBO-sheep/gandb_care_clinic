@@ -9,7 +9,7 @@ class MockPaymentView extends GetView<MockPaymentController> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     // Format helper for amount
     String formatRupiah(int amount) {
       String result = amount.toString();
@@ -78,14 +78,19 @@ class MockPaymentView extends GetView<MockPaymentController> {
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
+                border: Border.all(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                ),
               ),
               child: Obx(
                 () => DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     isExpanded: true,
                     value: controller.selectedMethod.value,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
                     dropdownColor: theme.colorScheme.surface,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: theme.colorScheme.onSurface,
@@ -106,7 +111,7 @@ class MockPaymentView extends GetView<MockPaymentController> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
             Text(
               'Masukkan Nominal (Simulasi)',
@@ -134,30 +139,43 @@ class MockPaymentView extends GetView<MockPaymentController> {
                 fillColor: theme.colorScheme.surface,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: theme.colorScheme.surfaceContainerHighest),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                  ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: theme.colorScheme.surfaceContainerHighest),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                  ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                  borderSide: BorderSide(
+                    color: theme.colorScheme.primary,
+                    width: 2,
+                  ),
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                color: theme.colorScheme.secondaryContainer.withValues(
+                  alpha: 0.3,
+                ),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: theme.colorScheme.secondaryContainer),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: theme.colorScheme.secondary, size: 20),
+                  Icon(
+                    Icons.info_outline,
+                    color: theme.colorScheme.secondary,
+                    size: 20,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -175,34 +193,39 @@ class MockPaymentView extends GetView<MockPaymentController> {
             const SizedBox(height: 40),
 
             // TOMBOL SIMULASI BAYAR
-            Obx(() => ElevatedButton(
-              onPressed: controller.isProcessing.value 
-                  ? null 
-                  : controller.simulatePaymentSuccess,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.colorScheme.primary,
-                minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+            Obx(
+              () => ElevatedButton(
+                onPressed: controller.isProcessing.value
+                    ? null
+                    : controller.simulatePaymentSuccess,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  minimumSize: const Size(double.infinity, 56),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: isDark ? 0 : 4,
                 ),
-                elevation: isDark ? 0 : 4,
-              ),
-              child: controller.isProcessing.value
-                  ? SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(color: theme.colorScheme.onPrimary, strokeWidth: 2),
-                    )
-                  : Text(
-                      'BAYAR SEKARANG',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.2,
-                        color: theme.colorScheme.onPrimary,
+                child: controller.isProcessing.value
+                    ? SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: theme.colorScheme.onPrimary,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Text(
+                        'BAYAR SEKARANG',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.2,
+                          color: theme.colorScheme.onPrimary,
+                        ),
                       ),
-                    ),
-            )),
-            
+              ),
+            ),
+
             const SizedBox(height: 16),
             Text(
               '*Halaman ini mensimulasikan proses Payment Gateway pihak ketiga. Saat pembayaran sukses, data akan langsung diperbarui di server tanpa konfirmasi manual kasir.',

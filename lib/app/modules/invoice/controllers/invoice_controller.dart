@@ -93,10 +93,14 @@ class InvoiceController extends GetxController {
       final responseData = jsonDecode(response.body);
 
       if (responseData['success'] == true) {
-        final oldStatus = invoiceData.value?['status']?.toString().toLowerCase();
+        final oldStatus = invoiceData.value?['status']
+            ?.toString()
+            .toLowerCase();
         invoiceData.value = responseData['data'];
-        final newStatus = invoiceData.value?['status']?.toString().toLowerCase();
-        
+        final newStatus = invoiceData.value?['status']
+            ?.toString()
+            .toLowerCase();
+
         if (oldStatus != 'paid' && newStatus == 'paid') {
           _stopPolling();
           if (Get.isBottomSheetOpen ?? false) Get.back();
@@ -155,7 +159,7 @@ class InvoiceController extends GetxController {
     }
 
     final totalAmount = invoiceData.value?['grand_total'] ?? 0;
-    
+
     int parsedAmount = 0;
     if (totalAmount is int) {
       parsedAmount = totalAmount;
@@ -165,11 +169,14 @@ class InvoiceController extends GetxController {
       parsedAmount = double.tryParse(totalAmount.toString())?.toInt() ?? 0;
     }
 
-    Get.toNamed('/mock-payment', arguments: {
-      'method': method,
-      'amount': parsedAmount,
-      'invoiceId': invoiceId,
-    });
+    Get.toNamed(
+      '/mock-payment',
+      arguments: {
+        'method': method,
+        'amount': parsedAmount,
+        'invoiceId': invoiceId,
+      },
+    );
   }
 
   void showPaymentMethods() {
@@ -276,7 +283,7 @@ class InvoiceController extends GetxController {
   String formatRupiah(dynamic amount) {
     if (amount == null) return 'Rp 0';
     int value = 0;
-    
+
     if (amount is int) {
       value = amount;
     } else if (amount is double) {
@@ -284,7 +291,7 @@ class InvoiceController extends GetxController {
     } else {
       value = double.tryParse(amount.toString())?.toInt() ?? 0;
     }
-    
+
     String result = value.toString();
     String formatted = '';
     int count = 0;
@@ -298,4 +305,3 @@ class InvoiceController extends GetxController {
     return 'Rp $formatted';
   }
 }
-

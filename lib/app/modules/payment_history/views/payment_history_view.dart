@@ -11,7 +11,7 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       extendBody: true,
@@ -25,7 +25,10 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -49,13 +52,21 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
               Expanded(
                 child: Obx(() {
                   if (controller.isLoading.value) {
-                    return Center(child: CircularProgressIndicator(color: theme.colorScheme.primary));
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: theme.colorScheme.primary,
+                      ),
+                    );
                   }
                   if (controller.historyList.isEmpty) {
                     return _buildEmptyState(theme, isDark);
                   }
                   return ListView.builder(
-                    padding: const EdgeInsets.only(left: 24, right: 24, bottom: 120),
+                    padding: const EdgeInsets.only(
+                      left: 24,
+                      right: 24,
+                      bottom: 120,
+                    ),
                     itemCount: controller.historyList.length,
                     itemBuilder: (context, index) {
                       var item = controller.historyList[index];
@@ -68,7 +79,9 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
           ),
         ),
       ),
-      bottomNavigationBar: isFromMainLayout ? null : _buildBottomNav(theme, isDark),
+      bottomNavigationBar: isFromMainLayout
+          ? null
+          : _buildBottomNav(theme, isDark),
     );
   }
 
@@ -83,8 +96,8 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
           children: [
             CircleAvatar(
               radius: 18,
-              backgroundColor: theme.colorScheme.primaryContainer,
-              child: Icon(Icons.person, size: 24, color: theme.colorScheme.onPrimaryContainer),
+              backgroundColor: Colors.white,
+              backgroundImage: const AssetImage('assets/logo_klinik.png'),
             ),
             const SizedBox(width: 12),
             Text(
@@ -105,7 +118,11 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.history_toggle_off, size: 80, color: theme.colorScheme.surfaceContainerHighest),
+          Icon(
+            Icons.history_toggle_off,
+            size: 80,
+            color: theme.colorScheme.surfaceContainerHighest,
+          ),
           const SizedBox(height: 16),
           Text(
             'Belum ada riwayat',
@@ -119,7 +136,11 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
     );
   }
 
-  Widget _buildHistoryCard(Map<String, dynamic> item, ThemeData theme, bool isDark) {
+  Widget _buildHistoryCard(
+    Map<String, dynamic> item,
+    ThemeData theme,
+    bool isDark,
+  ) {
     bool isDone = item['status'] == 'completed' || item['status'] == 'selesai';
     return GestureDetector(
       onTap: () => controller.openTicket(item),
@@ -130,13 +151,15 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: theme.colorScheme.surfaceContainerHighest),
-          boxShadow: isDark ? [] : [
-            BoxShadow(
-              color: theme.colorScheme.shadow.withValues(alpha: 0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          boxShadow: isDark
+              ? []
+              : [
+                  BoxShadow(
+                    color: theme.colorScheme.shadow.withValues(alpha: 0.02),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
         child: Row(
           children: [
@@ -160,22 +183,31 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: isDone ? Colors.green.withValues(alpha: 0.1) : theme.colorScheme.secondaryContainer,
+                      color: isDone
+                          ? Colors.green.withValues(alpha: 0.1)
+                          : theme.colorScheme.secondaryContainer,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       item['status'].toString().toUpperCase(),
                       style: theme.textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: isDone ? Colors.green : theme.colorScheme.onSecondaryContainer,
+                        color: isDone
+                            ? Colors.green
+                            : theme.colorScheme.onSecondaryContainer,
                       ),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    item['poli']?['nama_poli'] ?? item['poli']?['name'] ?? 'Poli Klinik',
+                    item['poli']?['nama_poli'] ??
+                        item['poli']?['name'] ??
+                        'Poli Klinik',
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.onSurface,
@@ -193,7 +225,10 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+            Icon(
+              Icons.chevron_right,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ],
         ),
       ),
@@ -202,7 +237,10 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
 
   Widget _buildBottomNav(ThemeData theme, bool isDark) {
     return ClipRRect(
-      borderRadius: const BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(40),
+        topRight: Radius.circular(40),
+      ),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
@@ -225,16 +263,24 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
     );
   }
 
-  Widget _buildNavItem(int index, String label, IconData icon, ThemeData theme, bool isDark) {
+  Widget _buildNavItem(
+    int index,
+    String label,
+    IconData icon,
+    ThemeData theme,
+    bool isDark,
+  ) {
     bool isSelected = controller.currentIndex.value == index;
     return GestureDetector(
       onTap: () => controller.changePage(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         width: 76,
-          padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primaryContainer : Colors.transparent,
+          color: isSelected
+              ? theme.colorScheme.primaryContainer
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Column(
@@ -242,7 +288,9 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
           children: [
             Icon(
               icon,
-              color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -251,7 +299,9 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
               style: theme.textTheme.labelSmall?.copyWith(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -260,4 +310,3 @@ class PaymentHistoryView extends GetView<PaymentHistoryController> {
     );
   }
 }
-
