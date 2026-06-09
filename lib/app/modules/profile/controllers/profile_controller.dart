@@ -61,17 +61,114 @@ class ProfileController extends GetxController {
       return;
     }
 
-    Get.defaultDialog(
-      title: 'Konfirmasi Logout',
-      middleText: 'Apakah Anda yakin ingin keluar dari akun ini?',
-      textConfirm: 'Ya, Keluar',
-      textCancel: 'Batal',
-      confirmTextColor: Colors.white,
-      buttonColor: const Color(0xFFBA1A1A),
-      onConfirm: () async {
-        Get.back();
-        await _executeLogout();
-      },
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Get.theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Get.theme.colorScheme.errorContainer.withValues(alpha: 0.5),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.logout_rounded,
+                  color: Get.theme.colorScheme.error,
+                  size: 32,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Keluar Akun?',
+                style: Get.theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  color: Get.theme.colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Anda harus login kembali untuk mengakses jadwal dan tiket pemeriksaan medis Anda.',
+                textAlign: TextAlign.center,
+                style: Get.theme.textTheme.bodyMedium?.copyWith(
+                  color: Get.theme.colorScheme.onSurfaceVariant,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 28),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Get.back(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        side: BorderSide(
+                          color: Get.theme.colorScheme.outlineVariant,
+                        ),
+                      ),
+                      child: Text(
+                        'Batal',
+                        style: Get.theme.textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Get.theme.colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Get.back();
+                        await _executeLogout();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Get.theme.colorScheme.error,
+                        foregroundColor: Get.theme.colorScheme.onError,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        'Ya, Keluar',
+                        style: Get.theme.textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Get.theme.colorScheme.onError,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
     );
   }
 
