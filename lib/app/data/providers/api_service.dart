@@ -78,6 +78,43 @@ class ApiService {
     }
   }
 
+  Future<http.Response> multipartRequest(
+    String endpoint, {
+    required String method,
+    Map<String, String>? fields,
+    File? file,
+    String? fileField,
+  }) async {
+    try {
+      String? token = await _storage.read(key: 'token');
+      var request = http.MultipartRequest(method, Uri.parse('$_baseUrl/$endpoint'));
+
+      if (token != null) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+      request.headers['Accept'] = 'application/json';
+
+      if (fields != null) {
+        request.fields.addAll(fields);
+      }
+
+      if (file != null && fileField != null) {
+        request.files.add(await http.MultipartFile.fromPath(fileField, file.path));
+      }
+
+      var streamedResponse = await request.send().timeout(const Duration(seconds: _timeoutSeconds));
+      var response = await http.Response.fromStream(streamedResponse);
+      
+      return _processResponse(response);
+    } on SocketException {
+      throw Exception('Tidak ada koneksi internet');
+    } on TimeoutException {
+      throw Exception('Koneksi ke server terputus (Timeout)');
+    } catch (e) {
+      throw Exception('Terjadi kesalahan: $e');
+    }
+  }
+
   http.Response _processResponse(http.Response response) {
     // If the token is invalid or expired, the backend usually returns 401.
     // In a full implementation, we might clear the token and redirect to login here.

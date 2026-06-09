@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 import '../../../data/providers/api_service.dart';
 import '../../../data/providers/unauthorized_exception.dart';
 import 'package:gandb_care_clinic/app/modules/main_layout/controllers/main_layout_controller.dart';
@@ -16,6 +19,8 @@ class ProfileController extends GetxController {
   var userAddress = ''.obs;
   var userHeight = ''.obs;
   var userWeight = ''.obs;
+  var userAvatar = ''.obs;
+  var isUploading = false.obs;
   var isLoading = false.obs;
 
   final ApiService _apiService = ApiService();
@@ -42,6 +47,13 @@ class ProfileController extends GetxController {
       userAddress.value = userData['address']?.toString() ?? '-';
       userHeight.value = userData['height']?.toString() ?? '-';
       userWeight.value = userData['weight']?.toString() ?? '-';
+      
+      String avatarPath = userData['avatar']?.toString() ?? '';
+      if (avatarPath.isNotEmpty) {
+        userAvatar.value = 'http://127.0.0.1:8000/storage/$avatarPath'; // Sesuaikan baseUrl jika di prod
+      } else {
+        userAvatar.value = '';
+      }
     } on UnauthorizedException {
       logout(confirm: false);
     } catch (e) {
@@ -49,6 +61,76 @@ class ProfileController extends GetxController {
       Get.snackbar('Error Koneksi', e.toString().replaceAll('Exception: ', ''));
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> pickAndCropImage(ImageSource source) async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: source);
+
+      if (image != null) {
+        CroppedFile? croppedFile = await ImageCropper().cropImage(
+          sourcePath: image.path,
+          aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+          uiSettings: [
+            AndroidUiSettings(
+              toolbarTitle: 'Crop Foto Profil',
+              toolbarColor: Get.theme.colorScheme.primary,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.square,
+              lockAspectRatio: true,
+            ),
+            IOSUiSettings(
+              title: 'Crop Foto Profil',
+              aspectRatioLockEnabled: true,
+            ),
+          ],
+        );
+
+        if (croppedFile != null) {
+          await uploadAvatar(File(croppedFile.path));
+        }
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Gagal memproses gambar: $e');
+    }
+  }
+
+  Future<void> uploadAvatar(File imageFile) async {
+    try {
+      isUploading.value = true;
+      Get.snackbar('Mengunggah...', 'Mohon tunggu, sedang mengunggah foto profil Anda.', showProgressIndicator: true);
+
+      final response = await _apiService.multipartRequest(
+        'profile/update',
+        method: 'POST',
+        fields: {
+          '_method': 'PUT',
+          'name': userName.value,
+          'email': userEmail.value,
+        },
+        file: imageFile,
+        fileField: 'avatar',
+      );
+
+      final data = jsonDecode(response.body);
+      if (data['status'] == 'success') {
+        final userData = data['data'] ?? {};
+        String avatarPath = userData['avatar']?.toString() ?? '';
+        if (avatarPath.isNotEmpty) {
+          userAvatar.value = 'http://127.0.0.1:8000/storage/$avatarPath';
+        }
+        Get.closeAllSnackbars();
+        Get.snackbar('Berhasil', 'Foto profil berhasil diperbarui!', backgroundColor: Colors.green.withValues(alpha: 0.1), colorText: Colors.green[800]);
+      } else {
+        throw Exception(data['message'] ?? 'Gagal mengunggah foto');
+      }
+    } catch (e) {
+      Get.closeAllSnackbars();
+      Get.snackbar('Error', e.toString().replaceAll('Exception: ', ''));
+    } finally {
+      isUploading.value = false;
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/invoice_controller.dart';
+import 'invoice_shimmer_view.dart';
 
 class InvoiceView extends GetView<InvoiceController> {
   const InvoiceView({super.key});
@@ -16,11 +17,7 @@ class InvoiceView extends GetView<InvoiceController> {
       body: SafeArea(
         child: Obx(() {
           if (controller.isLoading.value) {
-            return Center(
-              child: CircularProgressIndicator(
-                color: theme.colorScheme.primary,
-              ),
-            );
+            return const InvoiceShimmerView();
           }
           if (controller.errorMessage.isNotEmpty) {
             return _buildErrorState(theme, isDark);

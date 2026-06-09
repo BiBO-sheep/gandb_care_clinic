@@ -29,6 +29,8 @@ dependencies:
   intl: ^0.19.0
   firebase_core: ^4.9.0
   firebase_crashlytics: ^5.2.2
+  image_picker: ^1.2.2
+  image_cropper: ^12.2.1
 
 dev_dependencies:
   flutter_test:
@@ -47,6 +49,7 @@ flutter:
   assets:
     - assets/images/
     - assets/audio/
+    - assets/logo_klinik.png
     - .env
 
 # 👇 KONFIGURASI SPLASH SCREEN WAJIB DI SINI (Di Luar Dependencies) 👇
