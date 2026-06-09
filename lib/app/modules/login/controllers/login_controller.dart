@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../../../data/providers/api_service.dart';
 import '../../../../core/utils/app_snackbar.dart';
 import '../../../routes/app_pages.dart';
+import '../../../services/notification_service.dart';
 
 class LoginController extends GetxController {
   final emailController = TextEditingController();
@@ -45,6 +46,9 @@ class LoginController extends GetxController {
       String token = data['access_token'];
 
       await _storage.write(key: 'token', value: token);
+
+      // Kirim FCM token setelah login berhasil (bearer token sudah tersedia)
+      _sendFcmToken();
 
       AppSnackbar.success('Login Berhasil', 'Selamat datang kembali.');
 
@@ -93,6 +97,9 @@ class LoginController extends GetxController {
 
       await _storage.write(key: 'token', value: token);
 
+      // Kirim FCM token setelah login berhasil (bearer token sudah tersedia)
+      _sendFcmToken();
+
       AppSnackbar.success('Login Berhasil', 'Selamat datang kembali.');
 
       Get.offAllNamed(Routes.HOME);
@@ -103,6 +110,14 @@ class LoginController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+    }
+  }
+  void _sendFcmToken() async {
+    try {
+      final notificationService = Get.find<NotificationService>();
+      await notificationService.sendFcmToken();
+    } catch (e) {
+      debugPrint('Gagal send FCM token: $e');
     }
   }
 }

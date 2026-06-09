@@ -31,20 +31,10 @@ class NotificationService extends GetxService {
       debugPrint('User granted permission');
     }
 
-    // Ambil FCM Token
-    String? token = await _fcm.getToken();
-    debugPrint("FCM Token: $token");
-    if (token != null) {
-      try {
-        final apiService = ApiService();
-        await apiService.post('profile/update-fcm-token', body: {
-          'fcm_token': token,
-        });
-        debugPrint("FCM Token berhasil dikirim ke backend");
-      } catch (e) {
-        debugPrint("Gagal mengirim FCM token: $e");
-      }
-    }
+    // Ambil FCM Token (simpan lokal, kirim ke backend lewat sendFcmToken() setelah login)
+    _fcm.getToken().then((token) {
+      debugPrint("FCM Token: $token");
+    });
 
     _initLocalNotifications();
 
@@ -115,5 +105,21 @@ class NotificationService extends GetxService {
       body: message.notification?.body,
       notificationDetails: notificationDetails,
     );
+  }
+
+  /// Dipanggil setelah user login berhasil agar Bearer token sudah tersedia
+  Future<void> sendFcmToken() async {
+    try {
+      String? token = await _fcm.getToken();
+      if (token != null) {
+        final apiService = ApiService();
+        await apiService.post('profile/update-fcm-token', body: {
+          'fcm_token': token,
+        });
+        debugPrint("FCM Token berhasil dikirim ke backend: $token");
+      }
+    } catch (e) {
+      debugPrint("Gagal mengirim FCM token: $e");
+    }
   }
 }
