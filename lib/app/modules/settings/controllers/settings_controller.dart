@@ -114,8 +114,7 @@ class SettingsController extends GetxController {
   void toggleWellnessTips(bool value) => wellnessTips.value = value;
   void toggleBiometric(bool value) => biometricLogin.value = value;
 
-  void changePassword() =>
-      AppSnackbar.info('Keamanan', 'Fitur ubah kata sandi segera hadir.');
+  void changePassword() => Get.toNamed(Routes.CHANGE_PASSWORD);
   void openPrivacyPolicy() =>
       AppSnackbar.info('Legal', 'Membuka Kebijakan Privasi...');
   void openTerms() =>

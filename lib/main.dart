@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'app/routes/app_pages.dart';
 import 'app/services/theme_service.dart';
 import 'app/services/polling_service.dart';
+import 'app/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
 
 void main() {
@@ -39,6 +40,7 @@ void main() {
 
     await Get.putAsync(() => ThemeService().init(), permanent: true);
     await Get.putAsync(() => PollingService().init(), permanent: true);
+    await Get.putAsync(() => NotificationService().init(), permanent: true);
 
     runApp(const MyApp());
   }, (error, stackTrace) {

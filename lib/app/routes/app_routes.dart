@@ -21,4 +21,7 @@ abstract class Routes {
   static const INVOICE = '/invoice';
   static const MOCK_PAYMENT = '/mock-payment';
   static const COMPLETE_PROFILE = '/complete-profile';
+  static const SCANNER = '/scanner';
+  static const CALL_CENTER = '/call-center';
+  static const CHANGE_PASSWORD = '/change-password';
 }

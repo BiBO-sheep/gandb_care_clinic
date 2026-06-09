@@ -55,6 +55,7 @@ class HomeShimmerView extends StatelessWidget {
                   _buildAppointmentCardShimmer(),
                   const SizedBox(height: 32),
                   _buildQuickActionsShimmer(),
+                  const SizedBox(height: 32),
                   _buildHealthTipsShimmer(),
                   const SizedBox(height: 32),
                   _buildPoliGridShimmer(),

@@ -114,7 +114,7 @@ class HomeController extends GetxController {
     }
   }
 
-  void openQRScanner() => Get.snackbar('Info', 'Membuka Scanner...');
+  void openQRScanner() => Get.toNamed('/scanner');
 
   void onQuickActionTapped(String action) {
     if (action == 'My History') {

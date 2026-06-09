@@ -31,6 +31,12 @@ import 'package:gandb_care_clinic/app/modules/settings/bindings/settings_binding
 import 'package:gandb_care_clinic/app/modules/settings/views/settings_view.dart';
 import 'package:gandb_care_clinic/app/modules/splash/bindings/splash_binding.dart';
 import 'package:gandb_care_clinic/app/modules/splash/views/splash_view.dart';
+import 'package:gandb_care_clinic/app/modules/scanner/bindings/scanner_binding.dart';
+import 'package:gandb_care_clinic/app/modules/scanner/views/scanner_view.dart';
+import 'package:gandb_care_clinic/app/modules/call_center/bindings/call_center_binding.dart';
+import 'package:gandb_care_clinic/app/modules/call_center/views/call_center_view.dart';
+import 'package:gandb_care_clinic/app/modules/change_password/bindings/change_password_binding.dart';
+import 'package:gandb_care_clinic/app/modules/change_password/views/change_password_view.dart';
 import 'package:get/get.dart';
 import '../modules/onboarding/bindings/onboarding_binding.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
@@ -102,6 +108,21 @@ class AppPages {
       page: () => const ExamResultsView(),
       binding: ExamResultsBinding(),
       transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: Routes.SCANNER,
+      page: () => const ScannerView(),
+      binding: ScannerBinding(),
+    ),
+    GetPage(
+      name: Routes.CALL_CENTER,
+      page: () => const CallCenterView(),
+      binding: CallCenterBinding(),
+    ),
+    GetPage(
+      name: Routes.CHANGE_PASSWORD,
+      page: () => const ChangePasswordView(),
+      binding: ChangePasswordBinding(),
     ),
     GetPage(
       name: Routes.DIGITAL_PRESCRIPTION,

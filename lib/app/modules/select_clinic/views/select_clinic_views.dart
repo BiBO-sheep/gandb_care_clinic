@@ -46,7 +46,7 @@ class SelectClinicView extends GetView<SelectClinicController> {
               Icons.qr_code_scanner,
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            onPressed: () {},
+            onPressed: () => Get.toNamed('/scanner'),
           ),
         ],
       ),
@@ -425,7 +425,7 @@ class SelectClinicView extends GetView<SelectClinicController> {
                 onPressed: controller.callCenter,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.onPrimary,
-                  foregroundColor: theme.colorScheme.primary,
+                  foregroundColor: isDark ? Colors.blue.shade900 : theme.colorScheme.primary,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,

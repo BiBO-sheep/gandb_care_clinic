@@ -59,9 +59,6 @@ class SelectClinicController extends GetxController {
   }
 
   void callCenter() {
-    AppSnackbar.info(
-      'Layanan Pelanggan',
-      'Menyambungkan ke layanan pelanggan...',
-    );
+    Get.toNamed('/call-center');
   }
 }
