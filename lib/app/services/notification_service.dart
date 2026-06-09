@@ -31,9 +31,10 @@ class NotificationService extends GetxService {
       debugPrint('User granted permission');
     }
 
-    // Ambil FCM Token (simpan lokal, kirim ke backend lewat sendFcmToken() setelah login)
+    // Ambil FCM Token dan coba kirim ke backend (akan berhasil jika user sudah login)
     _fcm.getToken().then((token) {
       debugPrint("FCM Token: $token");
+      sendFcmToken(); // Sync token at startup
     });
 
     _initLocalNotifications();
