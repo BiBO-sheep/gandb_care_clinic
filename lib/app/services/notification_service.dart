@@ -110,9 +110,9 @@ class NotificationService extends GetxService {
     );
 
     _localNotificationsPlugin.show(
-      message.hashCode,
-      message.notification?.title,
-      message.notification?.body,
+      id: message.hashCode,
+      title: message.notification?.title,
+      body: message.notification?.body,
       notificationDetails: notificationDetails,
     );
   }
