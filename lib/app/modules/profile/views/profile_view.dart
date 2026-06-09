@@ -85,9 +85,9 @@ class ProfileView extends GetView<ProfileController> {
                     children: [
                       _buildInfoStat('Gol. Darah', controller.userBloodType.value.isEmpty ? '-' : controller.userBloodType.value, theme),
                       Container(height: 40, width: 1, color: theme.colorScheme.surfaceContainerHighest),
-                      _buildInfoStat('Tinggi', '158 cm', theme),
+                      _buildInfoStat('Tinggi', controller.userHeight.value.isEmpty ? '-' : '${controller.userHeight.value} cm', theme),
                       Container(height: 40, width: 1, color: theme.colorScheme.surfaceContainerHighest),
-                      _buildInfoStat('Berat', '62 kg', theme),
+                      _buildInfoStat('Berat', controller.userWeight.value.isEmpty ? '-' : '${controller.userWeight.value} kg', theme),
                     ],
                   ),
                 ),

@@ -320,37 +320,94 @@ class HomeView extends GetView<HomeController> {
           ),
         ),
         const SizedBox(height: 16),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 1.2,
+        Column(
           children: [
-            _buildActionItem(
-              'Book\nAppointment',
-              Icons.add_circle,
-              theme.colorScheme.primaryContainer,
-              theme.colorScheme.onPrimaryContainer,
-              theme,
-              isDark,
+            GestureDetector(
+              onTap: () => controller.onQuickActionTapped('Book Appointment'),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: isDark
+                      ? []
+                      : [
+                          BoxShadow(
+                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.add_circle, color: Colors.white, size: 32),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Book Appointment',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Schedule a new visit instantly',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: Colors.white.withValues(alpha: 0.8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+                  ],
+                ),
+              ),
             ),
-            _buildActionItem(
-              'My History',
-              Icons.history,
-              theme.colorScheme.secondaryContainer,
-              theme.colorScheme.onSurface,
-              theme,
-              isDark,
-            ),
-            _buildActionItem(
-              'Poli Info',
-              Icons.info,
-              theme.colorScheme.primary.withValues(alpha: 0.1),
-              theme.colorScheme.primary,
-              theme,
-              isDark,
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 120,
+                    child: _buildActionItem(
+                      'My History',
+                      Icons.history,
+                      theme.colorScheme.secondaryContainer,
+                      theme.colorScheme.onSurface,
+                      theme,
+                      isDark,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: SizedBox(
+                    height: 120,
+                    child: _buildActionItem(
+                      'Poli Info',
+                      Icons.info,
+                      theme.colorScheme.primary.withValues(alpha: 0.1),
+                      theme.colorScheme.primary,
+                      theme,
+                      isDark,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

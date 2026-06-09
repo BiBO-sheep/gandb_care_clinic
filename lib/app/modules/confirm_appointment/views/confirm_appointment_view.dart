@@ -198,26 +198,7 @@ class ConfirmAppointmentView extends GetView<ConfirmAppointmentController> {
                         ],
                       ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          'EST. FEE',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onSurfaceVariant,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                        Text(
-                          controller.estFee,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Biaya dihilangkan agar tidak membingungkan pasien (biaya dihitung setelah pemeriksaan)
                   ],
                 ),
               ),

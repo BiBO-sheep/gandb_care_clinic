@@ -152,19 +152,25 @@ class LoginView extends GetView<LoginController> {
                 () => SizedBox(
                   width: double.infinity,
                   height: 56,
-                  child: OutlinedButton.icon(
+                  child: OutlinedButton(
                     onPressed: controller.isGoogleLoading.value ? null : controller.signInWithGoogle,
                     style: OutlinedButton.styleFrom(
                       backgroundColor: theme.colorScheme.surface,
                     ),
-                    icon: controller.isGoogleLoading.value
-                        ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Icon(Icons.g_mobiledata, size: 36, color: Colors.blue),
-                    label: Text(
-                      controller.isGoogleLoading.value ? 'Connecting...' : 'Continue with Google',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: theme.colorScheme.onSurface,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        controller.isGoogleLoading.value
+                            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                            : Image.asset('assets/images/google_logo.png', width: 24, height: 24),
+                        const SizedBox(width: 12),
+                        Text(
+                          controller.isGoogleLoading.value ? 'Connecting...' : 'Continue with Google',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

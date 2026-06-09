@@ -186,6 +186,25 @@ class ExamResultsView extends GetView<ExamResultsController> {
             ),
           ],
           const SizedBox(height: 16),
+          if (record['keluhan'] != null && record['keluhan'].toString().isNotEmpty) ...[
+            Text(
+              'KELUHAN PASIEN',
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.error,
+                letterSpacing: 1.5,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              record['keluhan'],
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           Text(
             'DIAGNOSIS',
             style: theme.textTheme.labelSmall?.copyWith(
