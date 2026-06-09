@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 import '../../../data/providers/api_service.dart';
 import '../../../data/providers/unauthorized_exception.dart';
+import '../../../../api_config.dart';
 import 'package:gandb_care_clinic/app/modules/main_layout/controllers/main_layout_controller.dart';
 
 class ProfileController extends GetxController {
@@ -50,7 +51,8 @@ class ProfileController extends GetxController {
       
       String avatarPath = userData['avatar']?.toString() ?? '';
       if (avatarPath.isNotEmpty) {
-        userAvatar.value = 'http://127.0.0.1:8000/storage/$avatarPath'; // Sesuaikan baseUrl jika di prod
+        String baseStorageUrl = ApiConfig.baseUrl.replaceAll('/api', '/storage');
+        userAvatar.value = '$baseStorageUrl/$avatarPath';
       } else {
         userAvatar.value = '';
       }
@@ -119,7 +121,8 @@ class ProfileController extends GetxController {
         final userData = data['data'] ?? {};
         String avatarPath = userData['avatar']?.toString() ?? '';
         if (avatarPath.isNotEmpty) {
-          userAvatar.value = 'http://127.0.0.1:8000/storage/$avatarPath';
+          String baseStorageUrl = ApiConfig.baseUrl.replaceAll('/api', '/storage');
+          userAvatar.value = '$baseStorageUrl/$avatarPath';
         }
         Get.closeAllSnackbars();
         Get.snackbar('Berhasil', 'Foto profil berhasil diperbarui!', backgroundColor: Colors.green.withValues(alpha: 0.1), colorText: Colors.green[800]);

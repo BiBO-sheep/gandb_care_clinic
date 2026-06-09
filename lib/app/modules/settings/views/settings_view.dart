@@ -36,7 +36,7 @@ class SettingsView extends GetView<SettingsController> {
               Center(
                 child: Column(
                   children: [
-                    Container(
+                    Obx(() => Container(
                       width: 96,
                       height: 96,
                       decoration: BoxDecoration(
@@ -48,13 +48,21 @@ class SettingsView extends GetView<SettingsController> {
                           ),
                           width: 4,
                         ),
+                        image: controller.profileCtrl.userAvatar.value.isNotEmpty
+                            ? DecorationImage(
+                                image: NetworkImage(controller.profileCtrl.userAvatar.value),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
                       ),
-                      child: Icon(
-                        Icons.person,
-                        size: 50,
-                        color: theme.colorScheme.onPrimaryContainer,
-                      ),
-                    ),
+                      child: controller.profileCtrl.userAvatar.value.isEmpty
+                          ? Icon(
+                              Icons.person,
+                              size: 50,
+                              color: theme.colorScheme.onPrimaryContainer,
+                            )
+                          : null,
+                    )),
                     const SizedBox(height: 12),
                     Obx(
                       () => Text(
