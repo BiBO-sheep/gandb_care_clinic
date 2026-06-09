@@ -71,7 +71,7 @@ class NotificationService extends GetxService {
     );
 
     _localNotificationsPlugin.initialize(
-      initializationSettings: initializationSettings,
+      settings: initializationSettings,
     );
 
     // Create custom channel
