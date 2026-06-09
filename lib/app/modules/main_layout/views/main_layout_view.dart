@@ -6,7 +6,7 @@ import '../../home/views/home_view.dart';
 import '../../payment_history/views/payment_history_view.dart';
 import '../../notifications/views/notifications_view.dart';
 import '../../profile/views/profile_view.dart';
-import 'package:move_to_background/move_to_background.dart';
+import 'package:flutter/services.dart';
 
 class MainLayoutView extends GetView<MainLayoutController> {
   const MainLayoutView({super.key});
@@ -20,7 +20,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        MoveToBackground.moveTaskToBack();
+        const MethodChannel('com.example.gandb_care_clinic/app_retain').invokeMethod('sendToBackground');
       },
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
