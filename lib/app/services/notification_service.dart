@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../data/providers/api_service.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -11,8 +12,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 class NotificationService extends GetxService {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final AudioPlayer _audioPlayer = AudioPlayer(); // Inisialisasi AudioPlayer
 
-  static const String channelId = 'hospital_call_channel';
+  static const String channelId = 'hospital_call_channel_v2';
   static const String channelName = 'Panggilan Antrean';
   static const String channelDescription = 'Notifikasi saat antrean dipanggil';
   static const String customSound = 'tingtung'; 
@@ -20,16 +22,16 @@ class NotificationService extends GetxService {
   Future<NotificationService> init() async {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     
-    // Request permission
-    NotificationSettings settings = await _fcm.requestPermission(
+    // Request permission without blocking init
+    _fcm.requestPermission(
       alert: true,
       badge: true,
       sound: true,
-    );
-
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      debugPrint('User granted permission');
-    }
+    ).then((settings) {
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        debugPrint('User granted permission');
+      }
+    });
 
     // Ambil FCM Token dan coba kirim ke backend (akan berhasil jika user sudah login)
     _fcm.getToken().then((token) {
@@ -40,13 +42,20 @@ class NotificationService extends GetxService {
     _initLocalNotifications();
 
     // Listen to foreground messages
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       debugPrint('Got a message whilst in the foreground!');
       debugPrint('Message data: ${message.data}');
 
       if (message.notification != null) {
         debugPrint('Message also contained a notification: ${message.notification}');
         _showLocalNotification(message);
+        
+        // Memainkan audio dari assets menggunakan AudioPlayer (Sesuai logic asli Anda)
+        try {
+          await _audioPlayer.play(AssetSource('audio/tingtung.mp3'));
+        } catch (e) {
+          debugPrint('Error playing audio: $e');
+        }
       }
     });
 

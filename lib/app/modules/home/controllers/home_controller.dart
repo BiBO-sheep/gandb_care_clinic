@@ -30,7 +30,11 @@ class HomeController extends GetxController {
   Future<void> refreshData({bool showLoading = true}) async {
     if (isClosed) return;
     if (showLoading && listPoli.isEmpty) isLoading.value = true;
-    await Future.wait([fetchUser(), fetchDashboardData(), fetchPoliAPI()]);
+    await Future.wait([
+      fetchUser().timeout(const Duration(seconds: 7), onTimeout: () => null),
+      fetchDashboardData().timeout(const Duration(seconds: 7), onTimeout: () => null),
+      fetchPoliAPI().timeout(const Duration(seconds: 7), onTimeout: () => null),
+    ]);
     if (!isClosed) {
       isLoading.value = false;
     }

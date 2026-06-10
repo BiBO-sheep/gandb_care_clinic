@@ -119,8 +119,10 @@ class ExamResultsView extends GetView<ExamResultsController> {
   }
 
   Widget _buildRecordCard(dynamic record, ThemeData theme, bool isDark) {
-    final appointmentDate =
-        record['appointment']?['appointment_date'] ?? 'Tanggal tidak tersedia';
+    // Ambil dari root record (sesuai API backend terbaru)
+    final appointmentDate = record['tanggal'] ?? 'Tanggal tidak tersedia';
+    final poliName = record['poli_name'] ?? 'Poli Umum';
+    
     final doctorName = record['doctor']?['name'] ?? 'Dokter tidak tersedia';
     final doctorSpec = record['doctor']?['specialization'] ?? '';
 
@@ -150,14 +152,29 @@ class ExamResultsView extends GetView<ExamResultsController> {
             children: [
               Expanded(
                 flex: 3,
-                child: Text(
-                  appointmentDate,
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      appointmentDate,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      poliName,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.primary,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(width: 8),

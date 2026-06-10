@@ -60,8 +60,8 @@ class SplashController extends GetxController
   }
 
   void _startSplash() async {
-    // Tunggu animasi selesai + sedikit jeda
-    await Future.delayed(const Duration(milliseconds: 3000));
+    // Tunggu animasi selesai
+    await Future.delayed(const Duration(milliseconds: 1800));
 
     if (isClosed) return;
 
