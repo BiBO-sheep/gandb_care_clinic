@@ -286,22 +286,39 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
             ],
           ),
           const SizedBox(height: 24),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                height: 2,
-                width: double.infinity,
-                color: theme.colorScheme.surfaceContainerHighest,
-              ),
-              Positioned(
-                left: 0,
-                child: Container(
-                  height: 2,
-                  width: 200,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    height: 2,
+                    width: double.infinity,
+                    color: theme.colorScheme.surfaceContainerHighest,
+                  ),
+                  Positioned(
+                    left: 0,
+                    child: Obx(() {
+                      double progress = 0.0;
+                      if (_isStatusReached('consult', false) || _isStatusReached('consult', true)) {
+                        progress = 1.0;
+                      } else if (_isStatusReached('waiting', false)) {
+                        progress = 0.66;
+                      } else if (_isStatusReached('pre-screen', false)) {
+                        progress = 0.33;
+                      } else if (_isStatusReached('check-in', false)) {
+                        progress = 0.0;
+                      }
+
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 800),
+                        curve: Curves.easeInOut,
+                        height: 2,
+                        width: constraints.maxWidth * progress,
+                        color: theme.colorScheme.primary,
+                      );
+                    }),
+                  ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -335,8 +352,10 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
                 ],
               ),
             ],
-          ),
-          const SizedBox(height: 8),
+          );
+        },
+      ),
+      const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -379,11 +398,16 @@ class QueueMonitorView extends GetView<QueueMonitorController> {
     String current = controller.currentStatus.value.toLowerCase();
 
     // Map Laravel status to Timeline status
-    String mappedCurrent = 'scheduled';
-    if (current == 'check_in' || current == 'pemeriksaan')
-      mappedCurrent = 'consult';
-    else if (['selesai', 'pending_kasir', 'unpaid', 'paid'].contains(current))
-      mappedCurrent = 'completed';
+    String mappedCurrent = 'check-in';
+    if (current == 'scheduled') {
+      mappedCurrent = 'check-in'; // Masih dalam perjalanan / belum datang
+    } else if (current == 'check_in') {
+      mappedCurrent = 'waiting'; // Sudah di klinik, menunggu
+    } else if (current == 'pemeriksaan') {
+      mappedCurrent = 'consult'; // Dipanggil ke ruangan
+    } else if (['selesai', 'pending_kasir', 'unpaid', 'paid'].contains(current)) {
+      mappedCurrent = 'completed'; // Selesai
+    }
 
     List<String> statuses = [
       'scheduled',
